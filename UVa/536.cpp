@@ -6,13 +6,10 @@ void solve(string, string);
 
 int main() {
 	string preOrder, inOrder;
-	int n, m;
-	cin >> n;
-	for (int i = 0; i < n; ++i) {
-		cin >> m >> preOrder >> inOrder;
-		solve(preOrder, inOrder);
-		cout << endl;
-	}
+  while (cin >> preOrder >> inOrder) {
+    solve(preOrder, inOrder);
+    cout << endl;
+  }
 	return 0;
 }
 

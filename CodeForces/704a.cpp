@@ -26,15 +26,15 @@ int main() {
         arc[arg - 1][j].read = true;
       }
     } else {
-      if (arg > max) {
-        max = arg;
-      }
+      max = arg;
     }
     int ans = 0;
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < arc[j].size(); ++k) {
         if (arc[j][k].number > max && !arc[j][k].read) {
           ans++;
+        } else if (arc[j][k].number <= max) {
+          arc[j][k].read = true;
         }
       }
     }

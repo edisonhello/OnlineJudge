@@ -12,7 +12,7 @@ int main() {
     if (i % 2 == 0) {
       dp[i] = min(dp[i - 1] + x, dp[i / 2] + y);
     } else {
-      dp[i] = dp[i - 1] + x;
+      dp[i] = min(dp[i - 1] + x, dp[i / 2] + y + x);
     }
   }
   cout << dp[n] << endl;

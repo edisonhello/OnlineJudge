@@ -1,14 +1,44 @@
 #include <iostream>
 using namespace std;
 
-int sq[500][500];
+long long int sq[500][500];
+long long int n;
+long long int sum = 0;
+
+bool b() {
+  long long int ji;
+  for (long long int i = 0; i < n; ++i) {
+    ji = 0;
+    for (long long int j = 0; j < n; ++j) {
+      ji += sq[i][j];
+    }
+    if (ji != sum) return false;
+  }
+  for (long long int i = 0; i < n; ++i) {
+    ji = 0;
+    for (long long int j = 0; j < n; ++j) {
+      ji += sq[j][i];
+    }
+    if (ji != sum) return false;
+  }
+  ji = 0;
+  for (long long int i = 0; i < n; ++i) {
+    ji += sq[i][i];
+  }
+  if (ji != sum) return false;
+  ji = 0;
+  for (long long int i = 0; i < n; ++i) {
+    ji += sq[i][n - i - 1];
+  }
+  if (ji != sum) return false;
+  return true;
+}
 
 int main() {
-  int n;
   cin >> n;
-  int zi, zj;
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
+  long long int zi, zj;
+  for (long long int i = 0; i < n; ++i) {
+    for (long long int j = 0; j < n; ++j) {
       cin >> sq[i][j];
       if (sq[i][j] == 0) {
         zi = i;
@@ -16,62 +46,32 @@ int main() {
       }
     }
   }
-  int sum = 0;
-  int r;
-  if (zi == 0) r = 1;
-  else r = zi - 1;
-  for (int i = 0; i < n; ++i) {
-    sum += sq[r][i];
+  long long int r, c;
+  if (zi == n - 1) r = 0;
+  else r = zi + 1;
+  if (zj == n - 1) c = 0;
+  else c = zj + 1;
+  long long int s1, s2;
+  for (long long int i = 0; i < n; ++i) {
+    s1 += sq[r][i];
+    s2 += sq[i][c];
   }
-  int jizz = 0;
-  for (int i = 0; i < n; ++i) {
-    jizz += sq[zi][i];
+  if (s1 == s2) sum = s1;
+  else {
+    cout << -1 << endl;
+    return 0;
   }
-  int ans = sum - jizz;
-
-  bool yes = true;
-  int zz = 0;
-  for (int i = 0; i < n; ++i) {
-    zz += sq[i][zj];
+  long long int ji = 0; long long int zz = 0;
+  for (long long int i = 0; i < n; ++i) {
+    ji += sq[zi][i];
   }
-  if (zz + ans != sum) yes = false;
-  zz = 0;
-  int zzz = 0;
-  if (zi == zj || zi + zj == n) {
-    for (int i = 0; i < n; ++i) {
-      zz += sq[i][i];
-      zzz += sq[n - i - 1][i];
-    }
-    if (zz + ans != sum || zzz + ans != sum) yes = false;
-  } else {
-    for (int i = 0; i < n; ++i) {
-      zz += sq[i][i];
-      zzz += sq[n - i - 1][i];
-    }
-    if (zzz != sum || zz != sum) yes = false;
-  }
-  for (int i = 0; i < n; ++i) {
-    if (i == zi) continue;
-    zz = 0;
-    for (int j = 0; j < n; ++j) zz += sq[i][j];
-    if (zz != sum) yes = false;
-  }
-  for (int i = 0; i < n; ++i) {
-    if (i == zj) continue;
-    zz = 0;
-    for (int j = 0; j < n; ++j) {
-      zz += sq[j][i];
-    }
-    if (zz != sum) yes = false;
-  }
-  // zz = 0;
-  // zzz = 0;
-  // for (int i = 0; i < n; ++i) {
-  //   zz += sq[i][i];
-  //   zzz += sq[n - i - 1][i];
+  long long int ans = sum - ji;
+  // if (ans == 0) {
+  //   cout << -1 << endl;
+  //   return 0;
   // }
-  if (zz + ans != sum || zzz + ans != sum) yes = false;
-  if (yes)
+  sq[zi][zj] = ans;
+  if (b())
     cout << ans << endl;
   else
     cout << -1 << endl;

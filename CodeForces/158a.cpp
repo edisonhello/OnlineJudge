@@ -2,6 +2,10 @@
 #include <algorithm>
 using namespace std;
 
+bool cmp(int a, int b) {
+  return a > b;
+}
+
 int main() {
   int n, k;
   cin >> n >> k;
@@ -9,12 +13,16 @@ int main() {
   for (int i = 0; i < n; ++i) {
     cin >> s[i];
   }
-  sort(s, s + n);
-  int th = s[n - k];
-  int m = 0;
-  for (int i = 0; i < n - k; ++i) {
-    if (s[i] <= th) m++;
+  sort(s, s + n, cmp);
+  int th = s[k - 1];
+  if (th <= 0) {
+
   }
-  cout << n - m << endl;
+  int ans = k;
+  for (int i = k; i < n; ++i) {
+    if (s[i] >= th && s[i] > 0) ans++;
+    else break;
+  }
+  cout << ans << endl;
   return 0;
 }

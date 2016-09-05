@@ -15,11 +15,8 @@ int main() {
   }
   sort(s, s + n, cmp);
   int th = s[k - 1];
-  if (th <= 0) {
-
-  }
-  int ans = k;
-  for (int i = k; i < n; ++i) {
+  int ans = 0;
+  for (int i = 0; i < n; ++i) {
     if (s[i] >= th && s[i] > 0) ans++;
     else break;
   }

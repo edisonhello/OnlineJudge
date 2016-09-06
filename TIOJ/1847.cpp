@@ -1,57 +1,52 @@
 #include <deque>
 #include <iostream>
 #include <cstring>
+#include <vector>
+#include <cstdio>
 using namespace std;
 
-struct Edge {
-  int from, to;
-  int w;
+struct CR {
+  int student;
+  bool lock;
+  vector<int> door;
 };
 
-deque<Edge> G[100000];
-int c[100000];
-bool v[100000];
+int dfs(int, int);
+CR c[100000];
 int d;
-void DFS(int, int, int);
-int maxx;
+int MAX = 0;
 
 int main() {
   int n, m, a, b;
-  Edge temp;
   cin >> n >> m;
-  maxx = 0;
   for (int i = 0; i < n; ++i) {
-    cin >> c[i];
+    cin >> c[i].student;
+    c[i].lock = false;
   }
   for (int i = 0; i < m; ++i) {
     cin >> a >> b;
-    temp.from = a;
-    temp.to = b;
-    temp.w = c[b];
-    G[a].push_back(temp);
-    temp.from = b;
-    temp.to = a;
-    temp.w = c[a];
-    G[b].push_back(temp);
+    c[a].door.push_back(b);
+    c[b].door.push_back(a);
   }
-  memset(v, false, sizeof(v));
   cin >> d;
-  int start = 0;
-  v[start] = true;
-  DFS(start, 1, 0);
-  cout << maxx * 2 << endl;
+  int total = dfs(0, 0);
+  cout << total << endl;
   return 0;
 }
 
-void DFS(int x, int level, int cur) {
+int dfs(int x, int level) {
+  if (level > d) return 0;
+  // printf("%d\n", x);
+  if (c[x].lock) return 0;;
   int target;
-  if (level > d) return;
-  for (int i = 0; i < G[x].size(); ++i) {
-    target = G[x][i].to;
-    if (v[target]) continue;
-    v[target] = true;
-    cur += G[x][i].w;
-    if (cur > maxx) maxx = cur;
-    DFS(target, level + 1, cur);
+  c[x].lock = true;
+  int total = c[x].student;
+  c[x].student = 0;
+  for (int i = 0; i < c[x].door.size(); ++i) {
+    // printf("%d\n", c[x].door[i]);
+    target = c[x].door[i];
+    total += dfs(target, level + 1);
   }
+  c[x].lock = false;
+  return total;
 }

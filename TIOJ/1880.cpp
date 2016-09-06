@@ -1,52 +1,58 @@
 #include <iostream>
-#include <cstdio>
+#include <cstring>
+#include <deque>
+#include <queue>
+#define MOD 1000007
 using namespace std;
 
-struct node {
-	int number;
-	node* frd;
-	int color; //0->black; 1->red;
-	int visit = 0;
-}
-
-node people[100001];
+deque<int> f[100050];
+bool v[100050];
+bool color[100050];
 
 int main() {
-	int N, M;
-	scanf("%d %d", &N, &M);
-	for (int i = 0; i < M; ++i) {
-		int p, q;
-		scanf("%d %d", &p, &q);
-			if (!people[p] && !people[q]) {
-				people[p].number = p;
-				people[q].number = q;
-				people[p].frd = &people[q];
-				people[q].frd = &people[p];
-				people[p].color = 0;
-				people[q].color = 1;
-			}
-			else if (!people[p] && people[q]) {
-				people[p].number = p;
-				people[p].frd = &people[q];
-				people[p].color = people[q].color == 0 ? 1 : 0;
-			}
-			else if (people[p] && !people[q]) {
-				people[q].number = q;
-				people[q].frd = &people[p];
-				people[q].color = people[p].color == 0 ? 1 : 0;
-			}
+	int n, m, p, q;
+	cin >> n >> m;
+	for (int i = 0; i < n; ++i) {
+		f[i].clear();
 	}
-	int group = 0;
-	int idx = 0;
-	while (true) {
-		if (people[idx].color == people[idx].frd->color) {
-			group = 0;
-			break;
-		}
-		else if (people[idx].frd->visit == 1) {
-			group++;
-			idx = 
+	for (int i = 0; i < m; ++i) {
+		cin >> p >> q;
+		f[p].push_back(q);
+		f[q].push_back(p);
+	}
+	memset(v, false, sizeof(v));
+	// memset(color, 0, sizeof(color));
+	int tree = 0;
+	queue<int> qq;
+	int cur;
+	for (int i = 0; i < n; ++i) {
+		if (!v[i + 1]) {
+			tree++;
+			qq.push(i + 1);
+			color[i + 1] = true;
+			v[i + 1] = true;
+			while (!qq.empty()) {
+				cur = qq.front();
+				qq.pop();
+				for (int j = 0; j < f[cur].size(); ++j) {
+					if (!v[f[cur][j]]) {
+						v[f[cur][j]] = true;
+						color[f[cur][j]] = !color[cur];
+						qq.push(f[cur][j]);
+					} else {
+						if (color[f[cur][j]] == color[cur]) {
+							cout << 0 << endl;
+							return 0;
+						}
+					}
+				}
+			}
 		}
 	}
-
+	int ans = 1;
+	for (int i = 1; i < tree; ++i) {
+		ans *= 2;
+	}
+	cout << ans % MOD << endl;
+	return 0;
 }

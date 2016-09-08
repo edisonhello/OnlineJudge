@@ -13,6 +13,6 @@ int main() {
   }
   int player = 0;
   while (true) {
-    
+     
   }
 }

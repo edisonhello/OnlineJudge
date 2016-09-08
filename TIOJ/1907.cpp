@@ -1,66 +1,84 @@
 #include <iostream>
-#include <queue>
-#include <cstdio>
+#include <utility>
+#include <algorithm>
+#include <vector>
 #include <cstring>
 using namespace std;
 
-struct doll  {
-  int w, h;
-  int deg;
-  int l;
+typedef pair<int, int> pii;
+vector<pii> vec;
+
+int bs(vector<pii>& vec, int l, int r, pii key) {
+  while (r - 1 > l) {
+    int m = l + (r - 1) / 2;
+    if (vec[m].first >= key.first && vec[m].second >= key.second) r = m;
+    else l = m;
+  }
+  return r;
+}
+
+inline int rit(){
+    int t = 0, k = 1;
+    char c;
+    do {
+        c = getchar();
+        if (c == '-') k = -1;
+    } while (c < '0' || c > '9');
+    do {
+        t = t * 10 + c - '0';
+        c=getchar();
+    } while(c >= '0' && c <= '9');
+    return t * k;
 };
 
-doll d[20001];
-bool mat[20001][20001];
+int LIS(vector<pii>& vec) {
+  if (vec.size() == 0) return 0;
+  vector<pii> v;
+  v.push_back(vec[0]);
+  for (int i = 1; i < vec.size(); ++i) {
+    if (vec[i].first > v.back().first && vec[i].second > v.back().second) {
+      v.push_back(vec[i]);
+    } else {
+      *lower_bound(v.begin(), v.end(), vec[i]) = vec[i];
+    }
+  }
+  return v.size();
+}
 
-int cmp(doll d1, doll d2) {
-  if (d1.w < d2.w && d1.h < d2.h) return 1;
-  if (d1.w > d2.w && d1.h > d2.h) return -1;
-  return 0;
+int LIS2(vector<pii>& vec) {
+  if (vec.size() == 0) return 0;
+  vector<pii> v(vec.size());
+  int len = 1;
+  for (int i = 1; i < vec.size(); ++i) {
+    if (vec[i].first < v[0].first && vec[i].second < v[0].second) {
+      v[0] = vec[i];
+    } else if (vec[i].first > v[len - 1].first && vec[i].second > v[len - 1].second) {
+      v[len++] = vec[i];
+    } else {
+      v[bs(v, -1, len - 1, vec[i])] = vec[i];
+    }
+  }
+  return len;
 }
 
 int main() {
-  int t, m;
-  scanf("%d\n", &t);
-  while (t--) {
-    memset(mat, false, sizeof(mat));
-    scanf("%d\n", &m);
-    for (int i = 0; i < m; ++i) {
-      scanf("%d %d", &d[i].h, &d[i].w);
-      d[i].l = 1;
-      d[i].deg = 0;
-    }
-    queue<int> q;
-    for (int i = 0; i < m; ++i) {
-      for (int j = 0; j < m; ++j) {
-        if (cmp(d[i], d[j]) > 0) {
-          mat[i][j] = true;
-          d[j].deg++;
-        } else {
-          mat[i][j] = false;
+    int n;
+    int m;
+    int w, h;
+    n = rit();
+    // int dp[20000];
+    int dp[20000];
+    while (n--) {
+        vec.clear();
+        m = rit();
+        for (int i = 0; i < m; ++i) {
+            w = rit();
+            h = rit();
+            vec.push_back(pii(w, h));
         }
-      }
-      if (d[i].deg == 0) q.push(i);
+        sort(vec.begin(), vec.end());
+        int ans = LIS2(vec);
+        cout << ans << endl;
     }
-
-    int temp;
-    while (!q.empty()) {
-      temp = q.front();
-      for (int i = 0; i < m; ++i) {
-        if (!mat[temp][i]) continue;
-        if (d[i].l < d[temp].l + 1) {
-          d[i].l = d[temp].l + 1;
-        }
-        d[i].deg--;
-        if (d[i].deg == 0) q.push(i);
-      }
-      q.pop();
-    }
-    int maxx = 0;
-    for (int i = 0; i < m; ++i) {
-      if (d[i].l > maxx) maxx = d[i].l;
-    }
-    cout << maxx << endl;
-  }
-  return 0;
+    return 0;
 }

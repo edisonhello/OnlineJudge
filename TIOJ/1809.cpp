@@ -5,6 +5,7 @@
 #define pii pair<int, int>
 using namespace std;
 vector<pii> vec;
+
 inline int rit() {
   int t = 0, k = 1;
   char c;
@@ -18,6 +19,7 @@ inline int rit() {
   } while (c >= '0' && c <= '9');
   return t * k;
 }
+
 int find(pii p) {
   int left = 0;
   int right = vec.size() - 1;

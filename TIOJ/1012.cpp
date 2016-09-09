@@ -1,56 +1,61 @@
-#include <iostream>
 #include <cstdio>
 #include <stack>
-
 using namespace std;
 
-stack<int> station;
-stack<int> rail;
-int A[1000], B[1000];
-int N, M;
+int t, n, m, A[1000], B[1000], i, ai = 0, bi = 0;
+stack<int> S1, S2;
+
+inline int rit() {
+  t = 0;
+  char c;
+  do {
+    c = getchar_unlocked();
+    // if (c == '-') k = -1;
+  } while (c < '0' || c > '9');
+  do {
+    t = t * 10 + c - '0';
+    c = getchar_unlocked();
+  } while (c >= '0' && c <= '9');
+  return t;
+}
 
 int main() {
-    scanf("%d %d", &N, &M);
-    for (int i = 0; i < N; ++i) {
-        A[i] = i + 1;
-        scanf("%d", &B[i]);
+  n = rit(); m = rit();
+  for (i = 0; i < n; ++i) {
+    B[i] = rit();
+    A[i] = i + 1;
+  }
+  while (bi < n) {
+    if (S1.empty()) {
+      // if (S2.empty() && ai < n) S1.push(A[ai++]);
+      if (ai < n) S1.push(A[ai++]);
+      else {
+        if (!S2.empty()) {
+          S1.push(S2.top());
+          S2.pop();
+        }
+      }
     }
-    int Bi = 0;
-    int Ai = 0;
-    bool yes = true;
-    while (Bi < N && yes) {
-        if (station.empty()) {
-            station.push(A[Ai]);
-            Ai++;
-        }
-        else if (station.top() == B[Bi]) {
-            station.pop();
-            Bi++;
-        }
-        else if (station.top() < B[Bi]) {
-            station.push(A[Ai]);
-            Ai++;
-        }
-        else {
-            if (rail.size() > M) {
-                yes = false;
-            }
-            else if (rail.top() == B[Bi]) {
-                station.push(rail.top());
-                rail.pop();
-                station.pop();
-                Bi++;
-            }
-            else if (rail.top() < B[Bi]) {
-                rail.push(station.top());
-                station.pop();
-            }
-            else {
-                yes = false;
-            }
-        }
+    else if (S1.top() == B[bi]) {
+      S1.pop();
+      bi++;
+    } else if (S1.top() < B[bi]) {
+      if (ai < n) S1.push(A[ai++]);
+      else {
+        if (!S2.empty()) {S1.push(S2.top()); S2.pop();}
+        else {printf("no\n"); return 0;}
+      }
+    } else {
+      if (S2.size() < m) {
+        S2.push(S1.top());
+        S1.pop();
+      } else {
+        printf("no\n");
+        return 0;
+      }
     }
-    if (yes) printf("yes\n");
-    else printf("no\n");
-    return 0;
+
+  }
+  printf("yes\n");
+  return 0;
 }

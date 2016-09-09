@@ -2,49 +2,35 @@
 #include <queue>
 using namespace std;
 
+char c;
 vector<long long int> hf;
 priority_queue< long long int, vector<long long int>, greater<long long int> > tmp;
-long long int nmax = 0;
-
-inline long long int rlit() {
-  int t = 0, k = 1;
-  char c;
-  do {
-    c = getchar();
-    if (c == '-') k = -1;
-  } while (c < '0' || c > '9');
-  do {
-    t = t * 10 + c - '0';
-    c = getchar();
-  } while (c >= '0' && c <= '9');
-  return t * k;
-}
+long long int nmax, a, b;
+int n, p, i, t;
 
 inline int rit() {
-  int t = 0, k = 1;
-  char c;
+  t = 0;
   do {
-    c = getchar();
-    if (c == '-') k = -1;
+    c = getchar_unlocked();
+    // if (c == '-') k = -1;
   } while (c < '0' || c > '9');
   do {
     t = t * 10 + c - '0';
-    c = getchar();
+    c = getchar_unlocked();
   } while (c >= '0' && c <= '9');
-  return t * k;
+  return t;
 }
 
 int main() {
-  int n;
   n = rit();
-  long long int p;
+  // int p;
+  // long long int a, b;
   hf.reserve(n);
-  for (int i = 0; i < n; ++i) {
-    p = rlit();
+  for (i = 0; i < n; ++i) {
+    p = rit();
     tmp.push(p);
   }
   while (tmp.size() > 1) {
-    long long int a, b;
     a = tmp.top();
     tmp.pop();
     b = tmp.top();

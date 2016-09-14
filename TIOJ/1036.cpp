@@ -1,13 +1,13 @@
 #include <iostream>
 #include <cstring>
 #include <string>
-#define MAX 10000001
+#define MAX 10000010
 using namespace std;
 
 bool prime[MAX];
 
 void build() {
-	memset(prime, true, MAX);
+	memset(prime, true, sizeof(prime));
 	prime[1] = false;
 	for (int i = 2; i < MAX; ++i) {
 		if (prime[i]) {
@@ -15,7 +15,7 @@ void build() {
 				prime[j] = false;
 			}
 		}
-	} 
+	}
 }
 
 int main() {

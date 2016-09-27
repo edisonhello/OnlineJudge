@@ -37,7 +37,7 @@ int main() {
 int dfs(int x, int level) {
   if (level > d) return 0;
   // printf("%d\n", x);
-  if (c[x].lock) return 0;;
+  if (c[x].lock) return 0;
   int target;
   c[x].lock = true;
   int total = c[x].student;

@@ -3,13 +3,14 @@
 using namespace std;
 
 int main() {
-	double n;
+	unsigned double n, m;
 	while (cin >> n) {
-		n /= 1.01;
-		if (n < 0 || n > 1024) {
+		m = n / 1.01;
+		if (m < 0 || m > 1024) {
 			cout << "stupid" << endl;
 		} else {
-			cout << int(n) + 1 << endl;	
+			if (floor(m) * 1.01 >= n) cout << floor(m) << endl;
+			else cout << ceil(m) << endl;
 		}
 	}
 	return 0;

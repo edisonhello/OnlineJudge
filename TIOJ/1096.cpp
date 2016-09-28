@@ -1,44 +1,25 @@
 #include <iostream>
-#include <vector>
-#include <utility>
-#include <queue>
-#define PII pair<int, int>
-#define INF 1e9
+#include <cstdio>
 using namespace std;
 
-vector<Edge> G[110];
-int n, t, d[110];
-bool v[110];
-Edge tmp;
-priority_queue<Edge, vector<Edge>, greater<Edge> > pq;
-
-struct Edge {
-  int from, to, w;
-  bool operator > (const Edge& e) const {
-    return w < e.w;
-  }
-};
+int map[100][100];
 
 int main() {
-  while (cin >> n) {
-    memset(v, false, sizeof(v));
-    for (int i = 0; i < n; ++i) d[i] = INF;
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        cin >> t;
-        if (t != 0) {
-          tmp.from = i;
-          tmp.to = j;
-          tmp.w = t;
-          G[i].push_back(tmp);
-          tmp.from = j;
-          tmp.to = i;
-          G[j].push_back(tmp);
-        }
-      }
-    }
-    v[0] = true;
-    dis[0] = true;
-    
+  int n; int mn;
+  while (scanf("%d", &n)) {
+    if (n == 0) break;
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+        scanf("%d", &map[i][j]);
+
+    for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
+        for (int k = 0; k < n; k++)
+          if ((map[j][i] != 0 && map[i][k] != 0) && (map[j][k] == 0 || map[j][k] > map[j][i] + map[i][k])) map[j][k] = map[j][i] + map[i][k];
+   mn = -1;
+   for (int i = 0; i < n; i++)
+      if(map[i][i] != 0 && (map[i][i] < mn || mn == -1 )) mn = map[i][i];
+
+   printf("%d\n", mn);
   }
 }

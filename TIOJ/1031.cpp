@@ -1,45 +1,37 @@
 #include <iostream>
-#include <cstdio>
+#include <cmath>
+#define MAX 10000000
 using namespace std;
 
-
-
-/*void init() {
-	int k = 1;
-	int i = 0;
-	while (k < 10000000) {
-		two[i] = k;
-		k *= 2;
-		i++;
+int bs(int n) {
+	int r = 30;
+	int l = 0;
+	int m = (l + r) / 2;
+	while (l < r) {
+		if (pow(2, m) > n) r = m - 1;
+		else if (pow(2, m) < n) l = m + 1;
+		else return m;
+		m = (l + r) / 2;
 	}
-}*/
+	return r;
+}
+
+int s(int n) {
+	for (int i = 0; i <= 30; ++i) {
+		if (pow(2, i) <= n && pow(2, i + 1) > n) return i;
+	}
+}
+
+int n, a;
+long long int cnt;
 
 int main() {
-	int two[100];
-	int k = 1;
-	int idx = 0;
-	while (k < 10000000) {
-		two[idx] = k;
-		k *= 2;
-		idx++;
-	}
-	int bean;
-	int zero = 0;
-	int cnt = 0;
-	bool go = true;
-	while (go) {
-		scanf("%d", &bean);
-		if (bean == 0) {
-			if (zero == 1) go = false;
-			else {printf("%d\n", cnt); cnt = 0; zero = 1;}
-		}
-		else {
-			zero = 0;
-			int i = 0;
-			while (two[i] <= bean) {
-				i++;
-			}
-			cnt += two[i - 1];
+	while (cin >> a) {
+		if (a == 0) break;
+		cnt = pow(2, s(a));
+		while (cin >> a) {
+			if (a == 0) {cout << cnt << endl; break;}
+			cnt += pow(2, s(a));
 		}
 	}
 	return 0;

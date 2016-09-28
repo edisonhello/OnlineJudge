@@ -46,8 +46,8 @@ int main() {
       v[pqe.from] = true;
       for (int i = 0; i < G[pqe.from].size(); ++i) {
         if (!v[G[pqe.from][i].to]) {
-          if (d[G[pqe.from][i].to] > d[pqe.from] + d[pqe.from] * G[pqe.from][i].w) {
-            d[G[pqe.from][i].to] = d[pqe.from] + d[pqe.from] * G[pqe.from][i].w;
+          if (d[G[pqe.from][i].to] > d[pqe.from] * G[pqe.from][i].w) {
+            d[G[pqe.from][i].to] = d[pqe.from] * G[pqe.from][i].w;
             tmp.from = G[pqe.from][i].to;
             tmp.w = d[G[pqe.from][i].to];
             pq.push(tmp);

@@ -1,7 +1,3 @@
-//
-// Created by Wayne Tu on 5/27/16.
-//
-
 #include <stdio.h>
 #include <cmath>
 #include <algorithm>

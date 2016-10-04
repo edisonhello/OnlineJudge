@@ -48,6 +48,6 @@ long long int gcd(long long int a, long long int b) {
 int main() {
   long long int i, j;
   cin >> i >> j;
-  cout << fib(gcd(i + 1, j + 1) - 1) << endl;
+  cout << fib(gcd(i + 1, j + 1) ) << endl;
   return 0;
 }

@@ -1,27 +1,37 @@
-#include <iostream>
+#include <cstdio>
 #include <algorithm>
+#include <iostream>
 using namespace std;
 
-long long int absolute(long long int x) {
-  return x > 0 ? x : -x;
+int n, len, i, j;
+long long int dp[1000], dis[1000], t;
+char c;
+
+inline long long int rit() {
+  t = 0;
+  do {
+    c = getchar_unlocked();
+  } while (c < '0' || c > '9');
+  do {
+    t = t * 10 + c - '0';
+    c = getchar_unlocked();
+  } while (c >= '0' && c <= '9');
+  return t;
 }
 
 int main() {
-  int n, len;
-  long long int dp[1000];
-  long long int dis[1000];
-  cin >> n;
-  for (int i = 0; i < n; ++i) {
-    cin >> len;
-    for (int j = 0; j < len; ++j) {
-      cin >> dis[j];
+  n = rit();
+  for (i = 0; i < n; ++i) {
+    len = rit();
+    for (j = 0; j < len; ++j) {
+      dis[j] = rit();
     }
     dp[0] = 0;
-    dp[1] = dis[1] - dis[0];
-    for (int j = 2; j < len; ++j) {
-      dp[j] = min(dp[j - 1] + absolute(dis[j] - dis[j - 1]), dp[j - 2] + absolute(dis[j] - dis[j - 2]));
+    dp[1] = abs(dis[1] - dis[0]);
+    for (j = 2; j < len; ++j) {
+      dp[j] = min(dp[j - 1] + abs(dis[j] - dis[j - 1]), dp[j - 2] + abs(dis[j] - dis[j - 2]));
     }
-    cout << dp[len - 1] << endl;
+    printf("%lld\n", dp[len - 1]);
   }
   return 0;
 }

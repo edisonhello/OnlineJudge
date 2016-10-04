@@ -1,24 +1,31 @@
 #include <iostream>
 #include <cmath>
+#include <string>
+#include <vector>
+#include <cstring>
 using namespace std;
 
-
-// int dp[100000001];
-long long int d;
-char sol[100000000];
-
-int s(long long int n) {
-  for (int i = 0; i <= 100; ++i) {
-    if (pow(2, i) <= n && pow(2, i) > n) {
-      return i;
-    }
-  }
-}
+int d, p;
+string ans;
+void solve();
 
 int main() {
   cin >> d;
-  while (d > 0) {
-    sol[s(d)] = '+';
-    d -= s(d);
+  ans = "";
+  p = floor(log2(d));
+  while (d) solve();
+  cout << ans.length() << '\n' << ans << endl;
+  return 0;
+}
+
+void solve() {
+  if (d > 0) {
+    d -= pow(2, p);
+    ans = '+' + ans;
+    p--;
+  } else if (d < 0) {
+    d += pow(2, p);
+    ans = '-' + ans;
+    p--;
   }
 }

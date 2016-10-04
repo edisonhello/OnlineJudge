@@ -4,8 +4,6 @@
 #define MAX 1299709
 using namespace std;
 
-
-
 void build(bool* prime, int* primes) {
 	memset(prime, true, sizeof(prime));
 	prime[1] = false;

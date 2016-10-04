@@ -22,9 +22,7 @@ int inline rit() {
 }
 
 int main() {
-  // memset(ok, true, sizeof(ok));
   n = rit(); m = rit(); l = rit(); q = rit();
-  // cout << n << ' ' << m << ' ' << l << ' ' << q << endl;
   for (i = 0; i < m; ++i) {
     a = rit(); b = rit();
     vec[a].push_back(b);
@@ -43,7 +41,6 @@ int main() {
       }
       q.pop();
     }
-    // cout << "jizz" << endl;
   }
   for (i = 0; i < q; ++i) {
     y = rit();

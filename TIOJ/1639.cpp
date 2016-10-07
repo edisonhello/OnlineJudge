@@ -1,25 +1,40 @@
-#include <iostream>
-#include <algorithm>
-#include <cstring>
+#include <cstdio>
 using namespace std;
 
-long long int dp[810][810];
-long long int p[810], n, jizz[810];
-long long int dpdp(int, int);
+long long int dp[4005][4005], p[4005], n, jizz[4005], __t, tmp;
+char __c;
+int h[4005][4005], mmm;
 
-int main() {
-  cin >> n;
-  for (int i = 0; i < n; ++i) {cin >> p[i]; jizz[i] = (i == 0 ? p[i] : jizz[i - 1] + p[i]);}
-  cout << dpdp(0, n - 1) - jizz[n - 1] << endl;
-  return 0;
+inline long long int rit() {
+  __t = 0;
+  do {
+    __c = getchar_unlocked();
+  } while (__c < '0' || __c > '9');
+  do {
+    __t = __t * 10 + __c - '0';
+    __c = getchar_unlocked();
+  } while (__c >= '0' && __c <= '9');
+  return __t;
 }
 
-long long int dpdp(int l, int r) {
-  if (l == r) return p[l];
-  if (dp[l][r]) return dp[l][r];
-  dp[l][r] = 1ll << 60;
-  for (int k = l; k < r; ++k) {
-    dp[l][r] = min(dp[l][r], dpdp(l, k) + dpdp(k + 1, r) + jizz[r] - jizz[l - 1]);
+int main() {
+  n = rit();
+  for (int i = 0; i < n; ++i) {p[i] = rit(); jizz[i] = (i == 0 ? p[i] : jizz[i - 1] + p[i]);}
+  for (int i = n - 1; i >= 0; --i) {
+    for (int j = i; j < n; ++j) {
+      if (i == j) dp[i][j] = p[i], h[i][j] = i;
+      else {
+        dp[i][j] = 1ll << 60;
+        for (int k = h[i][j - 1]; k <= h[i + 1][j]; ++k) {
+          tmp = dp[i][k] + dp[k + 1][j] + jizz[j] - jizz[i - 1];
+          if (dp[i][j] > tmp) {
+            dp[i][j] = tmp;
+            h[i][j] = k;
+          }
+        }
+      }
+    }
   }
-  return dp[l][r];
+  printf("%lld\n", dp[0][n - 1] - jizz[n - 1]);
+  return 0;
 }

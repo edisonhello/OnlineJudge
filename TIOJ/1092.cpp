@@ -1,41 +1,72 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <bitset>
+#include <cstdio>
 #include <string>
+#include <queue>
 using namespace std;
 
+int N, E, a, b, __t, tmp, in[10010], i;
+char __c;
 vector<int> G[10010];
-int N, E, a, b;
-int v[10010];
-string s;
+string name;
+bitset<10010> victory;
+bool ans;
 
-void DFS(int);
-
-int main() {
-  while (cin >> N >> E) {
-    if (N == 0 && E == 0) break;
-    for (int i = 0; i < E; ++i) {
-      cin >> a >> b;
-      G[a].push_back(b);
-    }
-    memset(v, 0, sizeof(v));
-    cin >> s;
-    if (s == "Mimi") v[1] = 1;
-    else v[1] = 2;
-    DFS(1);
-    if (v[N - 1] == 1) cout << "Mimi" << endl;
-    else cout << "Moumou" << endl;
-  }
-  return 0;
+inline int rit() {
+  __t = 0;
+  do {
+    __c = getchar_unlocked();
+  } while (__c < '0' || __c > '9');
+  do {
+    __t = __t * 10 + __c - '0';
+    __c = getchar_unlocked();
+  } while (__c >= '0' && __c <= '9');
+  return __t;
 }
 
-void DFS(int start) {
-  for (int i = 0; i < G[start].size(); ++i) {
-    if (!v[G[start][i]]) {
-      if (v[start] == 1) v[G[start][i]] = 2;
-      else v[G[start][i]] = 1;
-      DFS(G[start][i]);
-      break;
+bool topo() {
+  queue<int> q;
+  q.push(N);
+  victory.set();
+  while (!q.empty()) {
+    tmp = q.front(), q.pop();
+    if (victory[tmp]) {
+      for (i = 0; i < G[tmp].size(); ++i) {
+        victory[G[tmp][i]] = false;
+        in[G[tmp][i]]--;
+        if (!in[G[tmp][i]]) q.push(G[tmp][i]);
+      }
+    } else {
+      for (i = 0; i < G[tmp].size(); ++i) {
+        in[G[tmp][i]]--;
+        if (!in[G[tmp][i]]) q.push(G[tmp][i]);
+      }
     }
   }
+  return victory[1];
+}
+
+int main() {
+  while (scanf("%d %d", &N, &E) != EOF) {
+    if (N == 0 && E == 0) break;
+    memset(in, 0, sizeof(in));
+    for (i = 0; i <= N; ++i) G[i].clear();
+    for (i = 0; i < E; ++i) {
+      a = rit(), b = rit();
+      G[b].push_back(a);
+      in[a]++;
+    }
+    cin >> name;
+    ans = topo();
+    if (name == "Mimi") {
+      if (ans) printf("Mimi\n");
+      else printf("Moumou\n");
+    } else {
+      if (ans) printf("Moumou\n");
+      else printf("Mimi\n");
+    }
+  }
+  return 0;
 }

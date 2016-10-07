@@ -4,6 +4,7 @@
 #include <queue>
 #include <utility>
 #include <vector>
+#include <bitset>
 using namespace std;
 
 typedef pair<int, int> pii;
@@ -13,6 +14,7 @@ int v[51][51];
 pair<int, int> p;
 priority_queue<pii, vector<pii>, greater<pii> > pq;
 vector<pii> lakep[2500];
+bitset<2500> jizz;
 int BFS(int, int, vector<pii>&);
 
 int main() {
@@ -21,17 +23,20 @@ int main() {
     cin >> mp[i];
   }
   lake = 0;
-  memset(v, false, sizeof(v));
-  for (int i = 1; i < n - 1; ++i) {
-    for (int j = 1; j < m - 1; ++j) {
+  memset(v, 1, sizeof(v));
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < m; ++j) {
+      if (j == 0 || i == 0 || j == m - 1 || i == n - 1) jizz[i * 50 + j] = true;
       if (!v[i][j] && mp[i][j] == '.') {
-        v[i][j] = 1;
-        lake++;
-        pq.push(pii(BFS(i, j, lakep[lake - 1]), lake - 1));
+        v[i][j] = true;
+        int area = BFS(i, j, lakep[lake - 1]);
+        if (area < 2500) lake++;
+        pq.push(pii(area, lake - 1));
       }
     }
   }
   int ans = 0;
+  // cout << "lake: " << lake << endl;
   for (int i = 0; i < lake - k; ++i) {
     p = pq.top(); pq.pop();
     ans += p.first;
@@ -52,6 +57,7 @@ int BFS(int i, int j, vector<pii>& lp) {
   while (!q.empty()) {
     p = q.front();
     q.pop();
+    if (jizz[p.first * 50 + p.second]) return (int)1e9;
     if (p.first + 1 < n - 1 && !v[p.first + 1][p.second] && mp[p.first + 1][p.second] == '.') {lp.push_back(pii(p.first + 1, p.second)); v[p.first + 1][p.second] = true; area++; q.push(pii(p.first + 1, p.second));}
     if (p.first - 1 >= 1 && !v[p.first - 1][p.second] && mp[p.first - 1][p.second] == '.') {lp.push_back(pii(p.first - 1, p.second)); v[p.first - 1][p.second] = true; area++; q.push(pii(p.first - 1, p.second));}
     if (p.second + 1 < m - 1 && !v[p.first][p.second + 1] && mp[p.first][p.second + 1] == '.') {lp.push_back(pii(p.first, p.second + 1)); v[p.first][p.second + 1] = true; area++; q.push(pii(p.first, p.second + 1));}

@@ -18,6 +18,8 @@ bool cmp2(const string& a, const string& b) {
 }
 
 int main() {
+  cin.tie(0);
+  ios_base::sync_with_stdio(false);
   while (cin >> N) {
     stack<string> st;
     queue<string> q;

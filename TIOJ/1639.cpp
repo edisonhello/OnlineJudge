@@ -1,4 +1,5 @@
 #include <cstdio>
+#define getchar getchar_unlocked
 using namespace std;
 
 long long int dp[4005][4005], p[4005], n, jizz[4005], __t, tmp;
@@ -8,11 +9,11 @@ int h[4005][4005], mmm;
 inline long long int rit() {
   __t = 0;
   do {
-    __c = getchar_unlocked();
+    __c = getchar();
   } while (__c < '0' || __c > '9');
   do {
     __t = __t * 10 + __c - '0';
-    __c = getchar_unlocked();
+    __c = getchar();
   } while (__c >= '0' && __c <= '9');
   return __t;
 }

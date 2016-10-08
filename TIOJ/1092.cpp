@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <string>
 #include <queue>
+#define getchar getchar_unlocked
 using namespace std;
 
 int N, E, a, b, __t, tmp, in[10010], i;
@@ -17,11 +18,11 @@ bool ans;
 inline int rit() {
   __t = 0;
   do {
-    __c = getchar_unlocked();
+    __c = getchar();
   } while (__c < '0' || __c > '9');
   do {
     __t = __t * 10 + __c - '0';
-    __c = getchar_unlocked();
+    __c = getchar();
   } while (__c >= '0' && __c <= '9');
   return __t;
 }

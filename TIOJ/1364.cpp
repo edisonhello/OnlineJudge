@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstdio>
+#define getchar getchar_unlocked
 using namespace std;
 
 int n, k, a[1000010], __t, __k;
@@ -8,12 +9,12 @@ char __c;
 inline int rit() {
   __t = 0; __k = 1;
   do {
-    __c = getchar_unlocked();
+    __c = getchar();
     if (__c == '-') __k = -1;
   } while (__c < '0' || __c > '9');
   do {
     __t = __t * 10 + __c - '0';
-    __c = getchar_unlocked();
+    __c = getchar();
   } while (__c >= '0' && __c <= '9');
   return __t * __k;
 }

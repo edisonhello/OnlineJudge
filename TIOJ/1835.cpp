@@ -39,7 +39,7 @@ int main() {
 }
 
 void solve(int x, int y) {
-  if (x == 0 || y == 0) {ans.push_back(reverse(s3.begin(), s3.end())); return;}
+  if (x == 0 || y == 0) {reverse(s3.begin(), s3.end()); ans.push_back(s3); return;}
   if (mp[x][y] == 3) s3 += s1[x - 1], solve(x - 1, y - 1);
   else if (mp[x][y] == 2) solve(x, y - 1);
   else solve(x - 1, y);

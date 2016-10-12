@@ -1,25 +1,37 @@
-#include <iostream>
 #include <queue>
 #include <tuple>
 #include <cstring>
 #include <cmath>
-#include <algorithm>
-#include <utility>
-#define tp tuple<int, int, int, int>
+#include <cstdio>
+#define tp tuple<int, int, int>
+#define getchar getchar_unlocked
 using namespace std;
 
-int k, m, n, h[100][100], dir[8] = {1, 0, -1, 0, 0, 1, 0, -1};
+int k, m, n, h[100][100], dir[8] = {1, 0, -1, 0, 0, 1, 0, -1}, __t;
 bool v[100][100];
+char __c;
 int BFS();
 tp tmp;
 
+inline int rit() {
+  __t = 0;
+  do {
+    __c = getchar();
+  } while (__c < '0' || __c > '9');
+  do {
+    __t = __t * 10 + __c - '0';
+    __c = getchar();
+  } while (__c >= '0' && __c <= '9');
+  return __t;
+}
+
 int main() {
-  cin >> k;
+  k = rit();
   while (k--) {
-    cin >> m >> n;
-    for (int i = 0; i < m; ++i) for (int j = 0; j < n; ++j) cin >> h[i][j];
+    m = rit(), n = rit();
+    for (int i = 0; i < m; ++i) for (int j = 0; j < n; ++j) h[i][j] = rit();
     memset(v, false, sizeof(v));
-    cout << BFS() << endl;
+    printf("%d\n", BFS());
   }
   return 0;
 }

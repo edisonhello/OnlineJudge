@@ -3,37 +3,69 @@
 #include <stack>
 using namespace std;
 
-string s;
-string ss;
-string sss;
-string ssss;
+stack<char> postfix, op;
+string s, jizz, opp;
+char a, b;
+int idx;
+short prior();
+void trans();
 
 int main() {
   while (cin >> s) {
     if (s == "END") break;
-    ss = "", sss = "", ssss = "";
-    for (int i = 0; i < s.length(); ++i) {
-      if (s[i] == '!') {ss += s[i + 1] == '1' ? '0' : '1'; i++;}
-      else ss += s[i];
+    while (postfix.size()) postfix.pop();
+    jizz = "";
+    trans();
+    while (op.size()) op.pop();
+    opp = "";
+    for (int i = 0; i < jizz.length(); ++i) {
+      if (jizz[i] != '+' && jizz[i] != '*' && jizz[i] != '!') opp += jizz[i];
     }
-    for (int i = 0; i < ss.length(); ++i) {
-      if (ss[i] == '*') {
-        if (sss[i - 1] == '1' && sss[i + 1] == '1') sss += '1';
-        else sss += '0';
-        i++;
-      }
-      else sss += ss[i];
-    }
-    for (int i = 0; i < sss.length(); ++i) {
-      if (sss[i] == '+') {
-        if (sss[i - 1] == '0' && sss[i + 1] == '0') ssss += '0';
-        else ssss += '1';
-        i++;
+    idx = 0;
+    for (int i = 0; i < jizz.length(); ++i) {
+      if (jizz[i] == '+') {
+        // while (op.size() < 2) op.push(opp[idx++]);
+        a = op.top(), op.pop();
+        b = op.top(), op.pop();
+        if (a == '0' && b == '0') op.push('0');
+        else op.push('1');
+      } else if (jizz[i] == '*') {
+        // while (op.size() < 2) op.push(opp[idx++]);
+        a = op.top(), op.pop();
+        b = op.top(), op.pop();
+        if (a == '1' && b == '1') op.push('1');
+        else op.push('0');
+      } else if (jizz[i] == '!') {
+        // if (!op.size()) op.push(opp[idx++]);
+        a = op.top(), op.pop();
+        op.push(a == '1' ? '0' : '1');
       } else {
-        ssss += s[i];
+        op.push(opp[idx++]);
       }
     }
-    cout << ssss << endl;
+    // cout << jizz << endl;
+    cout << op.top() << endl;
   }
   return 0;
+}
+
+short prior(char c) {
+  if (c == '!') return 3;
+  if (c == '*') return 2;
+  if (c == '+') return 1;
+  return 0;
+}
+
+void trans() {
+  for (int i = 0; i < s.length(); ++i) {
+    if (s[i] == '+' || s[i] == '*' || s[i] == '!') {
+      while (postfix.size() && prior(postfix.top()) > prior(s[i])) {
+        jizz += postfix.top(), postfix.pop();
+      }
+      postfix.push(s[i]);
+    } else {
+      jizz += s[i];
+    }
+  }
+  while (postfix.size()) jizz += postfix.top(), postfix.pop();
 }

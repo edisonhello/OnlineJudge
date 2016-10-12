@@ -1,60 +1,38 @@
 #include <iostream>
-#include <cstdio>
+#include <string>
 using namespace std;
 
-char map[3][3];
+string mp[3];
+int O, X;
 
-bool win() {
-    for (int i = 0; i < 3; ++i) {
-        char tmp = map[i][0];
-        if (tmp != 'O' && tmp != 'X') continue;
-        bool ans = true;
-        for (int j = 1; j < 3; ++j) {
-            if (map[i][j] != tmp) {ans = false; break;}
-        }
-        if (ans) return true;
-    }
-    for (int i = 0; i < 3; ++i) {
-        char tmp = map[0][i];
-        if (tmp != 'O' && tmp != 'X') continue;
-        bool ans = true;
-        for (int j = 1; j < 3; ++j) {
-            if (map[j][i] != tmp) {ans = false; break;}
-        }
-        if (ans) return true;
-    }
-    bool ans = true;
-    char tmp = map[0][0];
-    for (int i = 1; i < 3; ++i) {
-        if (map[i][i] != tmp) {ans = false; break;}
-    }
-    if (ans) return true;
-    ans = true;
-    tmp = map[2][0];
-    for (int i = 1; i < 3; ++i) {
-        if (map[2 - i][i] != tmp) {ans = false; break;}
-    }
-    if (ans) return true;
-    return false;
-}
+bool win(char c);
+
 int main() {
-    int nO = 0, nX = 0;
-    bool poss = true;
-    for (int i = 0; i < 3 && poss; ++i) {
-        for (int j = 0; j < 3 && poss; ++j) {
-            scanf("%d", &map[i][j]);
-            if (map[i][j] == 'O') nO++;
-            else if (map[i][j] == 'X') nX++;
-            else if (map[i][j] != '.') poss = false;
-        }
+  for (int i = 0; i < 3; ++i) cin >> mp[i];
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      if (mp[i][j] == 'O') O++;
+      else if (mp[i][j] == 'X') X++;
+      else if (mp[i][j] != '.') {cout << "IMPOSSIBLE" << endl; return 0;}
     }
-    if (win) {
-        if (nO - nX == 1) printf("POSSIBLE\n");
-        else printf("IMPOSSIBLE\n");
-    }
-    else {
-        if (nO == nX || nO - nX == 1) printf("POSSIBLE\n");
-        else printf("IMPOSSIBLE\n");
-    }
-    return 0;
+  }
+  if (abs(O - X) > 1) {cout << "IMPOSSIBLE" << endl; return 0;}
+  if (O > X) {
+    if (win('X')) cout << "IMPOSSIBLE" << endl;
+    else cout << "POSSIBLE" << endl;
+  } else {
+    if (win('O')) cout << "IMPOSSIBLE" << endl;
+    else cout << "POSSIBLE" << endl;
+  }
+  return 0;
+}
+
+bool win(char c) {
+  for (int i = 0; i < 3; ++i) {
+    if (mp[i][0] == c && mp[i][1] == c && mp[i][2] == c) return true;
+    if (mp[0][i] == c && mp[1][i] == c && mp[2][i] == c) return true;
+  }
+  if (mp[0][0] == c && mp[1][1] == c && mp[2][2] == c) return true;
+  if (mp[0][2] == c && mp[1][1] == c && mp[2][0] == c) return true;
+  return false;
 }

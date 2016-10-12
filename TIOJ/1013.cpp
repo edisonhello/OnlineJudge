@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <queue>
+#include <tuple>
+#define tp tuple<int, int, int>
 using namespace std;
 
 string mp[10] = {
@@ -15,72 +17,82 @@ string mp[10] = {
   "****.*.*........*",
   "*****************"
 };
-int fx, fy, sx, sy, ex, ey, t;
 
-struct xy {
-  int x, y;
-  int level;
-  xy(int x, int y, int level): x(x), y(y), level(level) {}
-  xy() {}
-};
-
-void render() {
-  for (int i = 0; i < 10; ++i) {
-    cout << mp[i] << endl;
-  }
-}
+int fx, fy, sx, sy, ex, ey, t, tm;
+tp tmp;
+bool v[20][20];
+void output();
 
 int BFS() {
-  queue<xy> q1, q2;
-  q1.push(xy(fx, fy, 0));
-  xy tmp1, tmp2;
-  bool keep = true;
-  while (!q1.empty()) {
-    tmp1 = q1.front();
-    if (tmp1.level == t && keep) {
-      render();
-      q2.push(xy(sx, sy, tmp1.level));
-      keep = false;
+  queue<tp> q1, q2;
+  q1.push(tp(fy, fx, 1));
+  while (!q1.empty() && get<2>(q1.front()) < t) {
+    tmp = q1.front(); q1.pop();
+    // cout << get<0>(tmp) << ' ' << get<1>(tmp) << " jizz" << endl;
+    if (get<0>(tmp) >= 0 && get<0>(tmp) < 10 && get<1>(tmp) >= 0 && get<1>(tmp) < 17) {
+      mp[get<1>(tmp)][get<0>(tmp)] = 'x';
+      if (get<0>(tmp) + 1 < 10 && mp[get<1>(tmp)][get<0>(tmp) + 1] != 'x') q1.push(tp(get<0>(tmp) + 1, get<1>(tmp), get<2>(tmp) + 1));
+      if (get<0>(tmp) - 1 >= 0 && mp[get<1>(tmp)][get<0>(tmp) - 1] != 'x') q1.push(tp(get<0>(tmp) - 1, get<1>(tmp), get<2>(tmp) + 1));
+      if (get<1>(tmp) + 1 < 17 && mp[get<1>(tmp) + 1][get<0>(tmp)] != 'x') q1.push(tp(get<0>(tmp), get<1>(tmp) + 1, get<2>(tmp) + 1));
+      if (get<0>(tmp) - 1 >= 0 && mp[get<1>(tmp) - 1][get<0>(tmp)] != 'x') q1.push(tp(get<0>(tmp), get<1>(tmp) - 1, get<2>(tmp) + 1));
     }
-    if (!keep) {
-      if (q2.empty()) break;
-      tmp2 = q2.front();
-      if (tmp2.x == ex && tmp2.y == ey) return tmp2.level;
-      mp[tmp2.y][tmp2.x] = '-';
-      if (tmp2.x + 1 < 17 && mp[tmp2.y][tmp2.x + 1] != '-' && mp[tmp2.y][tmp2.x + 1] != '*' && mp[tmp2.y][tmp2.x + 1] != '-') q2.push(xy(tmp2.x + 1, tmp2.y, tmp2.level + 1));
-      if (tmp2.x - 1 >= 0 && mp[tmp2.y][tmp2.x - 1] != '-' && mp[tmp2.y][tmp2.x - 1] != '*' && mp[tmp2.y][tmp2.x - 1] != '-') q2.push(xy(tmp2.x - 1, tmp2.y, tmp2.level + 1));
-      if (tmp2.y + 1 < 10 && mp[tmp2.y + 1][tmp2.x] != '-' && mp[tmp2.y + 1][tmp2.x] != '*' && mp[tmp2.y + 1][tmp2.x] != '-') q2.push(xy(tmp2.x, tmp2.y + 1, tmp2.level + 1));
-      if (tmp2.y - 1 <= 0 && mp[tmp2.y - 1][tmp2.x] != '-' && mp[tmp2.y - 1][tmp2.x] != '*' && mp[tmp2.y - 1][tmp2.x] != '-') q2.push(xy(tmp2.x, tmp2.y - 1, tmp2.level + 1));
-      q2.pop();
-    }
-    mp[tmp1.y][tmp1.x] = 'x';
-    if (tmp1.x + 1 < 17 && mp[tmp1.y][tmp1.x + 1] != 'x') q1.push(xy(tmp1.x + 1, tmp1.y, tmp1.level + 1));
-    if (tmp1.x - 1 >= 0 && mp[tmp1.y][tmp1.x - 1] != 'x') q1.push(xy(tmp1.x - 1, tmp1.y, tmp1.level + 1));
-    if (tmp1.y + 1 < 10 && mp[tmp1.y + 1][tmp1.x] != 'x') q1.push(xy(tmp1.x, tmp1.y + 1, tmp1.level + 1));
-    if (tmp1.y - 1 >= 0 && mp[tmp1.y - 1][tmp1.x] != 'x') q1.push(xy(tmp1.x, tmp1.y - 1, tmp1.level + 1));
-    q1.pop();
   }
-  return -1;
+  // output();
+  q2.push(tp(sy, sx, t));
+  v[sx][sy] = true;
+  tm = t;
+
+  while (true) {
+    while (!q1.empty() && get<2>(q1.front()) == tm) {
+      tmp = q1.front(); q1.pop();
+      // cout << get<0>(tmp) << ' ' << get<1>(tmp) << " jizz" << endl;
+      if (get<0>(tmp) >= 0 && get<0>(tmp) < 10 && get<1>(tmp) >= 0 && get<1>(tmp) < 17) {
+        mp[get<1>(tmp)][get<0>(tmp)] = 'x';
+        if (get<0>(tmp) + 1 < 10 && mp[get<1>(tmp)][get<0>(tmp) + 1] != 'x') q1.push(tp(get<0>(tmp) + 1, get<1>(tmp), get<2>(tmp) + 1));
+        if (get<0>(tmp) - 1 >= 0 && mp[get<1>(tmp)][get<0>(tmp) - 1] != 'x') q1.push(tp(get<0>(tmp) - 1, get<1>(tmp), get<2>(tmp) + 1));
+        if (get<1>(tmp) + 1 < 17 && mp[get<1>(tmp) + 1][get<0>(tmp)] != 'x') q1.push(tp(get<0>(tmp), get<1>(tmp) + 1, get<2>(tmp) + 1));
+        if (get<0>(tmp) - 1 >= 0 && mp[get<1>(tmp) - 1][get<0>(tmp)] != 'x') q1.push(tp(get<0>(tmp), get<1>(tmp) - 1, get<2>(tmp) + 1));
+      }
+    }
+    // output();
+    while (!q2.empty() && get<2>(q2.front()) == tm) {
+      tmp = q2.front(); q2.pop();
+      // cout << get<0>(tmp) << ' ' << get<1>(tmp) << ' ' << get<2>(tmp) << endl;
+      if (get<0>(tmp) == ex && get<1>(tmp) == ey) return get<2>(tmp);
+      if (get<0>(tmp) + 1 < 10 && !v[get<0>(tmp) + 1][get<1>(tmp)] && mp[get<0>(tmp) + 1][get<1>(tmp)] == '.') {
+        v[get<0>(tmp) + 1][get<1>(tmp)] = true;
+        q2.push(tp(get<0>(tmp) + 1, get<1>(tmp), get<2>(tmp) + 1));
+      }
+      if (get<0>(tmp) - 1 >= 0 && !v[get<0>(tmp) - 1][get<1>(tmp)] && mp[get<0>(tmp) - 1][get<1>(tmp)] == '.') {
+        v[get<0>(tmp) - 1][get<1>(tmp)] = true;
+        q2.push(tp(get<0>(tmp) - 1, get<1>(tmp), get<2>(tmp) + 1));
+      }
+      if (get<1>(tmp) + 1 < 17 && !v[get<0>(tmp)][get<1>(tmp) + 1] && mp[get<0>(tmp)][get<1>(tmp) + 1] == '.') {
+        v[get<0>(tmp)][get<1>(tmp) + 1] = true;
+        q2.push(tp(get<0>(tmp), get<1>(tmp) + 1, get<2>(tmp) + 1));
+      }
+      if (get<0>(tmp) - 1 >= 0 && !v[get<0>(tmp)][get<1>(tmp) - 1] && mp[get<0>(tmp)][get<1>(tmp) - 1] == '.') {
+        v[get<0>(tmp)][get<1>(tmp) - 1] = true;
+        q2.push(tp(get<0>(tmp), get<1>(tmp) - 1, get<2>(tmp) + 1));
+      }
+    }
+    tm++;
+    if (q2.empty()) return -1;
+  }
 }
 
-// int BFS(xy start) {
-//   queue<xy> q;
-//   q.push(start);
-//   xy tmp;
-//   while (true) {
-//     if (tmp.x == ex && tmp.y == ey) return tmp.level;
-//     if (tmp.x + 1 < 17 && mp[tmp.y][tmp.x + 1] != '-' && mp[tmp.y][tmp.x + 1] != '*') q.push(xy(tmp.x + 1, tmp.y, level + 1));
-//     if (tmp.x - 1 >= 0 && mp[tmp.y][tmp.x - 1] != '-' && mp[tmp.y][tmp.x - 1] != '*') q.push(xy(tmp.x - 1, tmp.y, level + 1));
-//     if (tmp.y + 1 < 10 && mp[tmp.y + 1][tmp.x] != '-' && mp[tmp.y + 1][tmp.x] != '*') q.push(xy(tmp.x, tmp.y + 1, level + 1));
-//     if (tmp.y - 1 <= 0 && mp[tmp.y - 1][tmp.x] != '-' && mp[tmp.y - 1][tmp.x] != '*') q.push(xy(tmp.x, tmp.y - 1, level + 1));
-//   }
-//   return -1;
-// }
-
+void output() {
+  for (int i = 0; i < 10; ++i) {
+    for (int j = 0; j < 17; ++j) {
+      cout << mp[i][j];
+    }
+    cout << endl;
+  }
+}
 int main() {
   cin >> fx >> fy;
-  cin >> sx >> sy >> ex >> ey;
   cin >> t;
+  cin >> sx >> sy >> ex >> ey;
   int ans = BFS();
   if (ans == -1) cout << "Help!" << endl;
   else cout << ans << endl;

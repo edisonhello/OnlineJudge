@@ -1,13 +1,11 @@
 #include <cstdio>
-#include <algorithm>
 #define getchar getchar_unlocked
 using namespace std;
 
-unsigned a, b, __t;
+long long int __t, hi, n, q, l, r, h[1000010];
 char __c;
-int cnt;
 
-inline unsigned rit() {
+inline long long int rit() {
   __t = 0;
   do {
     __c = getchar();
@@ -20,13 +18,12 @@ inline unsigned rit() {
 }
 
 int main() {
-  a = rit(), b = rit();
-  cnt = 0;
-  while (a != b) {
-    if (a < b) swap(a, b);
-    a /= 2;
-    cnt++;
+  n = rit(), q = rit();
+  h[0] = 0;
+  for (int i = 1; i <= n; ++i) hi = rit(), h[i] = hi ^ h[i - 1];
+  for (int i = 0; i < q; ++i) {
+    l = rit(), r = rit();
+    printf("%lld\n", h[r] ^ h[l - 1]);
   }
-  printf("%d\n", cnt);
   return 0;
 }

@@ -25,6 +25,9 @@ inline int rit() {
 
 vector<pii> vec;
 
+bool cmp(pii a, pii b) {
+  return a.second - a.first < b.second - b.first;
+}
 int main() {
   while (scanf("%d", &n) != EOF) {
     vec.clear();
@@ -34,13 +37,11 @@ int main() {
     }
     sort(vec.begin(), vec.end());
     mx = 0;
-    for (int i = n - 1; i >= 0; --i) {
+    for (int i = 0; i < n; ++i) {
       cnt = 0;
-      for (int j = i; j >= 0; --j) {
-        if (vec[j].second >= vec[i].first) cnt++;
-        else break;
+      for (int j = i + 1; j < n; ++j) {
+        if (vec[j].first < )
       }
-      if (cnt > mx) mx = cnt;
     }
     printf("%d\n", mx);
   }

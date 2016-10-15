@@ -1,69 +1,49 @@
 #include <iostream>
-#include <cstdio>
 #include <vector>
+#include <tuple>
+#include <bitset>
+#define TP tuple<int, int, int>
 using namespace std;
 
-int data[100];
+int n;
+vector<TP> edge;
+int w;
+int djs[101], cnt, ans;
+bitset<101> v;
+TP tmp;
 
-int max(int n) {
-	int max = 0;
-	for (int i = 0; i < sizeof(data) / sizeof(int); ++i) {
-		if (data[i] > max) {
-			max = data[i];
-		}
-	}
-	return max;
+int F(int x) {return djs[x] == x ? x : djs[x] = F(djs[x]);}
+
+void U(int a, int b) {
+	a = F(a), b = F(b);
+	return djs[a] = b;
 }
-int idx = 0;
-int solve(int* table[], int n) {
-	int p = 0;
-	if (n > 1) {
-		int Ni = 0;
-		for (int i = 0; i < n; ++i) {
-			for (int j = 0; j < n; ++j	) {
-				int** small = new int*[n - 1];
-				for (int si = 0; si < n ; ++si) {
-					small[i] = new int[n - 1];
-					if (si == i) continue;
-					else if (si < i) {
-						for (int sj = 0; sj < n; ++sj) {
-							if (sj == j) continue;
-							else if (sj < j) small[si][sj] = table[i][j];
-							else small[si][sj - 1] = table[j][j];
-						}
-					}
-					else {
-						for (int sj = 0; sj < n; ++sj) {
-							if (sj == j) continue;
-							else if (sj < j) small[si - 1][sj] = table[i][j];
-							else small[si - 1][sj - 1] = table[i][j];
-						}
-					}
-				}
-				solve(small, n - 1);
-			}
-		}
+
+void Kruskal() {
+	for (int i = 0; i < edge.size(); ++i) {
+		tmp = edge[i];
+		if (F(get<1>(tmp)) == F(get<2>(tmp))) continue;
+		U(get<1>(tmp), get<2>(tmp));
+		
 	}
-	else {
-		data[idx] = table[0][0];
-		idx++;
-	}
-	return max(n);
+}
+
+bool cmp(TP a, TP b) {
+	return get<0>(a) == get<0>b ? a < b ? get<0>(a) > get<0>(b);
 }
 
 int main() {
-	int n;
-	while (true) {
-		scanf("%d", &n);
-		if (n == 0) break;
-		int** table = new int*[n];
+	while (cin >> n, n) {
+		edge.clear();
 		for (int i = 0; i < n; ++i) {
-			table[i] = new int[n];
+			djs[i] = i;
 			for (int j = 0; j < n; ++j) {
-				scanf("%d", &table[i][j]);
+				cin >> w;
+				edge.push_back(make_pair(w, i, j));
 			}
 		}
-		printf("%d\n", solve(table, n));
+		v.reset();
+		sort(edge.begin(), edge.end(), cmp);
+		Kruskal();
 	}
-	return 0;
 }

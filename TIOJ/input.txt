@@ -1,5 +1,20 @@
-4 5
-0 0 1 1 0
-0 1 1 1 1
-0 1 1 1 1
-0 0 1 0 0
+abcde
+abcdd
+abcde
+abcde
+abcdefgh
+abcdefgh
+ABCDEFGH
+ABCDEFGH
+abcdEFGH
+abcdEFGH
+abcDEF12
+abcDEF12
+aB3,,3Ba
+aB3,,3Ba
+aB3,aB3,
+aB3,aB3,
+abCD56<>
+abCD56<>
+END
+END

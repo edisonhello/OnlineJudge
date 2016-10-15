@@ -403,19 +403,6 @@ void test_more_divide(int loops) {
 }
 
 int main() {
-    /*BigNumber bn("12345");
-    cout << bn << endl;
-
-    BigNumber bn2 = bn;
-    cout << bn2 << endl;
-
-    BigNumber bn3 = bn2.add(9);
-    cout << bn3 << endl;*/
-
-    /*BigNumber bn("12345");
-    bn=bn.multiply(5);
-    cout<<bn<<endl;*/
-
     string bn1,bn2;
     cin>>bn1>>bn2;
 
@@ -424,30 +411,5 @@ int main() {
 
     BigNumber q=BigNumber::divide(b,s);
     cout<<q<<endl;
-
-    /*
-     cout << "-- test constrctor --" << endl;
-     test_constructor();
-
-     cout << "-- test add --" << endl;
-     test_add();
-
-     cout << "-- test multiply --" << endl;
-     test_multiply();
-
-     cout << "-- test subtract --" << endl;
-     test_subtract();
-
-     cout << "-- test divideOne --" << endl;
-     test_divideOne();
-
-     cout << "-- test divide --" << endl;
-     test_divide();
-
-     cout << "-- test compare --" << endl;
-     test_compare();
-     */
-
-    // test_more_divide(10000);
     return 0;
 }

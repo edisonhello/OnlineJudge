@@ -26,14 +26,8 @@ int main() {
     M = rit();
     memset(dp, 0, sizeof(dp));
     for (int i = 0; i < N; ++i) {
-      for (int j = W; j >= A[i]; --j) {
-        k = 1;
-        m = 0;
-        while (j - (A[i] + M) * k > 0) {
-          m = max(m, dp[j - (A[i] + M) * k] + D[i] * k);
-          k++;
-        }
-        if (m > dp[j]) dp[j] = m;
+      for (int j = A[i]; j <= W; ++j) {
+        if (j - A[i] - M > 0) dp[j] = max(dp[j], dp[j - A[i] - M] + D[i]);
       }
     }
     if (dp[W] < B) printf("No\n");

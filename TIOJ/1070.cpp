@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <set>
+#include <algorithm>
 using namespace std;
 
 int F[101];
@@ -12,7 +13,6 @@ bool kmp(const string&, const string&);
 
 int main() {
   for (int i = 0; i < ss.length(); ++i) special.insert(ss[i]);
-  // for (set<char>::iterator it = special.begin(); it != special.end(); ++it) cout << *it << ' ';
   while (getline(cin, s1)) {
     getline(cin, s2);
     cap = false; lowercase = false; number = false; jizz = false;
@@ -31,11 +31,16 @@ int main() {
     if (!jizz) {cout << "Password should contain at least one special character.\n"; continue;}
     reverse(s2.begin(), s2.end());
     if (s1 == s2) {cout << "Symmetric password is not allowed.\n"; continue;}
-    cir = false;
-    for (int i = 3; i <= 6; ++i) {
-      if (kmp(s1.substr(i - 1, s1.length() - i), s1.substr(0, i))) {cout << "Circular password is not allowed.\n"; cir = true; break;}
+    bool c = false;
+    for (int i = 3; i <= 6 && !c; ++i) {
+      cir = true;
+      for (int j = 0, k = 0; j < s1.length(); ++j, ++k) {
+        if (k >= i) k = 0;
+        if (s1[j] != s1[k]) {cir = false; break;}
+      }
+      if (cir) {cout << "Circular password is not allowed.\n"; c = true;}
     }
-    if (!cir) cout <<"Password is valid.\n";
+    if (!c) cout << "Password is valid.\n";
   }
   return 0;
 }

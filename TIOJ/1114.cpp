@@ -1,74 +1,53 @@
 #include <iostream>
-#include <map>
-#include <algorithm>
 #include <string>
+#include <map>
+#include <sstream>
 #include <ctype.h>
-#include <locale>
 using namespace std;
 
-map< string, int > nmap;
+stringstream ss;
+string s;
+string in;
+map<string, int> m;
+string lower(const string&);
+bool p;
+int pre;
 
 int main() {
-  string s1, s2;
-  while (getline(cin, s1)) {
-    nmap.clear();
-    getline(cin, s2);
-
-    // transform(s1.begin(), s1.end(), s1.begin(), tolower)
-    // transform(s2.begin(), s2.end(), s2.begin(), tolower)
-    // s1 = tolower(s1);
-    // s2 = tolower(s2);
-
-    locale loc;
-
-    for (int i = 0; i < s1.length(); ++i) {
-      s1[i] = tolower(s1[i], loc);
-    }
-
-    for (int i = 0; i < s2.length(); ++i) {
-      s2[i] = tolower(s2[i], loc);
-    }
-
-    int index = 0;
-    int prev = 0;
-    while (index < s1.length()) {
-      if (!isalpha(s1[index])) {
-        string tmp = s1.substr(prev, index - prev);
-        if (nmap.find(tmp) == nmap.end()) {
-          nmap[tmp] = 0;
-        }
-        nmap[tmp]++;
-        prev = index;
-      } else {
-        index++;
+  while (getline(cin, in)) {
+    m.clear();
+    pre = 0;
+    for (int i = 0; i < in.length(); ++i) {
+      if (!isalpha(in[i])) {
+        if (m.find(lower(in.substr(pre, i - pre))) == m.end()) m[lower(in.substr(pre, i - pre))] = 0;
+        m[lower(in.substr(pre, i - pre))]++;
+        pre = i + 1;
       }
     }
-
-    index = 0;
-    prev = 0;
-    while (index < s2.length()) {
-      if (!isalpha(s2[index])) {
-        string tmp = s2.substr(prev, index - prev);
-        if (nmap.find(tmp) == nmap.end()) {
-          nmap[tmp] = 0;
-        }
-        nmap[tmp]++;
-        prev = index;
-      } else {
-        index++;
+    getline(cin, in);
+    pre = 0;
+    for (int i = 0; i < in.length(); ++i) {
+      if (!isalpha(in[i])) {
+        if (m.find(lower(in.substr(pre, i - pre))) == m.end()) m[lower(in.substr(pre, i - pre))] = 0;
+        m[lower(in.substr(pre, i - pre))]++;
+        pre = i + 1;
       }
     }
-
-    int ans = 0;
-    for (map< string, int >::iterator it = nmap.begin(); it != nmap.end(); it++) {
-      if (it->second > 2) {
-        cout << it->first << endl;
-        ans++;
-      }
+    p = false;
+    for (map<string, int>::iterator it = m.begin(); it != m.end(); ++it) {
+      if (it->second > 2) cout << it->first << endl, p = true;
     }
-    cout << ans;
-    if (!ans) cout << "<NONE>" << endl;
+    if (!p) cout << "<NONE>";
     cout << endl;
   }
   return 0;
+}
+
+string lower(const string& s) {
+  string ret = "";
+  for (int i = 0; i < s.length(); ++i) {
+    if (s[i] >= 'A' && s[i] <= 'Z') ret += s[i] + 32;
+    else ret += s[i];
+  }
+  return ret;
 }

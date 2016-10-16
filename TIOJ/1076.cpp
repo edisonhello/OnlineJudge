@@ -3,18 +3,16 @@
 #include <vector>
 #include <sstream>
 #include <cstdio>
+#include <cstring>
 using namespace std;
 
-int n, m, cnt, F[10000010];
+int n, m, cnt, F[100];
 string s, f;
 stringstream ss;
 vector<string> v;
-void query_both(const string&);
-void query_tail(const string&);
-void query_head(const string&);
-vector<string> ret_query_both(const string&, vector<string>);
-vector<string> ret_query_tail(const string&, vector<string>);
-vector<string> ret_query_head(const string&, vector<string>);
+vector<string> ret_query_both(const string&, const vector<string>&);
+vector<string> ret_query_tail(const string&, const vector<string>&);
+vector<string> ret_query_head(const string&, const vector<string>&);
 bool kmp(const string&, const string&);
 string trim(const string&);
 
@@ -25,63 +23,34 @@ int main() {
   cnt = 1;
   for (int i = 0; i < m; ++i) {
     getline(cin, f);
-    if (kmp(f, " ")) {
-      ss.clear();
-      string ff = f;
-      ss << f;
-      vector<string> vv = v;
-      while (ss >> f) {
-        // cout << f << endl;
-        if (f[0] == '*' && f[f.length() - 1] == '*') vv = ret_query_both(f, vv);
-        else if (f[0] == '*') vv = ret_query_tail(f, vv);
-        else if (f[f.length() - 1] == '*') vv = ret_query_head(f, vv);
-      }
-      printf("Query %d: ", cnt++);
-      cout << ff;
-      printf(", %lu item(s) is found.\n", vv.size());
-      for (int i = 0; i < vv.size(); ++i) cout << vv[i] << endl;
-      cout << endl;
-    } else if (f[0] == '*' && f[f.length() - 1] == '*') query_both(f);
-    else if (f[0] == '*') query_tail(f);
-    else if (f[f.length() - 1] == '*') query_head(f);
+    ss.clear();
+    string ff = f;
+    ss << f;
+    vector<string> vv;
+    for (int i = 0; i < v.size(); ++i) vv.push_back(v[i]);
+    while (ss >> f) {
+      if (f[0] == '*' && f[f.length() - 1] == '*') vv = ret_query_both(f, vv);
+      else if (f[0] == '*') vv = ret_query_tail(f, vv);
+      else if (f[f.length() - 1] == '*') vv = ret_query_head(f, vv);
+    }
+    printf("Query %d: ", cnt++);
+    cout << ff;
+    printf(", %lu item(s) is found.\n", vv.size());
+    for (int i = 0; i < vv.size(); ++i) cout << vv[i] << endl;
+    cout << endl;
   }
   return 0;
 }
 
-void query_both(const string& s) {
-  vector<string> ret;
-  for (int i = 0; i < n; ++i) {
-    if (kmp(v[i], trim(s))) ret.push_back(v[i]);
-  }
-  printf("Query %d: ", cnt++);
-  cout << s;
-  printf(", %lu item(s) is found.\n", ret.size());
-  for (int i = 0; i < ret.size(); ++i) cout << ret[i] << endl;
-  cout << endl;
-}
-
-vector<string> ret_query_both(const string& s, vector<string> vv) {
+vector<string> ret_query_both(const string& s, const vector<string>& vv) {
   vector<string> ret;
   for (int i = 0; i < vv.size(); ++i) {
-    if (kmp(vv[i], trim(s))) ret.push_back(vv[i]);
+    if (kmp(vv[i], s.substr(1, s.length() - 2))) ret.push_back(vv[i]);
   }
   return ret;
 }
 
-void query_tail(const string& s) {
-  vector<string> ret;
-  string query = s.substr(1, s.length() - 1);
-  for (int i = 0; i < n; ++i) {
-    if (v[i].length() >= query.length() && v[i].substr(v[i].length() - query.length(), query.length()) == query) ret.push_back(v[i]);
-  }
-  printf("Query %d: ", cnt++);
-  cout << s;
-  printf(", %lu item(s) is found.\n", ret.size());
-  for (int i = 0; i < ret.size(); ++i) cout << ret[i] << endl;
-  cout << endl;
-}
-
-vector<string> ret_query_tail(const string& s, vector<string> vv) {
+vector<string> ret_query_tail(const string& s, const vector<string>& vv) {
   vector<string> ret;
   string query = s.substr(1, s.length() - 1);
   for (int i = 0; i < vv.size(); ++i) {
@@ -90,22 +59,9 @@ vector<string> ret_query_tail(const string& s, vector<string> vv) {
   return ret;
 }
 
-void query_head(const string& s) {
+vector<string> ret_query_head(const string& s, const vector<string>& vv) {
   vector<string> ret;
   string query = s.substr(0, s.length() - 1);
-  for (int i = 0; i < n; ++i) {
-    if (v[i].length() >= query.length() && v[i].substr(0, query.length()) == query) ret.push_back(v[i]);
-  }
-  printf("Query %d: ", cnt++);
-  cout << s;
-  printf(", %lu item(s) is found.\n", ret.size());
-  for (int i = 0; i < ret.size(); ++i) cout << ret[i] << endl;
-  cout << endl;
-}
-
-vector<string> ret_query_head(const string& s, vector<string> vv) {
-  vector<string> ret;
-  string query = s.substr(1, s.length() - 1);
   for (int i = 0; i < vv.size(); ++i) {
     if (vv[i].length() >= query.length() && vv[i].substr(0, query.length()) == query) ret.push_back(vv[i]);
   }
@@ -124,10 +80,4 @@ bool kmp(const string& A, const string& B) {
     if (j == B.size() - 1) return true;
   }
   return false;
-}
-
-string trim(const string& s) {
-  string ret = "";
-  for (int i = 1; i < s.length() - 1; ++i) ret += s[i];
-  return ret;
 }

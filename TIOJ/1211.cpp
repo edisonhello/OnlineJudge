@@ -51,53 +51,53 @@
 //     }
 //     return 0;
 // }
-
-#include <iostream>
-#include <cstring>
-#include <tuple>
-#include <vector>
-#include <algorithm>
-using namespace std;
-
-typedef tuple<int, int, int> iii;
-int djs[10010];
-
-int F(int x) {return djs[x] == x ? x : djs[x] = F(djs[x]);}
-
-int U(int x, int y) {
-  x = F(x), y = F(y);
-  djs[x] = y;
-}
-
-vector<iii> G;
-int n, m, a, b, c;
-int Kruskal();
-
-int main() {
-  while (cin >> n >> m) {
-    if (n == 0 && m == 0) break;
-    G.clear();
-    for (int i = 0; i < m; ++i) {
-      cin >> a >> b >> c;
-      G.push_back(iii(c, a, b));
-      G.push_back(iii(c, b, a));
-    }
-    sort(G.begin(), G.end());
-    cout << Kruskal() << endl;
-  }
-  return 0;
-}
-
-int Kruskal() {
-  int cnt = 1, ans = 0;
-  for (int i = 1; i <= n; ++i) djs[i] = i;
-  for (int i = 0; i < 2 * m; ++i) {
-    int x = F(get<1>(G[i])), y = F(get<2>(G[i]));
-    // cout << "ans: " << ans << endl;
-    if (x == y) continue;
-    U(x, y);
-    ans += get<0>(G[i]);
-    if (++cnt == n) return ans;
-  }
-  return -1;
-}
+//
+// #include <iostream>
+// #include <cstring>
+// #include <tuple>
+// #include <vector>
+// #include <algorithm>
+// using namespace std;
+//
+// typedef tuple<int, int, int> iii;
+// int djs[10010];
+//
+// int F(int x) {return djs[x] == x ? x : djs[x] = F(djs[x]);}
+//
+// int U(int x, int y) {
+//   x = F(x), y = F(y);
+//   djs[x] = y;
+// }
+//
+// vector<iii> G;
+// int n, m, a, b, c;
+// int Kruskal();
+//
+// int main() {
+//   while (cin >> n >> m) {
+//     if (n == 0 && m == 0) break;
+//     G.clear();
+//     for (int i = 0; i < m; ++i) {
+//       cin >> a >> b >> c;
+//       G.push_back(iii(c, a, b));
+//       G.push_back(iii(c, b, a));
+//     }
+//     sort(G.begin(), G.end());
+//     cout << Kruskal() << endl;
+//   }
+//   return 0;
+// }
+//
+// int Kruskal() {
+//   int cnt = 1, ans = 0;
+//   for (int i = 1; i <= n; ++i) djs[i] = i;
+//   for (int i = 0; i < 2 * m; ++i) {
+//     int x = F(get<1>(G[i])), y = F(get<2>(G[i]));
+//     // cout << "ans: " << ans << endl;
+//     if (x == y) continue;
+//     U(x, y);
+//     ans += get<0>(G[i]);
+//     if (++cnt == n) return ans;
+//   }
+//   return -1;
+// }

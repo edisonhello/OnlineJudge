@@ -22,7 +22,6 @@ inline int rit() {
 
 int main() {
   while (cin >> n >> m) {
-    // cin >> n >> m;
     if (n == 0 && m == 0) break;
     for (int i = 0; i <= n; ++i) for (int j = 0; j <= n; ++j) w[i][j] = INF;
     for (int i = 0; i < m; ++i) {
@@ -30,21 +29,15 @@ int main() {
       w[__i][__j] = 1;
     }
     mn = INF;
-    memcpy(dp, w, sizeof(w));
-    for (int i = 0; i <= n; ++i) dp[i][i] = INF;
     for (int k = 1; k <= n; ++k) {
-      for (int i = 1; i < k; ++i) {
-        for (int j = 1; j < k; ++j) {
-          if (i != j) {
-            if (mn > dp[i][j] + w[j][k] + w[k][i]) mn = dp[i][j] + w[j][k] + w[k][i];
-          }
-        }
-        for (int i = 1; i <= n; ++i) {
-          for (int j = 1; j <= n; ++j) {
-            if (dp[i][k] + dp[k][j] < dp[i][j]) dp[i][j] = dp[i][k] + dp[k][j];
-          }
+      for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) {
+          if (w[i][j] > w[i][k] + w[k][j]) w[i][j] = w[i][k] + w[k][j];
         }
       }
+    }
+    for (int i = 1; i <= n; ++i) {
+      if (w[i][i] < mn) mn = w[i][i];
     }
     if (mn == INF) cout << "0" << endl;
     else cout << mn << endl;

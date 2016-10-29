@@ -1,92 +1,113 @@
-#include <iostream>
+#include <cstdio>
 using namespace std;
 
-long long int a[100010], n, q, l, r, x, k, x1, x2, __t, __k;
-long long int total;
-char __c;
-
 struct Node {
-  long long int sum;
-  bool leaf, tag;
-  long long int xx;
-  Node(): leaf(false), tag(false) {}
-} node[400010];
+    int num, sm;
+    int x;
+};
 
-int LC(int i) {return i * 2;}
-int RC(int i) {return i * 2 + 1;}
+int n, q, a[100010], c, l, r, x;
+Node seg[400010];
+void build(int, int, int);
+int query(int, int, int, int, int);
+void modify(int, int, int, int, int, int);
+void push(int);
+void pull(int);
 
-void build(int L, int R, int i) {
-  if (L == R) {node[i].sum = a[L], node[i].leaf = true; return;}
-  int M = (L + R) / 2;
-  build(L, M, LC(i));
-  build(M + 1, R, RC(i));
-  node[i].sum = node[LC(i)].sum + node[RC(i)].sum;
+inline int L(int id) {return id *2;}
+inline int R(int id) {return id * 2 + 1;}
+
+inline int readchar() {
+  const int N = 1048576;
+  static char buf[N];
+  static char *p = buf, *end = buf;
+  if(p == end) {
+    if((end = buf + fread(buf, 1, N, stdin)) == buf) return EOF;
+    p = buf;
+  }
+  return *p++;
 }
 
-void query(int L, int R, int i) {
-  if (node[i].leaf) {
-    if (node[i].tag) node[i].sum ^= node[i].xx, node[i].tag = false;
-    total += node[i].sum;
-    return;
-  }
-  if (x1 <= L && x2 >= R && !node[i].tag) {
-    total += node[i].sum;
-    return;
-  }
-  int M = (L + R) / 2;
-  if (x1 <= M) query(L, M, LC(i));
-  if (x2 > M) query(M + 1, R, RC(i));
-  node[i].tag = node[LC(i)].tag || node[RC(i)].tag;
+template<typename T>
+inline bool gin(T &x){
+  char c = 0; bool flag = 0;
+  while (c = readchar(), c < '0' && c != '-' || c > '9') if (c == -1) return false;
+  c == '-' ? (flag = 1, x = 0):(x = c - '0');
+  while (c = readchar(), c >= '0' && c <= '9') x = x * 10 + c - '0';
+  if (flag) x = -x;
+  return true;
 }
 
-void update(int L, int R, int i) {
-  if (node[i].leaf && L >= x1 && R <= x2) {
-    if (node[i].tag) {
-      node[i].xx ^= x;
-    } else {
-      node[i].tag = true;
-      node[i].xx = x;
-    }
-    return;
-  }
-  int M = (L + R) / 2;
-  if (x1 <= M) update(L, M, LC(i));
-  if (x2 > M) update(M + 1, R, RC(i));
-  // node[i].sum = node[LC(i)].sum + node[RC(i)].sum;
-  node[i].tag = node[LC(i)].tag || node[RC(i)].tag;
-}
-
-inline long long int rit(){
-  __t = 0, __k = 1;
-  do {
-    __c = getchar();
-    if (__c == '-') __k = -1;
-  } while (__c < '0' || __c > '9');
-  do {
-    __t = __t * 10 + __c - '0';
-    __c = getchar();
-  } while(__c >= '0' && __c <= '9');
-  return __t * __k;
+template <typename T, typename ...Args>
+inline bool gin(T &x, Args &...args){
+  return gin(x) && gin(args...);
 }
 
 int main() {
-  n = rit();
-  for (int i = 0; i < n; ++i) a[i] = rit();
+  gin(n);
+  for (int i = 0; i < n; ++i) gin(a[i]);
   build(0, n - 1, 1);
-  q = rit();
-  for (int i = 0; i < q; ++i) {
-    k = rit();
-    if (k == 1) {
-      l = rit(), r = rit();
-      x1 = l - 1, x2 = r - 1;
-      total = 0;
-      query(0, n - 1, 1);
-      printf("%lld\n", total);
+  gin(q);
+  while (q--) {
+    gin(c);
+    if (c == 1) {
+      gin(l, r);
+      printf("%d\n", query(0, n - 1, l - 1, r - 1, 1));
+            //cout << query(0, n - 1, l - 1, r - 1, 1) << endl;
     } else {
-      l = rit(), r = rit(), x = rit();
-      x1 = l - 1, x2 = r - 1;
-      update(0, n - 1, 1);
+      gin(l, r, x);
+      modify(0, n - 1, l - 1, r - 1, 1, x);
     }
   }
-  return 0;
+}
+
+void build(int l, int r, int id) {
+  if (l == r) {
+    seg[id].num = a[l];
+    seg[id].sm = seg[id].num;
+    return;
+  }
+  int m = (l + r) / 2;
+  build(l, m, L(id)), build(m + 1, r, R(id));
+  seg[id].sm = seg[L(id)].sm + seg[R(id)].sm;
+}
+
+int query(int l, int r, int ql, int qr, int id) {
+  if (ql > r || qr < l) return 0;
+  if (l == r) {
+    seg[id].num ^= seg[id].x;
+    seg[id].sm = seg[id].num;
+    seg[id].x = 0;
+    return seg[id].sm;
+  }
+  push(id);
+  int m = (l + r) / 2;
+  int t1 = query(l, m, ql, qr, L(id)), t2 = query(m + 1, r, ql, qr, R(id));
+  pull(id);
+  return t1 + t2;
+}
+
+void push(int id) {
+  if (seg[id].x) {
+    seg[L(id)].x ^= seg[id].x;
+    seg[R(id)].x ^= seg[id].x;
+    seg[id].x = 0;
+  }
+}
+
+void pull(int id) {
+  seg[id].sm = seg[L(id)].sm + seg[R(id)].sm;
+}
+
+void modify(int l, int r, int ml, int mr, int id, int xx) {
+  if (l > mr || r < ml) return;
+  if (ml <= l && mr >= r) {
+    seg[id].x ^= xx;
+    return;
+  }
+  push(id);
+  int m = (l + r) / 2;
+  modify(l, m, ml, mr, L(id), xx);
+  modify(m + 1, r, ml, mr, R(id), xx);
+  pull(id);
 }

@@ -1,15 +1,3 @@
-9
-confidence
-federal
-confederation
-fidelity
-infidelity
-confident
-confidential
-diffident
-infidel
-4
-con*
-*fed*
-im*
-*fid* *ent
+5 1
+1 2 3 4 5
+2 1 5 

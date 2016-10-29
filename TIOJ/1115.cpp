@@ -1,15 +1,16 @@
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 using namespace std;
 
-const int pi = acos(1);
-double abs(double x) {
-	return x >= 0 ? x : -x;
-}
+double x, y, r, theta, a1, jizz;
+const double pi = acos(-1);
 
 int main() {
-	double x, y, r;
-	cin >> x >> y >> r;
-	if (y < -r) {cout << '0' << endl; return 0;}
-
+	while (cin >> x >> y >> r) {
+		if (y <= -r) { cout << "0.00\n"; continue; }
+		if (y >= r) { cout << fixed << setprecision(2) << r * r * pi << endl; continue; }
+		cout << fixed << setprecision(2) << r * r * (pi - acos(y / r)) + sqrt(r * r - y * y) * y << endl;
+	}
+	return 0;
 }

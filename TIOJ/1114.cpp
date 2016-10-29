@@ -1,43 +1,40 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <map>
-#include <sstream>
 #include <ctype.h>
 using namespace std;
 
 stringstream ss;
 string s;
-string in;
-map<string, int> m;
+map<string, int> mp1, mp2;
 string lower(const string&);
-bool p;
-int pre;
+bool jizz;
 
 int main() {
-  while (getline(cin, in)) {
-    m.clear();
-    pre = 0;
-    for (int i = 0; i < in.length(); ++i) {
-      if (!isalpha(in[i])) {
-        if (m.find(lower(in.substr(pre, i - pre))) == m.end()) m[lower(in.substr(pre, i - pre))] = 0;
-        m[lower(in.substr(pre, i - pre))]++;
-        pre = i + 1;
+  while (getline(cin, s)) {
+    mp1.clear(); mp2.clear();
+    for (auto& c : s) if (!isalpha(c)) c = ' ';
+    ss.clear(); ss << s;
+    while (ss >> s) {
+      if (mp1.find(lower(s)) == mp1.end()) mp1[lower(s)] = 0;
+      mp1[lower(s)]++;
+    }
+    getline(cin, s);
+    for (auto& c : s) if (!isalpha(c)) c = ' ';
+    ss.clear(); ss << s;
+    while (ss >> s) {
+      if (mp2.find(lower(s)) == mp2.end()) mp2[lower(s)] = 0;
+      mp2[lower(s)]++;
+    }
+    jizz = false;
+    for (auto i : mp1) {
+      if (i.second >= 2 && mp2[i.first] >= 2) {
+        jizz = true;
+        cout << i.first << endl;
       }
     }
-    getline(cin, in);
-    pre = 0;
-    for (int i = 0; i < in.length(); ++i) {
-      if (!isalpha(in[i])) {
-        if (m.find(lower(in.substr(pre, i - pre))) == m.end()) m[lower(in.substr(pre, i - pre))] = 0;
-        m[lower(in.substr(pre, i - pre))]++;
-        pre = i + 1;
-      }
-    }
-    p = false;
-    for (map<string, int>::iterator it = m.begin(); it != m.end(); ++it) {
-      if (it->second > 2) cout << it->first << endl, p = true;
-    }
-    if (!p) cout << "<NONE>";
+    if (!jizz) cout << "<NONE>\n";
     cout << endl;
   }
   return 0;
@@ -45,9 +42,9 @@ int main() {
 
 string lower(const string& s) {
   string ret = "";
-  for (int i = 0; i < s.length(); ++i) {
-    if (s[i] >= 'A' && s[i] <= 'Z') ret += s[i] + 32;
-    else ret += s[i];
+  for (auto c : s) {
+    if (c >= 'A' && c <= 'Z') c += 32;
+    ret += c;
   }
   return ret;
 }

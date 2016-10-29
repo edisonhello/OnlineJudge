@@ -1,23 +1,40 @@
 #include "lib1871.h"
+#include <iostream>
 #include <utility>
-#include <algorithm>
-#include <vector>
+#define INF 2147483647
 using namespace std;
 
-int N, i, q;
-int *A;
-pair<int, int> ask;
+int* a;
+int n, q;
+int* seg;
+
+inline int L(int x) {return x * 2;}
+inline int R(int x) {return x * 2 + 1;}
+int build(int, int, int);
+int query(int, int, int, int, int);
 
 int main() {
-  N = futa::init();
-  A = futa::momo_gives_you_list_of_futa();
-  vector<int> jizz;
-  for (i = 0; i < N; ++i) jizz.push_back(A[i]);
+  n = futa::init();
+  a = futa::momo_gives_you_list_of_futa();
   q = futa::momo_tells_you_q();
-  for (i = 0; i < q; ++i) {
-    ask = futa::momo_asks();
-    auto mm = minmax_element(jizz.begin() + ask.first, jizz.begin() + ask.second + 1);
-    futa::you_tell_momo(*(mm.second));
+  seg = new int[4 * n];
+  build(0, n - 1, 1);
+  while (q--) {
+    pair<int, int> p = futa::momo_asks();
+    futa::you_tell_momo(query(0, n - 1, p.first, p.second, 1));
   }
-  return 0;
+}
+
+int build(int l, int r, int id) {
+  if (l == r) {seg[id] = a[l]; return seg[id];}
+  int m = (l + r) / 2;
+  int t1 = build(l, m, L(id)); int t2 = build(m + 1, r, R(id));
+  return seg[id] = min(t1, t2);
+}
+
+int query(int l, int r, int ql, int qr, int id) {
+  if (l > qr || r < ql) return INF;
+  if (l >= ql && r <= qr) return seg[id];
+  int m = (l + r) / 2;
+  return min(query(l, m, ql, qr, L(id)), query(m + 1, r, ql, qr, R(id)));
 }

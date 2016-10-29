@@ -2,7 +2,6 @@
 #include <algorithm>
 using namespace std;
 
-
 struct Node {
   int num;
   int pos;

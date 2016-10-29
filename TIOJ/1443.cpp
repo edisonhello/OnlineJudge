@@ -1,24 +1,26 @@
-#include <iostream>
 #include <cstdio>
 #include <vector>
 using namespace std;
 
-vector<int> dp;
+char __c;
+bool flag;
 
-int f(int n) {
-	dp.resize(n + 1);
-	dp[0] = 0;
-	int max = 0;
-	for (int i = 1; i <= n; ++i) {
-		dp[i] = dp[i / 2] + i - 2 * (i / 2);
-		if (dp[i] > max) max = dp[i];
-	}
-	return max;
-} 
+template <typename T>
+inline bool rit(T& x) {
+  __c = 0, flag = false;
+  while (__c = getchar(), (__c < '0' && __c != '-') || __c > '9') if (__c == -1) return false;
+  __c == '-' ? (flag = true, x = 0) : (x = __c - '0');
+  while (__c = getchar(), __c >= '0' && __c <= '9') x = x * 10 + __c - '0';
+  if (flag) x = -x;
+  return true;
+}
 
+template <typename T, typename ...Args>
+inline bool rit(T& x, Args& ...args) {return rit(x) && rit(args...);}
+
+int n;
 int main() {
-	int n;
-	scanf("%d", &n);
-	printf("%d\n", f(n));
+	rit(n);
+
 	return 0;
 }

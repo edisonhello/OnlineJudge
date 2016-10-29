@@ -1,58 +1,53 @@
 #include <iostream>
 #include <bitset>
+#include <vector>
 using namespace std;
 
-bitset<10010> prime;
+bitset<1000010> prime;
 
 void build() {
-  prime.set();
-  prime[1] = false;
-  for (int i = 2; i <= 10000; ++i) {
-    if (prime[i]) {
-      for (int j = i * i; j <= 10000; j += i) prime[j] = false;
+  // prime.set();
+  prime[1] = true;
+  for (int i = 2; i <= 1000000; ++i) {
+    if (!prime[i]) {
+      for (int j = i * i; j <= 1000000; j += i) prime[j] = true;
     }
   }
 }
 
 int n, m;
-int dp[10010];
-bool p;
 
-void dpdp() {
-  dp[1] = 0;
-  dp[2] = 2;
-  dp[3] = 3;
-  for (int i = 3; i <= 10000; ++i) {
-    p = true;
-    for (int j = i - 1; j > i / 2; --j) {
-      if (i != i - j && prime[j] && (dp[i - j] || prime[i - j])) {dp[i] = j; p = false; break;}
-    }
-    if (p) {
-      if (!prime[i]) dp[i] = 0;
-      else prime[i] = i;
+vector<int> ans;
+bitset<1000010> v;
+
+bool dfs(int n) {
+  if (n == 0) return true;
+  for (int i = n; i > 0; --i) {
+    if (!prime[i] && !v[i]) {
+      v[i] = true;
+      if (dfs(n - i)) {
+        ans.push_back(i);
+        return true;
+      }
+      v[i] = false;
     }
   }
-}
-
-void solve(int m) {
-  while (dp[m] > 0 && dp[m] != m) {
-    cout << dp[m] << ' ';
-    m -= dp[m];
-  }
-  cout << dp[m] << endl;
+  return false;
 }
 
 int main() {
   build();
-  dpdp();
-  // for (int i = 0; i <= 10000; ++i) cout << dp[i] << ' ';
   cin >> n;
   while (n--) {
+    ans.clear(); v.reset();
     cin >> m;
-    if (!prime[m]) cout << 0 << endl;
-    else {
-      // cout << m << ": " << dp[m] << endl;
-      solve(m);
+    if (prime[m]) {cout << 0 << endl; break;}
+    v[m] = true;
+    if (dfs(m)) {
+      for (int i = 0; i < ans.size(); ++i) cout << ans[i] << ' ';
+      cout << endl;
+    } else {
+      cout << m << endl;
     }
   }
   return 0;

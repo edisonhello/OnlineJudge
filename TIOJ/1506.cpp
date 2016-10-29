@@ -1,13 +1,15 @@
 #include <iostream>
+#include <iomanip>
+#include <cmath>
 #include <cstdio>
 using namespace std;
 
-float a1, a2, b1, b2;
+int a1, a2, b1, b2;
 
 int main() {
 	cin >> a1 >> a2 >> b1 >> b2;
-	float x = (b2 - b1) / (a1 - a2);
-	float y = a1 * x + b1;
-	printf("%.2f\n%.2f\n", x, y);
-	return 0;
+	double x = (double)(b1 - b2) / (double)(a2 - a1);
+	// cout << fixed << setprecision(2) << x << endl;
+	// cout << fixed << setprecision(2) << a1 * x + b1 << endl;
+	printf("%.2lf\n%.2lf\n", (double)x, (double)(x * a1 + b1));
 }

@@ -6,7 +6,7 @@
 
 void init(int N, long long C[]);
 int query(int L, int R);
-
+void debug();
 long long *C;
 
 int main()
@@ -17,6 +17,7 @@ int main()
     C = (long long*)malloc(N * sizeof(long long));
     for (i = 0; i < N; i++) scanf("%lld", C + i);
     init(N, C);
+    // debug();
     scanf("%d", &Q);
     if (N <= 0) puts("Invalid Q");
     while (Q--) {

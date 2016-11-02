@@ -27,8 +27,9 @@ int main() {
   rit(n, m);
   for (int i = 0; i < n; ++i) for (int j = 0; j < m; ++j) rit(x[i][j]);
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
+    for (int j = 0; j < m; ++j) {
       if (!v[i][j]) {
+        // printf("i: %d j: %d\n", i, j);
         v[i][j] = true;
         DFS(i, j, x[i][j], 1);
       }
@@ -48,4 +49,5 @@ void DFS(int i, int j, int xx, int nw) {
       }
     }
   }
+  if (nw > mx) mx = nw;x
 }

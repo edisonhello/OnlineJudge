@@ -22,6 +22,10 @@ inline bool rit(T& x) {
 template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
 
+// struct s {
+//   int i, j,
+// };
+
 bitset<3005> v[3005];
 int n, m, x[3005][3005], mx, bfs, t, ret;
 pair<int, int> p;

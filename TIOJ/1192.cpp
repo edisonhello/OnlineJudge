@@ -14,7 +14,7 @@ inline bool rit(T& x) {
   return true;
 }
 
-int T, n, djs[2000005], x;
+int T, n, djs[2000005], x, pre;
 
 inline int front(int x) { return x * 2; }
 inline int back(int x) { return x * 2 + 1; }
@@ -29,6 +29,12 @@ void U(int x, int y) {
 int main() {
   rit(T);
   while (T--) {
-    while (rit(x), x) 
+    rit(x); pre = x;
+    while (rit(x), x) {
+      if (F(front(x)) == F(back(pre)) || F(back(x)) == F(front(pre))) { p = false; break; }
+      U(front(x), front(pre)); U(back(x), back(pre));
+      pre = x;
+    }
+    if ()
   }
 }

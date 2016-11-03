@@ -1,9 +1,5 @@
 #include <cstdio>
 #include <bitset>
-#include <queue>
-#include <utility>
-#define x first
-#define y second
 using namespace std;
 
 char __c;
@@ -22,15 +18,10 @@ inline bool rit(T& x) {
 template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
 
-// struct s {
-//   int i, j,
-// };
-
 bitset<3005> v[3005];
-int n, m, x[3005][3005], mx, bfs, t, ret;
-pair<int, int> p;
+int n, m, x[3005][3005], mx;
 short di[] = {1, 0, -1, 0}, dj[] = {0, 1, 0, -1};
-int BFS(int, int);
+void DFS(int, int, int, int);
 
 int main() {
   rit(n, m);
@@ -38,8 +29,9 @@ int main() {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < m; ++j) {
       if (!v[i][j]) {
-        bfs = BFS(i, j);
-        if (bfs > mx) mx = bfs;
+        // printf("i: %d j: %d\n", i, j);
+        v[i][j] = true;
+        DFS(i, j, x[i][j], 1);
       }
     }
   }
@@ -47,22 +39,15 @@ int main() {
   return 0;
 }
 
-int BFS(int i, int j) {
-  queue<pair<int, int>> q;
-  t = x[i][j];
-  q.push(make_pair(i, j));
-  ret = 0;
-  while (q.size()) {
-    p = q.front(); q.pop();
-    for (int _ = 0; _ < 4; ++_) {
-      if (p.x + di[_] < n && p.x + di[_] >= 0 && p.y + dj[_] < m && p.y + dj[_] >= 0) {
-        if (!v[p.x + di[_]][p.y + dj[_]] && x[p.x + di[_]][p.y + dj[_]] == t) {
-          v[p.x + di[_]][p.y + dj[_]] = true;
-          q.push(make_pair(p.x + di[_], p.y + dj[_]));
-          ret++;
-        }
+void DFS(int i, int j, int xx, int nw) {
+  if (nw > mx) mx = nw;
+  for (int _ = 0; _ < 4; ++_) {
+    if (i + di[_] < n && i + di[_] >= 0 && j + dj[_] < m && j + dj[_] >= 0) {
+      if (!v[i + di[_]][j + dj[_]] && x[i + di[_]][j + dj[_]] == xx) {
+        v[i + di[_]][j + dj[_]] = true;
+        DFS(i + di[_], j + dj[_], xx, nw + 1);
       }
     }
   }
-  return ret;
+  if (nw > mx) mx = nw;x
 }

@@ -1,5 +1,4 @@
 #include <cstdio>
-using namespace std;
 
 char __c;
 bool flag;
@@ -14,21 +13,5 @@ inline bool rit(T& x) {
   return true;
 }
 
-int T, n, djs[2000005], x;
-
-inline int front(int x) { return x * 2; }
-inline int back(int x) { return x * 2 + 1; }
-
-int F(int x) { return djs[x] == x ? x : djs[x] = F(djs[x]); }
-
-void U(int x, int y) {
-  x = F(x); y = F(y);
-  djs[x] = y;
-}
-
-int main() {
-  rit(T);
-  while (T--) {
-    while (rit(x), x) 
-  }
-}
+template <typename T, typename ...Args>
+inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }

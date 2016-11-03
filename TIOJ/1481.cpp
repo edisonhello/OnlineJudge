@@ -1,5 +1,7 @@
+#include "lib1481.h"
 #include <cstdio>
-#include <stack>
+#include <vector>
+#include <utility>
 using namespace std;
 
 char __c;
@@ -18,22 +20,33 @@ inline bool rit(T& x) {
 template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
 
-struct s {
-  int id, h;
-};
-
-int N, leave[1000005], i;
-s tmp;
-stack<s> st;
+int n, k, st, ed, num[20005], cnt;
+vector<pair<int, int>> G[2005];
+bool v[20005];
+void DFS(int);
 
 int main() {
-  rit(N);
-  for (i = 0; i < N; ++i) {
-    rit(tmp.h); tmp.id = i;
-    while (st.size() && st.top().h < tmp.h) leave[st.top().id] = i, st.pop();
-    st.push(tmp);
+  Init();
+  rit(n, k);
+  for (int i = 1; i <= k; ++i) {
+    rit(st, ed);
+    G[st].push_back({ ed, i });
+    G[ed].push_back({ st, i });
   }
-  while (st.size()) leave[st.top().id] = N - 1, st.pop();
-  for (i = 0; i < N; ++i) printf("%d\n", leave[i] - i);
+  cnt = 1;
+  DFS(1);
+  Possible();
+  for (int i = 1; i <= k; ++i) Number(num[i]);
+  Finish();
   return 0;
+}
+
+void DFS(int x) {
+  for (auto i : G[x]) {
+    if (!v[i.second]) {
+      v[i.second] = true;
+      num[i.second] = cnt++;
+      DFS(i.first);
+    }
+  }
 }

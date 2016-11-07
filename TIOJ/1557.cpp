@@ -1,6 +1,8 @@
 #include <cstdio>
-#include <algorithm>
+#include <vector>
+#include <cstring>
 #define getchar getchar_unlocked
+#define MOD 1073741824
 using namespace std;
 
 char __c;
@@ -19,26 +21,31 @@ inline bool rit(T& x) {
 template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
 
-struct S {
-  int t, f;
-  bool operator<(const S& s) const {
-    return t == s.t ? f > s.f : t < s.t;
-  }
-};
-
-int n, ans, now;
-S s[2000005];
-
+vector<int> G[10005];
+int N, M, A, B, V, D, dpa[10005], tot;
+bool v[10005];
+int dp(int);
 
 int main() {
-  while (rit(n)) {
-    for (int i = 0; i < n; ++i) rit(s[i * 2].t, s[i * 2 + 1].t), s[i * 2].f = 1, s[i * 2 + 1].f = -1;
-    sort(s, s + 2 * n);
-    now = 0; ans = 0;
-    for (int i = 0; i < 2 * n; ++i) {
-      now += s[i].f; ans = max(ans, now);
-    }
-    printf("%d\n", ans);
+  rit(N, M);
+  for (int i = 0; i < M; ++i) {
+    rit(A, B);
+    G[A].push_back(B);
   }
+  rit(V, D);
+  memset(dpa, -1, sizeof(dpa));
+  dpa[D] = 1;
+  printf("%d\n", dp(V));
   return 0;
+}
+
+int dp(int x) {
+  if (dpa[x] != -1) return dpa[x];
+  int& ans = dpa[x]; ans = 0;
+  v[x] = true;
+  for (auto i : G[x]) {
+    if (!v[i]) ans = (ans + dp(i)) % MOD;
+  }
+  v[x] = false;
+  return ans;
 }

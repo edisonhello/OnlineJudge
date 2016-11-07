@@ -18,8 +18,8 @@ int main() {
   while (T--) {
     cin >> n >> s >> t;
     for (int i = 0; i < n; ++i) cin >> a[i];
-    nth_element(a, a+s-1, a+n);
-    nth_element(a+s-1, a+t, a+n);
+    nth_element(a, a + s - 1, a + n);
+    nth_element(a + s - 1, a + t, a + n);
     aaa = 0;
     p.first = 0, p.second = 0;
     for (int i = s - 1; i < t; ++i) {

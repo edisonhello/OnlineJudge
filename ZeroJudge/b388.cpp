@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <algorithm>
-#define getchar getchar_unlocked
+#include <cstdlib>
 using namespace std;
 
 char __c;
@@ -19,26 +19,15 @@ inline bool rit(T& x) {
 template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
 
-struct S {
-  int t, f;
-  bool operator<(const S& s) const {
-    return t == s.t ? f > s.f : t < s.t;
-  }
-};
-
-int n, ans, now;
-S s[2000005];
-
+int N, a[200005], dp[200005];
 
 int main() {
-  while (rit(n)) {
-    for (int i = 0; i < n; ++i) rit(s[i * 2].t, s[i * 2 + 1].t), s[i * 2].f = 1, s[i * 2 + 1].f = -1;
-    sort(s, s + 2 * n);
-    now = 0; ans = 0;
-    for (int i = 0; i < 2 * n; ++i) {
-      now += s[i].f; ans = max(ans, now);
-    }
-    printf("%d\n", ans);
+  rit(N);
+  for (int i = 0; i < N; ++i) rit(a[i]);
+  dp[0] = 0; dp[1] = abs(a[1] - a[0]);
+  for (int i = 2; i < N; ++i) {
+    dp[i] = min(dp[i - 2] + abs(a[i] - a[i - 2]), dp[i - 1] + abs(a[i] - a[i - 1]));
   }
+  printf("%d\n", dp[N - 1]);
   return 0;
 }

@@ -16,3 +16,5 @@ inline bool rit(T& x) {
 
 template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
+
+int n, dp[];

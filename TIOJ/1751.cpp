@@ -1,33 +1,29 @@
 #include <iostream>
-#include <algorithm>
-#define INF (1<<30)
 using namespace std;
 
-int f[27], N, K, dp[1<<30];
-
-void fib() {
-  f[1] = 1;
-  f[2] = 1;
-  for (int i = 3; i <= 26; ++i) f[i] = f[i - 2] + f[i - 1];
-}
-
-void dpdp() {
-  for (int i = 0; i <= 1<<30; ++i) dp[i] = INF;
-  dp[0] = 0;
-  for (int i = 1; i <= 26; ++i) {
-    for (int j = 1<<30; j >= f[i]; --j) {
-      dp[j] = min(dp[j], dp[j - f[i]] + 1);
-    }
-  }
-}
+int f[45], cnt, n, K;
+void fib();
 
 int main() {
-  fib(); dpdp();
-  // for (int i = 1; i <= 26; ++i) cout << i << ": " << f[i] << endl;
-  cin >> N;
-  while (N--) {
-    cin >> K;
-    cout << dp[K] << endl;
+  cin.tie(0); ios_base::sync_with_stdio(false);
+  fib();
+  cin >> n;
+  while (n--) {
+    cin >> K; cnt = 0;
+    if (K <= 0) cout << "iyada~\n";
+    else {
+      while (K) {
+        for (int i = 0; i < 45; ++i) {
+          if (f[i] <= K && (i == 44 || f[i + 1] > K)) cnt++, K -= f[i];
+        }
+      }
+      cout << cnt << '\n';
+    }
   }
   return 0;
+}
+
+void fib() {
+  f[0] = 1; f[1] = 2;
+  for (int i = 2; i < 45; ++i) f[i] = f[i - 1] + f[i - 2];
 }

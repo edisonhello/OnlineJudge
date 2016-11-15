@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <fstream>
 #define getchar getchar_unlocked
 #define MAX 500000
 using namespace std;
@@ -30,6 +31,7 @@ void U(int x, int y) {
 }
 
 int main() {
+  // freopen("in.txt", "r", stdin); freopen("out.txt", "w", stdout);
   for (int i = 0; i < 3 * MAX + 5; ++i) djs[i] = i;
   rit(N, K);
   while (K--) {

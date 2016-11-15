@@ -1,38 +1,43 @@
 #include <iostream>
-#include <utility>
-#include <queue>
-#include <cstdio>
+#include <vector>
+#include <cstring>
 using namespace std;
 
-int n, k, r[501], c[501], x, y, tot, cnt, rm, cm;
-// pair<int, int> r[501], c[501];
-bool cv[501], rv[501];
-priority_queue<pair<int, int>, vector<pair<int, int>>, less<pair<int, int>>> rr, cc;
+vector<int> G[505];
+int N, K, R, C, mx[505], my[505], ret, ans;
+bool v[505];
+int matching();
+bool DFS(int);
 
 int main() {
-  cin >> n >> k;
-  // for (int i = 0; i <= n; ++i) r[i].second = i;
-  for (int i = 0; i < k; ++i) {
-    cin >> y >> x;
-    r[y]++; c[x]++;
+  cin.tie(0); ios_base::sync_with_stdio(false);
+  cin >> N >> K;
+  for (int i = 0; i < K; ++i) {
+    cin >> R >> C;
+    G[R].push_back(C);
   }
-  for (int i = 1; i <= n; ++i) printf("r[%d]: %d\n", i, r[i]);
-  for (int i = 1; i <= n; ++i) printf("c[%d]: %d\n", i, c[i]);
-  for (int i = 1; i <= n; ++i) rr.push(make_pair(r[i], i)), cc.push(make_pair(c[i], i));
-  tot = k;
-  while (tot) {
-    if (rr.top() - rm > cc.top() - cm) {
-      tot -= (rr.top() - rm);
-      cnt++;
-      cm++;
-      rr.pop();
-    } else {
-      tot -= (cc.top() - cm);
-      cnt++;
-      rm++;
-      cc.pop();
+  ans = matching();
+  cout << ans << endl;
+  return 0;
+}
+
+int matching() {
+  memset(my, -1, sizeof(my));
+  ret = 0;
+  for (int i = 1; i <= N; ++i) {
+    memset(v, false, sizeof(v));
+    if (DFS(i)) ret++;
+  }
+  return ret;
+}
+
+bool DFS(int x) {
+  v[x] = true;
+  for (auto i : G[x]) {
+    if (my[i] == -1 || !v[my[i]] && DFS(my[i])) {
+        my[i] = x;
+        return true;
     }
   }
-  cout << cnt << endl;
-  return 0;
+  return false;
 }

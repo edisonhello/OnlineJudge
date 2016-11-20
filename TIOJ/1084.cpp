@@ -1,53 +1,62 @@
-#include <iostream>
-#include <set>
-#include <cstring>
+#include <cstdio>
 #include <vector>
+#include <cstring>
+#include <algorithm>
 #include <utility>
+#define getchar getchar_unlocked
 using namespace std;
 
-multiset<int> G[505];
-int deg[505];
-int M, __i, __j, start;
-vector<pair<int, int>> edge;
-void Euler(int);
+char __c;
+bool flag;
+
+template <typename T>
+inline bool rit(T& x) {
+  __c = 0, flag = false;
+  while (__c = getchar(), (__c < '0' && __c != '-') || __c > '9') if (__c == -1) return false;
+  __c == '-' ? (flag = true, x = 0) : (x = __c - '0');
+  while (__c = getchar(), __c >= '0' && __c <= '9') x = x * 10 + __c - '0';
+  if (flag) x = -x;
+  return true;
+}
+
+template <typename T, typename ...Args>
+inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
+
+vector<pair<int, int>> G[505];
+bool v[1050], odd;
+int M, __i, __j, mn, cnt, leave[1050], start, oddN;
+void DFS(int);
 
 int main() {
-  cin.tie(0);
-  ios_base::sync_with_stdio(false);
-  while (cin >> M, M) {
-    memset(deg, 0, sizeof(deg));
+  while (rit(M), M) {
+    memset(v, false, sizeof(v));
     for (int i = 0; i < 505; ++i) G[i].clear();
-    edge.clear();
     for (int i = 0; i < M; ++i) {
-      cin >> __i >> __j;
-      G[__i].insert(__j), G[__j].insert(__i);
-      deg[__i]++, deg[__j]++;
+      rit(__i, __j);
+      G[__i].push_back({ __j, i });
+      G[__j].push_back({ __i, i });
     }
-    for (int i = 0; i < 10; ++i) {
-      cout << i << ": ";
-      for (auto& j : G[i]) cout << j << ' ';
-      cout << endl;
+    for (int i = 1; i < 505; ++i) sort(G[i].begin(), G[i].end());
+    start = 505; odd = false; oddN = 505;
+    for (int i = 1; i < 505; ++i) {
+      if (G[i].size() & 1) odd = true, oddN = min(oddN, i);
+      else start = min(start, i);
     }
-    for (int i = 0; i < 501; ++i) {
-      if (deg[i] & 1) { start = i; break; }
-    }
-    cout << "start: " << start << endl;
-    Euler(start);
-    cout << edge[0].first << endl;
-    for (int i = 0; i < edge.size(); ++i) cout << edge[i].second << endl;
+    if (odd) start = oddN;
+    cnt = 0;
+    DFS(start);
+    for (int i = cnt - 1; i >= 0; --i) printf("%d\n", leave[i]);
+    printf("\n");
   }
   return 0;
 }
 
-void Euler(int x) {
-  if (edge.size() == M) return;
+void DFS(int x) {
   for (auto i : G[x]) {
-    edge.push_back({x, i});
-    G[x].erase(i);
-    G[i].erase(x);
-    Euler(i);
-    G[x].insert(i);
-    G[i].insert(x);
-    // break;
+    if (!v[i.second]) {
+      v[i.second] = true;
+      DFS(i.first);
+    }
   }
+  leave[cnt++] = x;
 }

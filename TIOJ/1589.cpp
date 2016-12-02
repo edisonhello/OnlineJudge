@@ -1,5 +1,5 @@
 #include <cstdio>
-#include <vector>
+#include <unordered_map>
 #include <cstring>
 #define getchar getchar_unlocked
 using namespace std;
@@ -20,33 +20,29 @@ inline bool rit(T& x) {
 template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
 
-int dpa[1005], N, T, w[1005], K, x, in[1005], ans;
-vector<int> G[1005];
+int v, e, m, a, b, dpa[250], s, t;
+unordered_map<int, int> G[250];
+bool V[250];
 int dp(int);
 
 int main() {
-  rit(T);
-  while (T--) {
-    rit(N);
-    for (int i = 1; i <= N; ++i) G[i].clear();
-    for (int i = 1; i <= N; ++i) {
-      rit(w[i], in[i]);
-      for (int j = 0; j < in[i]; ++j) rit(x), G[x].push_back(i);
-    }
-    memset(dpa, 0, sizeof(dpa)); ans = 0;
-    for (int i = 1; i <= N; ++i) {
-      if (in[i] == 0) ans = max(ans, dp(i));
-    }
-    printf("%d\n", ans);
+  rit(v, e, m);
+  while (e--) {
+    rit(a, b);
+    G[a][b]++;
   }
+  rit(s, t);
+  printf("%d\n", dp(s) % m);
   return 0;
 }
 
 int dp(int x) {
-  if (dpa[x]) return dpa[x];
-  if (!G[x].size()) return w[x];
+  if (V[x]) return dpa[x];
+  if (x == t) return 1;
   for (auto i : G[x]) {
-    dpa[x] = max(dpa[x], dp(i) + w[x]);
+    dpa[x] += i.second * dp(i.first);
+    dpa[x] %= m;
   }
+  V[x] = true;
   return dpa[x];
 }

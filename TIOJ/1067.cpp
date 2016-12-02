@@ -1,6 +1,6 @@
 #include <cstdio>
-#include <vector>
 #include <cstring>
+#include <algorithm>
 #define getchar getchar_unlocked
 using namespace std;
 
@@ -19,34 +19,23 @@ inline bool rit(T& x) {
 
 template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
-
-int dpa[1005], N, T, w[1005], K, x, in[1005], ans;
-vector<int> G[1005];
-int dp(int);
+int N, M, a, dp[2][10005], ans;
 
 int main() {
-  rit(T);
-  while (T--) {
-    rit(N);
-    for (int i = 1; i <= N; ++i) G[i].clear();
-    for (int i = 1; i <= N; ++i) {
-      rit(w[i], in[i]);
-      for (int j = 0; j < in[i]; ++j) rit(x), G[x].push_back(i);
+  while (rit(N, M), (N || M)) {
+    memset(dp, 0, sizeof(dp));
+    for (int i = 0; i < N; ++i) {
+      rit(a);
+      for (int j = 0; j < M; ++j) {
+        if (!j || dp[i % 2][j]) dp[(i + 1) % 2][(j * 10 + a) % M] = max(dp[(i + 1) % 2][(j * 10 + a) % M], dp[i % 2][j] + 1);
+      }
+      memcpy(dp[i % 2], dp[(i + 1) % 2], sizeof(dp[i % 2]));
     }
-    memset(dpa, 0, sizeof(dpa)); ans = 0;
-    for (int i = 1; i <= N; ++i) {
-      if (in[i] == 0) ans = max(ans, dp(i));
+    ans = 0;
+    for (int i = 0; i < M; ++i) {
+      if (__gcd(i, M) == 1) ans = max(ans, dp[N % 2][i]);
     }
     printf("%d\n", ans);
   }
   return 0;
-}
-
-int dp(int x) {
-  if (dpa[x]) return dpa[x];
-  if (!G[x].size()) return w[x];
-  for (auto i : G[x]) {
-    dpa[x] = max(dpa[x], dp(i) + w[x]);
-  }
-  return dpa[x];
 }

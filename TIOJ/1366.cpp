@@ -10,7 +10,7 @@ int sm(const string&);
 int main() {
     cin.tie(0); ios_base::sync_with_stdio(false);
     cin >> n; for (int i = 0; i < n; ++i) cin >> s[i];
-    sort(s, s + n, [](const string& a, const string& b) -> bool {
+    stable_sort(s, s + n, [](const string& a, const string& b) -> bool {
         return sm(a) < sm(b);
     });
     for (int i = 0; i < n; ++i) cout << s[i] << ' ';

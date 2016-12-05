@@ -6,42 +6,33 @@ using namespace std;
 
 struct Point {
   double x, y;
-  Point operator-(const Point& p) {
+  Point operator-(const Point& p) const {
     return {x - p.x, y - p.y};
   }
-  double operator*(const Point& p) {
+  double operator*(const Point& p) const {
     return x * p.y - y * p.x;
   }
 };
 
-int N, n, pos, neg;
+int id, neg, pos;
+Point p[10], f;
 string s;
 stringstream ss;
-Point p[11];
-Point pp;
-Point tmp;
 
 int main() {
-  while(getline(cin, s)) {
-          //cout << s << endl;
+  while (getline(cin, s)) {
     ss.clear();
     ss << s;
-    n = 0;
-    pos = 0; neg = 0;
-    while (ss >> p[n++].x >> p[n].y);
-    //scanf("%lf %lf\n", &pp.x, &pp.y);
-    ss.clear();
-    getline(cin, s);
-    ss << s;
-    ss >> pp.x >> pp.y;
-    //cin >> pp.x >> pp.y; scanf("\n");
-    p[n] = p[0];
-    for (int i = 0; i < n; ++i) {
-      tmp = p[i] - p[i + 1];
-      if (pp * tmp > 0) pos++;
+    id = 0;
+    while (ss >> p[id].x >> p[id].y) id++;
+    scanf("%lf %lf\n", &f.x, &f.y);
+    p[id] = p[0];
+    pos = neg = 0;
+    for (int i = 0; i < id; ++i) {
+      if ((p[i] - f) * (p[i] - p[i + 1]) > 0) pos++;
       else neg++;
     }
-    if (pos > neg) cout << "Stop\n";
+    if (pos && neg) cout << "Stop\n";
     else cout << "Hit him\n";
   }
   return 0;

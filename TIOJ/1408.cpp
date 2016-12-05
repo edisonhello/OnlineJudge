@@ -1,26 +1,25 @@
 #include <iostream>
-#include <algorithm>
+#define Lc(x) x*2
+#define Rc(x) x*2+1
+#define M (L+R)>>1
 using namespace std;
 
-struct W {
-  int a, b, c;
-  bool operator<(const W& w) const {
-    return a == w.a ? b < w.b : a < w.a;
-  }
-};
-
-W w[100005];
-int n, sm, tot;
+int seg[400005];
+int n;
+void build(int, int, int);
 
 int main() {
-  while (cin >> n, n) {
-    sm = 0; tot = 0;
-    for (int i = 0; i < n; ++i) cin >> w[i].a >> w[i].b >> w[i].c, tot += w[i].c;
-    sort(w, w + n);
-    for (int i = 0; i < n - 1; ++i) {
-      if (w[i].b > w[i + 1].a) if (w[i].b - w[i + 1].a >= w[i + 1].c) sm += w[i].b - w[i + 1].a;
+  cin.tie(0); ios_base::sync_with_stdio(false);
+  while (cin >> n) {
+    build(1, n, 1);
+    for (int i = 0; i < n; ++i) {
+      cin >> a >> b >> c;
+      modify()
     }
-    cout << tot - sm << endl;
   }
-  return 0;
+}
+
+void build(int L, int R, int id) {
+  if (L == R) seg[id] = 0;
+  build(L, M, Lc(id)); build(M + 1, R, Rc(id));
 }

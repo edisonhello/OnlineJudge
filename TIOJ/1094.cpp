@@ -1,27 +1,24 @@
 #include <iostream>
-#include <cstring>
-#include <algorithm>
+#include <bitset>
+#define endl '\n'
 using namespace std;
 
-int dp[31][31];
-int a[31], b[31];
-int n;
-int dpdp(int, int);
+bitset<1048576> dp;
+int N, x, mx;
 
 int main() {
-  while (cin >> n, n) {
-    for (int i = 0; i < n; ++i) {cin >> b[i]; a[i] = a[i - 1] ^ b[i];}
-    for (int i = 0; i < n; ++i) cout << a[i] << ' ';
-    memset(dp, 0, sizeof(dp));
-    cout << dpdp(0, n) << endl;
+  cin.tie(0); ios_base::sync_with_stdio(false);
+  while (cin >> N, N) {
+    dp.reset();
+    dp[0] = true;
+    for (int i = 0; i < N; ++i) {
+      cin >> x;
+      for (int j = 0; j < 1048576; ++j) if (dp[j]) dp[j ^ x] = true;
+    }
+    for (int i = 0; i < 1048576; ++i) {
+      if (dp[i]) mx = i;
+    }
+    cout << mx << endl;
   }
-}
-
-int dpdp(int l, int r) {
-  if (dp[l][r]) return dp[l][r];
-  int mx = 0;
-  for (int i = l; i < r; ++i) {
-    mx = max(max(mx, dpdp(l, i) + dpdp(i + 1, r) + a[i - 1] ^ a[l] ^ a[r] ^ a[i]), b[i]);
-  }
-  return dp[l][r] = mx;
+  return 0;
 }

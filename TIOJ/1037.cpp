@@ -1,4 +1,5 @@
 #include <cstdio>
+#define getchar getchar_unlocked
 using namespace std;
 
 char __c;

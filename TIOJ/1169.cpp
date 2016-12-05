@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <algorithm>
 #include <map>
+#include <tuple>
 using namespace std;
 
 char __c;
@@ -20,66 +21,110 @@ template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
 
 struct Node {
-  int front, back, len, L, R;
-  bool con;
-  Node *Lc, *Rc;
-};
+  int st, ed, len;
+  Node *l, *r;
+  Node() {
+    l = r = NULL;
+  }
+} *root[200005];
 
-map<int, int> color;
-int N, Q, C, A[200005], P, K, X, Y, t, cnt;
-Node* root[40005];
-void build(int, int, int, Node*);
-int query(int, int, Node*);
+int N, Q, C, A[200005], type, P, K, X, Y, d, a, b;
+map<int, int> mp;
+tuple<int, int, int> query(Node*, int, int, int, int);
+void modify(Node*&, int, int, int, int);
+void pull(Node*, int, int);
 
 int main() {
   rit(N, Q, C);
-  for (int i = 0; i < N; ++i) rit(A[i]);
-  // for (int i = 0; i < C; ++i) build(0, N - 1, i, root[i]);
+  for (int i = 0; i < N; ++i) {
+    rit(A[i]);
+    if (mp.find(A[i]) == mp.end()) mp[A[i]] = d++;
+    if (!root[mp[A[i]]]) root[mp[A[i]]] = new Node();
+    modify(root[mp[A[i]]], i, A[i], 0, N - 1);
+  }
   while (Q--) {
-    rit(t);
-    if (t) {
-      rit(X, Y, K);
-      if (color.find(K) == color.end()) {
-        color[K] = cnt;
-        build(0, N - 1, cnt, root[cnt]);
-        cnt++;
-      }
-      printf("%d\n", query(X, Y, root[color[K]]));
+    rit(type);
+    if (type) {
+      rit(X, Y, K); Y--;
+      if (mp.find(K) == mp.end()) mp[K] = d++;
+      printf("%d\n", get<2>(query(root[mp[K]], X, Y, 0, N - 1)));
     } else {
       rit(P, K);
-      if (color.find(K) == color.end()) {
-        color[K] = cnt;
-        build(0, N - 1, cnt, root[cnt]);
-        cnt++;
-      }
-      // modify()
+      a = A[P]; b = K; A[P] = K;
+      if (mp.find(b) == mp.end()) mp[b] = d++;
+      if (mp.find(a) == mp.end()) mp[a] = d++;
+      if (!root[mp[K]]) root[mp[K]] = new Node();
+      if (!root[mp[a]]) root[mp[a]] = new Node();
+      modify(root[mp[K]], P, K, 0, N - 1);
+      modify(root[mp[a]], P, a, 0, N - 1);
     }
   }
+  return 0;
 }
 
-void build(int L, int R, int c, Node* node) {
-  printf("L: %d R: %d\n", L, R);
-  node = new Node;
-  if (L == R) {
-    // printf("jizz\n");
-    node->L = L; node->R = R;
-    if (A[L] != c) node->front = 1, node->back = 1, node->len = 1, node->con = true;
-    else node->front = 0, node->back = 0, node->len = 0, node->con = false;
-    return;
-  }
-  node->L = L, node->R = R;
+tuple<int, int, int> query(Node* node, int qL, int qR, int L, int R) {
+  if (!node && L >= qL && R <= qR) return make_tuple(R - L + 1, R - L + 1, R - L + 1);
+  if (!node && L >= qL) return make_tuple(qR - L + 1, qR - L + 1, qR - L + 1);
+  if (!node && R <= qR) return make_tuple(R - qL + 1, R - qL + 1, R - qL + 1);
+  if (L >= qL && R <= qR && node) return make_tuple(node->st, node->ed, node->len);
   int M = (L + R) >> 1;
-  build(L, M, c, node->Lc); build(M + 1, R, c, node->Rc);
-  if (node->Lc->con) node->front = node->Lc->back + node->Rc->front;
-  else node->front = node->Lc->front;
-  if (node->Rc->con) node->back = node->Rc->front + node->Lc->back;
-  else node->back = node->Rc->back;
-  node->len = max({ node->Lc->front, node->Rc->back, node->Lc->back + node->Rc->front });
-  node->con = node->Lc->con && node->Rc->con;
+  tuple<int, int, int> q1, q2;
+  if (!(M < qL || L > qR)) q1 = query(node->l, qL, qR, L, M);
+  else q1 = make_tuple(0, 0, 0);
+  if (!(M + 1 > qR || qL > R)) q2 = query(node->r, qL, qR, M + 1, R);
+  else q2 = make_tuple(0, 0, 0);
+  int st, ed, len;
+  if (get<2>(q1) == M - L + 1) st = get<2>(q1) + get<0>(q2);
+  else st = get<0>(q1);
+  if (get<2>(q2) == R - M) ed = get<2>(q2) + get<1>(q1);
+  else ed = get<1>(q2);
+  len = max({ st, ed, get<2>(q1), get<2>(q2), get<1>(q1) + get<0>(q2) });
+  return make_tuple(st, ed, len);
 }
 
-int query(int L, int R, Node* node) {
-  if (node->L > R || L > node->R) return 0;
-  if (node->L >= L && node->R <= R) return node->len;
-  return max({ query(L, R, node->Lc), query(L, R, node->Rc), node->Lc->back + node->Rc->front });
+void modify(Node*& node, int P, int K, int L, int R) {
+  if (L == R) {
+    if (A[L] == K) {
+      node->st = node->ed = node->len = 0;
+      return;
+    } else {
+      node->st = node->ed = node->len = 1;
+      return;
+    }
+  }
+  int M = (L + R) >> 1;
+  if (P <= M) {
+    if (!node->l) node->l = new Node();
+    modify(node->l, P, K, L, M);
+  }
+  if (P > M) {
+    if (!node->r) node->r = new Node();
+    modify(node->r, P, K, M + 1, R);
+  }
+  pull(node, L, R);
+}
+
+void pull(Node* node, int L, int R) {
+  int M = (L + R) >> 1;
+  if (node) {
+    if (node->l && node->r) {
+      if (node->l->len == M - L + 1) node->st = node->l->len + node->r->st;
+      else node->st = node->l->st;
+      if (node->r->len == R - M) node->ed = node->r->len + node->l->ed;
+      else node->ed = node->r->ed;
+    }
+    else if (node->r) {
+      node->st = node->r->st;
+      node->ed = node->r->ed;
+      node->len = node->r->len;
+    } else if (node->l) {
+      node->st = node->l->st;
+      node->ed = node->l->ed;
+      node->len = node->l->len;
+    }
+    node->len = max(node->st, node->ed);
+    if (node->l) node->len = max(node->len, node->l->len);
+    if (node->r) node->len = max(node->len, node->r->len);
+    if (node->l && node->r) node->len = max(node->len, node->l->ed + node->r->st);
+  }
 }

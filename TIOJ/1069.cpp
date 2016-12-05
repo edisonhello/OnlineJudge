@@ -3,6 +3,7 @@
 #include <cstring>
 #include <bitset>
 #include <cstdio>
+#define getchar getchar_unlocked
 using namespace std;
 
 struct S {
@@ -15,10 +16,6 @@ int n, m, match[1005], cnt;
 vector<int> G[1005];
 bool v[1005];
 bool DFS(int);
-
-
-char __c;
-bool flag;
 
 template <typename T>
 inline bool rit(T& x) {

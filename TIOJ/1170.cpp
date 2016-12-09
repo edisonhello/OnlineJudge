@@ -21,7 +21,7 @@ inline bool rit(T& x) {
 template <typename T, typename ...Args>
 inline bool rit(T& x, Args& ...args) {return rit(x) && rit(args...);}
 
-int N, a, sm[1005], dp[1005][1005];
+int N, a, sm[1005], dp[1005][1005], h[1005][1005];
 vector<bitset<1005>> v(1005);
 int dpdp(int, int);
 

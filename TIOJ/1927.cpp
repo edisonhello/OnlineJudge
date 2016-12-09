@@ -3,7 +3,7 @@
 
 int c[100005], N, Q, sa[100005], t[2][100005], r[100005], k, h[100005], st[20][100005], L, R;
 
-signed main() {
+int main() {
   std::cin.tie(0); std::ios_base::sync_with_stdio(false);
   std::cin >> N >> Q;
   for (int i = 0; i < N; ++i) std::cin >> c[i];
@@ -12,7 +12,7 @@ signed main() {
   for (int m = 2; m <= N; m <<= 1) {
     auto cmp = [x, m](const int& i, const int& j) -> bool {
       if (x[i] != x[j]) return x[i] < x[j];
-      return (i + m / 2 < N ? x[i + m / 2] : -1) < (j + m / 2 < N ? x[j + m / 2] : -1);
+      return (i + (m >> 1) < N ? x[i + (m >> 1)] : -1) < (j + (m >> 1) < N ? x[j + (m >> 1)] : -1);
     };
     std::sort(sa, sa + N, cmp);
     int R = 0;
@@ -32,9 +32,9 @@ signed main() {
     h[r[i]] = k;
   }
   for (int i = 0; i < N; ++i) st[0][i] = h[i];
-  for (int i = 1; (1<<i) <= N; ++i) {
-    for (int j = 0; j + (1<<i) <= N; ++j) {
-      st[i][j] = std::min(st[i - 1][j], st[i - 1][j + (1<<(i - 1))]);
+  for (int i = 1; (1 << i) <= N; ++i) {
+    for (int j = 0; j + (1 << i) <= N; ++j) {
+      st[i][j] = std::min(st[i - 1][j], st[i - 1][j + (1 << (i - 1))]);
     }
   }
   while (Q--) {

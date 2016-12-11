@@ -3,6 +3,17 @@
 char __c;
 bool flag;
 
+inline int gtx() {
+  const int N = 1048576;
+  static char buffer[N];
+  static char *p = buffer, *end = buffer;
+  if (p == end) {
+    if ((end = buffer + fread(buffer, 1, N, stdin)) == buffer) return EOF;
+    p = buffer;
+  }
+  return *p++;
+}
+
 template <typename T>
 inline bool rit(T& x) {
   __c = 0, flag = false;

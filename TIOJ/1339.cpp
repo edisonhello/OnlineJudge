@@ -1,35 +1,40 @@
 #include <iostream>
 #include <algorithm>
-#include <queue>
+#define int long long
 using namespace std;
 
-const int MOD = 1000000009;
-int n;
 struct D {
-  long long w, h;
-  // D() {}
-  bool operator < (const D& dd) const {
-    return w <= dd.w && h <= dd.h;
-  }
-  bool operator > (const D& dd) const {
-    return w >= dd.w && h >= dd.h;
-  }
-};
+  int w, h;
+} d[1000005];
 
-// priority_queue<d, vector<d>, greater
-D d[1000010];
-int main() {
-  cin >> n;
-  for (int i = 0; i < n; ++i) {
-    cin >> d[i].w >> d[i].h;
+const int MOD = 1000000009;
+int N;
+int dq(int, int);
+
+signed main() {
+  cin.tie(0); ios_base::sync_with_stdio(false);
+  cin >> N;
+  for (int i = 0; i < N; ++i) cin >> d[i].w >> d[i].h;
+  sort(d, d + N, [](const D& a, const D& b) -> bool {
+    return a.h < b.h;
+  });
+  cout << dq(0, N) << '\n';
+  return 0;
+}
+
+int dq(int L, int R) {
+  if (L == R - 1) return 0;
+  int M = (L + R) >> 1;
+  int ans1 = dq(L, M) % MOD, ans2 = dq(M, R) % MOD;
+  auto cmp = [](const D& a, const D& b) -> bool {
+    return a.w < b.w;
+  };
+  sort(d + L, d + M, cmp); sort(d + M, d + R, cmp);
+  int ans = 0, prefix = 0, len = 0;;
+  for (int i = L, j = M; i < M && j < R; ++i) {
+    if (d[j].w < d[i].w) ans += len * d[j].w * d[j].h - prefix, ans %= MOD, ++j;
+    len++;
+    prefix += d[i].w * d[i].h; prefix %= MOD;
   }
-  long long mx = 0;
-  // sort(d, d + n);
-  for (int i = 0; i < n; ++i) {
-    for (int j = i + 1; j < n; ++j) {
-      if (d[i] > d[j]) mx += d[i].w * d[i].h - d[j].w * d[j].h, mx %= MOD;
-      else if (d[i] < d[j]) mx += d[j].w * d[j].h - d[i].w * d[i].h, mx %= MOD;
-    }
-  }
-  cout << mx % MOD << endl;
+  return (ans + ans1 + ans2) % MOD;
 }

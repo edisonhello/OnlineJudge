@@ -4,13 +4,14 @@
 #include <ctime>
 using namespace std;
 
-long long N = 1000000000000000000;
-long long M = 100;
+const int N = 10000;
+const int MAX = 10000;
 
 int main() {
   srand(time(NULL));
   freopen("in.txt", "w", stdout);
-  cout << N << ' ' << M << '\n';
-  for (int i = 0; i < M; ++i) cout << rand() % 1000 + 1 << ' ';
-  return 0;
+  cout << N << '\n';
+  for (int i = 0; i < N; ++i) {
+    cout << rand() % MAX + 1 << ' ' << rand() % MAX + 1 << '\n';
+  }
 }

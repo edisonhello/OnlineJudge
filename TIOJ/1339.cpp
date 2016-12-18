@@ -18,23 +18,44 @@ signed main() {
   sort(d, d + N, [](const D& a, const D& b) -> bool {
     return a.h < b.h;
   });
-  cout << dq(0, N) << '\n';
+  cout << dq(0, N) % MOD << '\n';
   return 0;
 }
 
 int dq(int L, int R) {
-  if (L == R - 1) return 0;
+  if (L == R - 1) { /*cout << "L: " << L << " R: " << R << " ret: "; cout << "0\n"; */return 0; }
   int M = (L + R) >> 1;
   int ans1 = dq(L, M) % MOD, ans2 = dq(M, R) % MOD;
   auto cmp = [](const D& a, const D& b) -> bool {
     return a.w < b.w;
   };
   sort(d + L, d + M, cmp); sort(d + M, d + R, cmp);
+  // cout << "left: ";
+  // for (int i = L; i < M; ++i) cout << d[i].w << ' ' << d[i].h << '\n';
+  // cout << "right: ";
+  // for (int i = M; i < R; ++i) cout << d[i].w << ' ' << d[i].h << '\n';
   int ans = 0, prefix = 0, len = 0;;
-  for (int i = L, j = M; i < M && j < R; ++i) {
-    if (d[j].w < d[i].w) ans += len * d[j].w * d[j].h - prefix, ans %= MOD, ++j;
-    len++;
-    prefix += d[i].w * d[i].h; prefix %= MOD;
+  int i = L, j = M;
+  while (i < M && j < R) {
+    // cout << "i: " << i << " j: " << j << '\n';
+    // cout << "d[i]: " << d[i].w << ' ' << d[i].h << '\n';
+    if (d[i].w <= d[j].w) {}
+    else {
+      ans += (len * d[j].w * d[j].h - prefix);
+      ans %= MOD;
+      j++;
+    }
+    prefix += (d[i].w * d[i].h); len++; i++;
+    prefix %= MOD;
   }
-  return (ans + ans1 + ans2) % MOD;
+  // cout << "prefix: " << prefix << '\n';
+  while (j < R) {
+    ans += (len * d[j].w * d[j].h - prefix);
+    ans %= MOD;
+    j++;
+  }
+  int ret = (ans + ans1 + ans2) % MOD;
+  // cout << "L: " << L << " R: " << R << " ret: ";
+  // cout << ret << '\n';
+  return ret;
 }

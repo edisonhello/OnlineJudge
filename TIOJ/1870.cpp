@@ -1,113 +1,96 @@
-#include <cstdio>
+#include <iostream>
+#include <cstring>
+#define Lc(x) (x) << 1
+#define Rc(x) ((x) << 1) + 1
+#define root 1
 using namespace std;
 
+const int maxn = 100000 + 5, BIT = 20 + 5;
+int N, Q, A[maxn], L, R, X, type;
+
 struct Node {
-    int num, sm;
-    int x;
-};
+  long long sum;
+  int bit[BIT], tag;
+} Seg[maxn << 2];
 
-int n, q, a[100010], c, l, r, x;
-Node seg[400010];
 void build(int, int, int);
-int query(int, int, int, int, int);
-void modify(int, int, int, int, int, int);
-void push(int);
 void pull(int);
-
-inline int L(int id) {return id *2;}
-inline int R(int id) {return id * 2 + 1;}
-
-inline int readchar() {
-  const int N = 1048576;
-  static char buf[N];
-  static char *p = buf, *end = buf;
-  if(p == end) {
-    if((end = buf + fread(buf, 1, N, stdin)) == buf) return EOF;
-    p = buf;
-  }
-  return *p++;
-}
-
-template<typename T>
-inline bool gin(T &x){
-  char c = 0; bool flag = 0;
-  while (c = readchar(), c < '0' && c != '-' || c > '9') if (c == -1) return false;
-  c == '-' ? (flag = 1, x = 0):(x = c - '0');
-  while (c = readchar(), c >= '0' && c <= '9') x = x * 10 + c - '0';
-  if (flag) x = -x;
-  return true;
-}
-
-template <typename T, typename ...Args>
-inline bool gin(T &x, Args &...args){
-  return gin(x) && gin(args...);
-}
+long long query(int, int, int, int, int);
+void push(int);
+void modify(int, int, int, int, int, int);
 
 int main() {
-  gin(n);
-  for (int i = 0; i < n; ++i) gin(a[i]);
-  build(0, n - 1, 1);
-  gin(q);
-  while (q--) {
-    gin(c);
-    if (c == 1) {
-      gin(l, r);
-      printf("%d\n", query(0, n - 1, l - 1, r - 1, 1));
-            //cout << query(0, n - 1, l - 1, r - 1, 1) << endl;
-    } else {
-      gin(l, r, x);
-      modify(0, n - 1, l - 1, r - 1, 1, x);
+  cin.tie(0); ios_base::sync_with_stdio(false);
+  cin >> N;
+  for (int i = 0; i < N; ++i) cin >> A[i];
+  build(root, 0, N - 1);
+  cin >> Q;
+  while (Q--) {
+    cin >> type;
+    if (type == 1) {
+      cin >> L >> R; L--; R--;
+      cout << query(root, 0, N - 1, L, R) << '\n';
+    }
+    if (type == 2) {
+      cin >> L >> R >> X; L--; R--;
+      modify(root, 0, N - 1, L, R, X);
     }
   }
 }
 
-void build(int l, int r, int id) {
-  if (l == r) {
-    seg[id].num = a[l];
-    seg[id].sm = seg[id].num;
+void build(int id, int L, int R) {
+  if (L == R) {
+    Seg[id].sum = A[L];
+    memset(Seg[id].bit, -1, sizeof(Seg[id].bit));
+    for (int i = 0, j = A[L]; j != 0; j >>= 1, ++i) Seg[id].bit[i] = (j & 1) ? 1 : -1;
     return;
   }
-  int m = (l + r) / 2;
-  build(l, m, L(id)), build(m + 1, r, R(id));
-  seg[id].sm = seg[L(id)].sm + seg[R(id)].sm;
-}
-
-int query(int l, int r, int ql, int qr, int id) {
-  if (ql > r || qr < l) return 0;
-  if (l == r) {
-    seg[id].num ^= seg[id].x;
-    seg[id].sm = seg[id].num;
-    seg[id].x = 0;
-    return seg[id].sm;
-  }
-  push(id);
-  int m = (l + r) / 2;
-  int t1 = query(l, m, ql, qr, L(id)), t2 = query(m + 1, r, ql, qr, R(id));
+  int M = (L + R) >> 1;
+  build(Lc(id), L, M);
+  build(Rc(id), M + 1, R);
   pull(id);
-  return t1 + t2;
-}
-
-void push(int id) {
-  if (seg[id].x) {
-    seg[L(id)].x ^= seg[id].x;
-    seg[R(id)].x ^= seg[id].x;
-    seg[id].x = 0;
-  }
 }
 
 void pull(int id) {
-  seg[id].sm = seg[L(id)].sm + seg[R(id)].sm;
+  Seg[id].sum = Seg[Lc(id)].sum + Seg[Rc(id)].sum;
+  for (int i = 0; i < BIT; ++i) Seg[id].bit[i] = Seg[Lc(id)].bit[i] + Seg[Rc(id)].bit[i];
 }
 
-void modify(int l, int r, int ml, int mr, int id, int xx) {
-  if (l > mr || r < ml) return;
-  if (ml <= l && mr >= r) {
-    seg[id].x ^= xx;
+long long query(int id, int L, int R, int l, int r) {
+  if (L > r || l > R) return 0;
+  if (L >= l && R <= r) return Seg[id].sum;
+  push(id);
+  int M = (L + R) >> 1;
+  return query(Lc(id), L, M, l, r) + query(Rc(id), M + 1, R, l, r);
+}
+
+void push(int id) {
+  if (!Seg[id].tag) return;
+  for (int i = 0, j = Seg[id].tag; j != 0; ++i, j >>= 1) {
+    if (j & 1) {
+      Seg[Lc(id)].bit[i] *= -1;
+      Seg[Rc(id)].bit[i] *= -1;
+      Seg[Lc(id)].sum += (1 << i) * Seg[Lc(id)].bit[i];
+      Seg[Rc(id)].sum += (1 << i) * Seg[Rc(id)].bit[i];
+    }
+  }
+  Seg[Lc(id)].tag ^= Seg[id].tag;
+  Seg[Rc(id)].tag ^= Seg[id].tag;
+  Seg[id].tag = 0;
+}
+
+void modify(int id, int L, int R, int l, int r, int x) {
+  if (L > r || l > R) return;
+  if (L >= l && R <= r) {
+    for (int i = 0, j = x; j != 0; ++i, j >>= 1) {
+      if (j & 1) Seg[id].bit[i] *= -1, Seg[id].sum += (1 << i) * Seg[id].bit[i];
+    }
+    Seg[id].tag ^= x;
     return;
   }
   push(id);
-  int m = (l + r) / 2;
-  modify(l, m, ml, mr, L(id), xx);
-  modify(m + 1, r, ml, mr, R(id), xx);
+  int M = (L + R) >> 1;
+  modify(Lc(id), L, M, l, r, x);
+  modify(Rc(id), M + 1, R, l, r, x);
   pull(id);
 }

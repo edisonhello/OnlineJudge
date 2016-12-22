@@ -1,9 +1,37 @@
-#include <iostream>
+#include <cstdio>
 #include <vector>
 #include <bitset>
 #include <set>
+#define getchar gtx
 #define INF (1<<30)
 using namespace std;
+
+char __c;
+bool flag;
+
+inline int gtx() {
+  const int N = 1048576;
+  static char buffer[N];
+  static char *p = buffer, *end = buffer;
+  if (p == end) {
+    if ((end = buffer + fread(buffer, 1, N, stdin)) == buffer) return EOF;
+    p = buffer;
+  }
+  return *p++;
+}
+
+template <typename T>
+inline bool rit(T& x) {
+  __c = 0, flag = false;
+  while (__c = getchar(), (__c < '0' && __c != '-') || __c > '9') if (__c == -1) return false;
+  __c == '-' ? (flag = true, x = 0) : (x = __c - '0');
+  while (__c = getchar(), __c >= '0' && __c <= '9') x = x * 10 + __c - '0';
+  if (flag) x = -x;
+  return true;
+}
+
+template <typename T, typename ...Args>
+inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
 
 int n, m, x, y, cnt, mn, mni, c[100005], djs[100005], sz[100005];
 bitset<100005> v;
@@ -20,14 +48,11 @@ void U(int x, int y) {
 }
 
 int main() {
-  cin.tie(0);
-  ios_base::sync_with_stdio(false);
-  cin >> n;
-  cin >> m;
+  rit(n, m);
   mn = INF;
   for (int i = 1; i <= n; ++i) djs[i] = i, sz[i] = 1;
   for (int i = 0; i < m; ++i) {
-    cin >> x >> y;
+    rit(x, y);
     if (x != y) c[x]++; c[y]++, G[x].push_back(y), G[y].push_back(x);
   }
   for (int i = 1; i <= n; ++i) {
@@ -48,7 +73,7 @@ int main() {
   for (int i = 1; i <= n; ++i) {
     if (!v[F(i)]) cnt++, v[F(i)] = true;
   }
-  cout << cnt << endl;
+  printf("%d\n", cnt);
   return 0;
 }
 

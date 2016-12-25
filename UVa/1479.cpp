@@ -6,7 +6,7 @@
 using namespace std;
 
 const int maxn = 20000 + 5;
-const int maxq = 500000 + 5;
+const int maxq = 1000000 + 5;
 const int maxm = 60000 + 5;
 int T, N, M, D[maxn], u, v, a, b, q, djs[maxn], cnt, kase;
 long long sum;
@@ -23,7 +23,7 @@ struct Treap {
   }
   inline int Lsz() { return l ? l->sz : 0; }
   inline int Rsz() { return r ? r->sz : 0; }
-} *root[maxn];
+} *root[maxn] = {0};
 
 struct Query {
   int a, b;
@@ -49,10 +49,10 @@ int main() {
   cin.tie(0); ios_base::sync_with_stdio(false);
   while (cin >> N >> M, (N || M)) {
     memset(col, false, sizeof(col)); q = 0;
-    for (int i = 0; i < N; ++i) root[i] = NULL;
-    for (int i = 0; i < N; ++i) djs[i] = i;
-    for (int i = 0; i < N; ++i) cin >> D[i];
-    for (int i = 0; i < M; ++i) cin >> u >> v, E[i] = (Edge){ u, v };
+    for (int i = 1; i <= N; ++i) root[i] = NULL;
+    for (int i = 1; i <= N; ++i) djs[i] = i;
+    for (int i = 1; i <= N; ++i) cin >> D[i];
+    for (int i = 1; i <= M; ++i) cin >> u >> v, E[i] = (Edge){ u, v };
     while (cin >> c) {
       if (c == 'Q') cin >> a >> b;
       if (c == 'C') cin >> a >> b, swap(D[a], b);
@@ -60,8 +60,8 @@ int main() {
       if (c == 'E') break;
       Q[q++] = (Query){ a, b, c };
     }
-    for (int i = 0; i < N; ++i) root[i] = new Treap(D[i]);
-    for (int i = 0; i < M; ++i) if (!col[i]) Connect(i);
+    for (int i = 1; i <= N; ++i) root[i] = new Treap(D[i]);
+    for (int i = 1; i <= M; ++i) if (!col[i]) Connect(i);
     sum = 0; cnt = 0;
     while (q--) {
       if (Q[q].c == 'D') Connect(Q[q].a);
@@ -72,7 +72,7 @@ int main() {
       }
       if (Q[q].c == 'Q') cnt++, sum += kth(root[F(Q[q].a)], Q[q].b);
     }
-    cout << "Sekai " << ++kase << ": " << fixed << setprecision(6) << (double)sum * 1.0 / cnt << '\n';
+    cout << "Case " << ++kase << ": " << fixed << setprecision(6) << (double)sum * 1.0 / cnt << '\n';
   }
   return 0;
 }
@@ -83,7 +83,7 @@ void Connect(int id) {
   if (root[x] && root[y] && root[x]->sz < root[y]->sz) swap(x, y);
   connect(root[x], root[y]);
   djs[y] = x;
-  // delete root[y];
+  delete root[y];
 }
 
 void connect(Treap*& a, Treap*& b) {

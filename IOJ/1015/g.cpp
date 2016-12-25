@@ -5,7 +5,7 @@
 using namespace std;
 
 const int N = 1000;
-const int MAX = 10000;2w
+const int MAX = 10000;
 int c, x;
 
 int main() {

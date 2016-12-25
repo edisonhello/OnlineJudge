@@ -1,26 +1,9 @@
-#include <cstdio>
+#include <iostream>
 #include <algorithm>
-// #define __gcd GCD
-#define getchar getchar_unlocked
 using namespace std;
 
 int R, C, N, t, P, Q, U, V;
 long long K;
-char __c;
-bool flag;
-
-template <typename T>
-inline bool rit(T& x) {
-  __c = 0, flag = false;
-  while (__c = getchar(), (__c < '0' && __c != '-') || __c > '9') if (__c == -1) return false;
-  __c == '-' ? (flag = true, x = 0) : (x = __c - '0');
-  while (__c = getchar(), __c >= '0' && __c <= '9') x = x * 10 + __c - '0';
-  if (flag) x = -x;
-  return true;
-}
-
-template <typename T, typename ...Args>
-inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
 
 long long GCD(long long a, long long b) {
   if (!a) return b;
@@ -116,18 +99,19 @@ struct Seg {
 } *seg;
 
 int main() {
-  rit(R, C, N);
+  cin.tie(0); ios_base::sync_with_stdio(false);
+  cin >> R >> C >> N;
   seg = new Seg();
   while (N--) {
-    rit(t);
+    cin >> t;
     if (t == 1) {
-      rit(P, Q, K);
+      cin >> P >> Q >> K;
       seg->insert(0, R - 1, P, Q, K);
     } else {
-      rit(P, Q, U, V);
+      cin >> P >> Q >> U >> V;
       if (P > U) swap(P, U);
       if (Q > V) swap(Q, V);
-      printf("%lld\n", seg->query(0, R - 1, P, Q, U, V));
+      cout << seg->query(0, R - 1, P, Q, U, V) << '\n';
     }
   }
   return 0;

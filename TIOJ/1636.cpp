@@ -1,26 +1,20 @@
-#include <iostream>
-#include <cstring>
+#include <bits/stdc++.h>
+#define int long long
 using namespace std;
 
-int a[1000010], n, k, pos, m[1000010];
-long long ans;
+const int maxn = 1000000 + 5;
+int A[maxn], N, K, tot, ans;
 
-int main() {
-  cin >> n >> k;
-  for (int i = 0; i < n; ++i) cin >> a[i];
-  memcpy(m, a, sizeof(a));
-  pos = 0;
-  ans = m[0];
-  m[0] = 0;
-  for (int i = 0; i < k; ++i) {
-    m[pos - 1] = a[pos - 1], m[pos + 1] = a[pos + 1];
-    if (pos == 0) ans += m[1], pos = 1, m[1] = 0;
-    else if (pos == n - 1) ans += m[n - 2], pos = n - 2, m[n - 2] = 0;
-    else {
-      if (m[pos + 1] >= m[pos - 1]) ans += m[pos + 1], m[pos + 1] = 0, pos++;
-      else ans += m[pos - 1], m[pos - 1] = 0, pos--;
-    }
+signed main() {
+  ios_base::sync_with_stdio(false); cin.tie(nullptr);
+  cin >> N >> K;
+  for (int i = 1; i <= N; ++i) cin >> A[i];
+  for (int i = 1; i <= N && K + 1 >= i; ++i) {
+    tot += A[i];
+    if (i == 1) { ans = A[i]; continue; }
+    ans = max(ans, tot + (K - i + 1) / 2 * A[i] + (K - i + 2) / 2 * A[i + 1]);
   }
-  cout << ans << endl;
+  if (N == 1) cout << (K + 1) / 2 * A[1] << '\n';
+  else cout << ans << '\n';
   return 0;
 }

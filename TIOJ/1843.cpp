@@ -11,7 +11,7 @@ const int maxm = 60000 + 5;
 int T, N, M, D[maxn], u, v, a, b, q, djs[maxn], cnt, kase;
 long long sum;
 char c;
-bool col[maxn];
+bool col[maxm];
 
 struct Treap {
   int val, pri, sz;

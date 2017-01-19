@@ -1,72 +1,78 @@
 #include <iostream>
-#include <climits>
 #include <algorithm>
+#include <cstring>
+#include <climits>
+#include <tuple>
+#define Lc(id) (id) << 1
+#define Rc(id) (id) << 1 | 1
+#define root 1
 using namespace std;
 
-struct Node {
-  int Sum, add, set, Min, Max;
-  Node *l, *r;
-  Node() {
-    l = r = NULL;
-  }
-} *root[25];
+const int maxn = 1000000 + 5;
 
-const int INF = INT_MAX;
-int r, c, m, type, x1, y1, x2, y2, v;
-void add(Node*, int, int, int, int, int);
-void build(Node*, int, int);
-void pull(Node*);
-void push(Node*);
+struct Seg {
+  int Sum, Min, Max;
+  int tag, seg;
+} seg[25][maxn << 2];
+
+int R, C, M, t, x1, y1, x2, y2;
+
+void add(int, int, int, int, int, int, int);
+void set(int, int, int, int, int, int, int);
+tuple<int, int, int> query(int, int, int, int, int);
+void push(int, int);
+void pull(int, int);
 
 int main() {
-  while (cin >> r >> c >> m) {
-    for (int i = 0; i < 25; ++i) root[i] = NULL;
-    for (int i = 0; i < 25; ++i) build(root[i], 1, c);
-    while (m--) {
-      cin >> type;
-      if (type == 1) {
+  cin.tie(0); ios_base::sync_with_stdio(false);
+  while (cin >> R >> C >> M) {
+    memset(seg, 0, sizeof(seg));
+    while (M--) {
+      cin >> t;
+      if (t == 1) {
         cin >> x1 >> y1 >> x2 >> y2 >> v;
-        for (int i = y1; i <= y2; ++i) add(root[i], 1, c, x1, x2, v);
+        for (int i = x1; i <= x2; ++i) add(root, i, 1, C, y1, y2, v);
+      }
+      if (t == 2) {
+        cin >> x1 >> y1 >> x2 >> y2 >> v;
+        for (int i = x1; i <= x2; ++i) set(root, i, 1, C, y1, y2, v);
+      }
+      if (t == 3) {
+        cin >> x1 >> y1 >> x2 >> y2;
+        tuple<int, int, int> ret = { 0, INT_MAX, 0 };
+        for (int i = x1; i <= x2; ++i) {
+          tuple<int, int, int> res = query(root, 1, C, y1, y2);
+          get<0>(ret) += get<0>(res);
+          get<1>(ret) = min(get<1>(ret), get<1>(res));
+          get<2>(ret) = max(get<2>(ret), get<2>(res));
+        }
+        cout << get<0>(ret) << ' ' << get<1>(ret) << ' ' << get<2>(ret) << '\n';
       }
     }
   }
+  return 0;
 }
 
-void build(Node*& node, int L, int R) {
-  node = new Node();
-  if (L == R) {
-    node->Sum = node->Max = 0;
-    node->Min = INF;
-  }
+void add(int id, int i, int L, int R, int l, int r, int v) {
+  if (L > r || l > R) return;
+  if (L >= l && R <= R) { seg[i][id].add += v; return; }
+  push(id, i);
   int M = (L + R) >> 1;
-  build(node->l, L, M);
-  build(node->r, M + 1, R);
-  pull(node);
+  add(Lc(id), i, L, M, l, r, v);
+  add(Rc(id), i, M + 1, R, l, r, v);
+  pull(id, i);
 }
 
-void pull(Node* node) {
-  if (node) {
-    node->Sum = node->l->Sum + node->r->Sum;
-    node->Min = min(node->l->Min, node->r->Sum);
-    node->Max = max(node->l->max, node->r->Max);
-  }
-}
-
-void add(Node* node, int L, int R, int x1, int x2, int v) {
-  if (L > x2 || x1 > R) return;
-  if (L >= x1 && R <= x2) {
-    node->add = v;
-    return;
-  }
-  push(node);
+void set(int id, int i, int L, int R, int l, int r, int v) {
+  if (L > r || l > R) return;
+  if (L >= l && R <= r) { seg[i][id].set = v; return; }
+  push(id, i);
   int M = (L + R) >> 1;
-  add(node->l, L, M, x1, x2, v);
-  add(node->r, M + 1, R, x1, x2, v);
-  pull(node);
+  add(Lc(id), i, L, M, l, r, v);
+  add(Rc(id), i, M + 1, R, l, r, v);
+  pull(id, i);
 }
 
-void push(Node* node) {
-  if (node) {
-    node->
-  }
+void push(int id, int i) {
+
 }

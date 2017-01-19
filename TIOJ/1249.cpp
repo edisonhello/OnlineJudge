@@ -9,25 +9,17 @@
 using namespace std;
 
 struct SORT {
-
   string unsorted;
   string sorted;
-
-  bool operator < (const SORT& sort) const {
-    if (sorted < sort.sorted)
-      return true;
-    else if (sorted > sort.sorted)
-      return false;
-    else {
-      return unsorted < sort.unsorted;
-    }
+  bool operator<(const SORT& sort) const {
+    if (sorted < sort.sorted) return true;
+    else if (sorted > sort.sorted) return false;
+    else return unsorted < sort.unsorted;
   }
 };
 
 void stringOutput(string temp) {
-  for (int i = 0; i < temp.size(); i++) {
-    cout << temp[i];
-  }
+  for (int i = 0; i < temp.size(); i++) cout << temp[i];
 }
 
 void answerOutput(vector<string> answer) {
@@ -35,9 +27,8 @@ void answerOutput(vector<string> answer) {
   for (int i = 0; i < len; i++) {
     if (i == len - 1) {
       stringOutput(answer[i]);
-        cout << '\n';
-      }
-
+      cout << '\n';
+    }
     else {
       stringOutput(answer[i]);
       cout << ',';
@@ -57,10 +48,8 @@ void readInput(FILE* in, vector<SORT>& accounts) {
     string array;
     char temp[128];
     fgets(temp, 127, in);
-
     array = temp;
     array.erase(remove(array.begin(), array.end(), '\n'), array.end());
-
     string array2 = array;
     accounts[i].unsorted = array;
     sort(array2.begin(), array2.end());
@@ -114,23 +103,14 @@ void solve(vector<SORT> accounts) {
 
 int main(int argc, char* argv[]) {
   FILE* in = stdin;
-  if (argc == 2) {
-    in = fopen(argv[1], "r");
-  }
-
-
+  if (argc == 2) in = fopen(argv[1], "r");
   while (true) {
     vector<SORT> accounts;
     readInput(in, accounts);
-    if (accounts.size() == 0) {
-      break;
-    }
+    if (accounts.size() == 0) break;
     sort(accounts.begin(), accounts.end());
     solve(accounts);
-
   }
-  if (in != stdin) {
-    fclose(in);
-  }
+  if (in != stdin) fclose(in);
   return 0;
 }

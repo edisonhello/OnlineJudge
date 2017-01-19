@@ -44,7 +44,7 @@ int main() {
     else R = r[R] + 1, L = r[L];
     int d = std::abs(R - L) + 1;
     int p = 31 - __builtin_clz(d);
-    std::cout << std::min(st[p][L], st[p][R - (1<<p) + 1]) << '\n';
+    std::cout << std::min(st[p][L], st[p][R - (1 << p) + 1]) << '\n';
   }
   return 0;
 }

@@ -1,67 +1,79 @@
 #include <iostream>
-#include <string>
-#include <cstring>
 #include <queue>
-#include <utility>
+#include <string>
 #include <vector>
-#include <bitset>
+#include <algorithm>
+#define DIR 4
 using namespace std;
 
-typedef pair<int, int> pii;
-string mp[51];
-int n, m, k, lake;
-int v[51][51];
-pair<int, int> p;
-priority_queue<pii, vector<pii>, greater<pii> > pq;
-vector<pii> lakep[2500];
-bitset<2500> jizz;
-int BFS(int, int, vector<pii>&);
+struct P {
+  int x, y;
+  bool operator<(const P& rhs) const {
+    return x == rhs.x ? y < rhs.y : x < rhs.x;
+  }
+};
+
+const int maxn = 50 + 5;
+int n, m, lake, ans, k;
+bool v[maxn][maxn], o;
+string mp[maxn];
+queue<P> q;
+short dx[4] = { 1, 0, -1, 0 }, dy[4] = { 0, 1, 0, -1 };
+vector<pair<int, vector<P>>> vec;
+
+pair<int, vector<P>> BFS(int, int);
 
 int main() {
+  ios_base::sync_with_stdio(false); cin.tie(0);
   cin >> n >> m >> k;
-  for (int i = 0; i < n; ++i) {
-    cin >> mp[i];
-  }
-  lake = 0;
-  memset(v, 1, sizeof(v));
+  for (int i = 0; i < n; ++i) cin >> mp[i];
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < m; ++j) {
-      if (j == 0 || i == 0 || j == m - 1 || i == n - 1) jizz[i * 50 + j] = true;
-      if (!v[i][j] && mp[i][j] == '.') {
-        v[i][j] = true;
-        int area = BFS(i, j, lakep[lake - 1]);
-        if (area < 2500) lake++;
-        pq.push(pii(area, lake - 1));
+      if (v[i][j]) continue;
+      o = false;
+      pair<int, vector<P>> ret;
+      if (mp[i][j] == '.') {
+        ret = BFS(i, j);
+        if (!o) vec.push_back(ret), lake++;
       }
     }
   }
-  int ans = 0;
-  // cout << "lake: " << lake << endl;
-  for (int i = 0; i < lake - k; ++i) {
-    p = pq.top(); pq.pop();
-    ans += p.first;
-    for (int j = 0; j < lakep[p.second].size(); ++j) {
-      mp[lakep[p.second][j].first][lakep[p.second][j].second] = '*';
-    }
+  sort(vec.begin(), vec.end());
+  int vi = 0;
+  while (lake > k) {
+    ans += vec[vi].first;
+    for (auto i : vec[vi].second) mp[i.x][i.y] = '*';
+    vi++;
+    lake--;
   }
-  cout << ans << endl;
-  for (int i = 0; i < n; ++i) cout << mp[i] << endl;
+  cout << ans << '\n';
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < m; ++j) cout << mp[i][j];
+    cout << '\n';
+  }
   return 0;
 }
 
-int BFS(int i, int j, vector<pii>& lp) {
-  int area = 1;
-  queue<pii> q;
-  q.push(pii(i, j));
-  lp.push_back(pii(i, j));
-  while (!q.empty()) {
-    p = q.front();
-    q.pop();
-    if (jizz[p.first * 50 + p.second]) return (int)1e9;
-    if (p.first + 1 < n - 1 && !v[p.first + 1][p.second] && mp[p.first + 1][p.second] == '.') {lp.push_back(pii(p.first + 1, p.second)); v[p.first + 1][p.second] = true; area++; q.push(pii(p.first + 1, p.second));}
-    if (p.first - 1 >= 1 && !v[p.first - 1][p.second] && mp[p.first - 1][p.second] == '.') {lp.push_back(pii(p.first - 1, p.second)); v[p.first - 1][p.second] = true; area++; q.push(pii(p.first - 1, p.second));}
-    if (p.second + 1 < m - 1 && !v[p.first][p.second + 1] && mp[p.first][p.second + 1] == '.') {lp.push_back(pii(p.first, p.second + 1)); v[p.first][p.second + 1] = true; area++; q.push(pii(p.first, p.second + 1));}
-    if (p.second - 1 >= 1 && !v[p.first][p.second - 1] && mp[p.first][p.second - 1] == '.') {lp.push_back(pii(p.first, p.second - 1)); v[p.first][p.second - 1] = true; area++; q.push(pii(p.first, p.second - 1));}
+pair<int, vector<P>> BFS(int x, int y) {
+  int sz = 0;
+  vector<P> ret;
+  while (q.size()) q.pop();
+  q.push((P){ x, y });
+  while (q.size()) {
+    P p = q.front(); q.pop();
+    // cout << p.x << ' ' << p.y << '\n';
+    if (v[p.x][p.y]) continue;
+    if (p.x == 0 || p.x == n - 1 || p.y == 0 || p.y == m - 1) o = true;
+    sz++;
+    ret.push_back(p);
+    v[p.x][p.y] = true;
+    for (int i = 0; i < 4; ++i) {
+      // cout << "debug: " << p.x + dx[i] << ' ' << p.y + dy[i] << '\n';
+      if (p.x + dx[i] >= 0 && p.x + dx[i] < n && p.y + dy[i] >= 0 && p.y + dy[i] < m) {
+        // cout << "jizz\n";
+        if (mp[p.x + dx[i]][p.y + dy[i]] == '.') q.push((P){ p.x + dx[i], p.y + dy[i] });
+      }
+    }
   }
-  return area;
+  return make_pair(sz, ret);
 }

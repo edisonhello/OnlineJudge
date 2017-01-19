@@ -1,47 +1,55 @@
-#include <iostream>
-#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
 #define INF (1 << 30)
+#define getchar getchar_unlocked
+#define abs(x) (x) > 0 ? (x) : -(x)
 using namespace std;
 
-int T, h[1005], N, mn, best;
-int H(int, int);
+char __c;
+bool flag;
+
+template <typename T>
+inline bool rit(T& x) {
+  __c = 0, flag = false;
+  while (__c = getchar(), (__c < '0' && __c != '-') || __c > '9') if (__c == -1) return false;
+  __c == '-' ? (flag = true, x = 0) : (x = __c - '0');
+  while (__c = getchar(), __c >= '0' && __c <= '9') x = x * 10 + __c - '0';
+  if (flag) x = -x;
+  return true;
+}
+
+template <typename T, typename ...Args>
+inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
+
+int T, h[1005], N, mn, best, tot;
+inline int add(int);
 
 int main() {
-  cin >> T;
+  rit(T);
   while (T--) {
-    cin >> N;
-    for (int i = 0; i < N; ++i) cin >> h[i];
-    for (int i = 0; i < N; ++i) {
+    rit(N); tot = 0;
+    for (int i = 1; i <= N; ++i) rit(h[i]);
+    h[N + 1] = h[N];
+    for (int i = 1; i <= N; ++i) {
       mn = INF;
-      for (int j = 0; j < N; ++j) {
-        // if (i == j) continue;
-        // cout << "i: " << i << " j: " << j << ' ' << H(i, j) << endl;
-        if (H(i, j) < mn) mn = H(i, j), best = j;
+      for (int j = 1; j <= N; ++j) {
+        int sw = -add(i) - add(j);
+        swap(h[i], h[j]);
+        sw += add(i) + add(j);
+        swap(h[i], h[j]);
+        if (sw < mn) mn = sw, best = j;
       }
-      cout << best + 1 << ' ';
+      printf("%d ", best);
     }
-    cout << endl;
+    puts("");
   }
   return 0;
 }
 
-int H(int i, int j) {
+inline int add(int i) {
   int ret = 0;
-  for (int ii = 0; ii < N - 1; ++ii) {
-    if (ii == i) {
-      if (ii + 1 == j) ret += abs(h[j] - h[i]);
-      else ret += abs(h[j] - h[ii + 1]);
-    }
-    else if (ii == i - 1) {
-      // if ()
-      ret += abs(h[ii] - h[j]);
-    }
-    else if (ii == j) {
-      if (ii + 1 == i) ret += abs(h[i] - h[j]);
-      else ret += abs(h[i] - h[ii + 1]);
-    }
-    else if (ii == j - 1) ret += abs(h[ii] - h[j]);
-    else ret += abs(h[ii] - h[ii + 1]);
-  }
+  if (i > 1) ret += abs(h[i] - h[i - 1]);
+  if (i < N) ret += abs(h[i] - h[i + 1]);
   return ret;
 }

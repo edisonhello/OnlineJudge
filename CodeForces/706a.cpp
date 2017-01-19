@@ -1,42 +1,19 @@
 #include <iostream>
-#include <iomanip>
 #include <cmath>
+#include <iomanip>
 using namespace std;
 
-class Point {
-public:
-  double x, y;
-  Point() {}
-  Point(int x, int y) {
-    this->x = x;
-    this->y = y;
-  }
-
-  int dis(const Point& p) const {
-    return sqrt((this->x - p.x) * (this->x - p.x) + (this->y - p.y) * (this->y - p.y));
-  }
-};
+int a, b, n, x, y, v;
+double Min;
 
 int main() {
-  Point point[1000];
-  double speed[1000];
-  Point house;
-  double a, b, v;
-  cin >> a >> b;
-  house = Point(a, b);
-  int n;
-  cin >> n;
+  cin >> a >> b >> n;
+  Min = 1e9;
   for (int i = 0; i < n; ++i) {
-    cin >> a >> b >> v;
-    point[i] = Point(a, b);
-    speed[i] = v;
+    cin >> x >> y >> v;
+    double t = sqrt((a - x) * (a - x) + (b - y) * (b - y)) / (double)v;
+    Min = min(Min, t);
   }
-  double min = 200000000;
-  for (int i = 0; i < n; ++i) {
-    if (house.dis(point[i]) / speed[i] < min) {
-      min = house.dis(point[i]) / speed[i];
-    }
-  }
-  cout << fixed << setprecision(20) << min << endl;
+  cout << fixed << setprecision(20) << Min << '\n';
   return 0;
 }

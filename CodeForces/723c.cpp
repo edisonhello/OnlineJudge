@@ -1,60 +1,50 @@
 #include <iostream>
-#include <vector>
 #include <queue>
 #include <map>
-#include <utility>
+#include <climits>
 #include <cstring>
-#include <set>
-#include <algorithm>
 using namespace std;
 
-int n, m, a[2010], cnt, tot[2010];
-int temp;
-pair<int, int> band[2010];
-int jizz = 1;
-int mn, mni;
-vector<int> song[2010];
+const int maxn = 2000 + 5;
+int n, m, A[maxn], cnt[maxn], Min, chg;
+bool add[maxn];
+queue<int> q;
+map<int, int> mp;
 
 int main() {
   cin >> n >> m;
-  memset(tot, 0, sizeof(tot));
+  for (int i = 0; i < n; ++i) cin >> A[i];
+  int t = n / m;
   for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-    if (a[i] >= 1 && a[i] <= m) {
-      tot[a[i]]++;
-      song[a[i]].push_back(i);
-    }
+    if (A[i] < 1 || A[i] > m) { q.push(i); continue; }
+    mp[A[i]]++;
+    if (mp[A[i]] > t) q.push(i), mp[A[i]]--;
   }
-  int idx = 0;
-  for (int i = 1; i <= m; ++i) band[idx++] = pair<int, int>(song[i].size(), i);
-  sort(band, band + m);
-  // for (int i = 0; i < m; ++i) cout << band[i].second << ": " << band[i].first << endl;
-  int target = n / m;
-  idx = 0;
-  cnt = 0;
-  for (int i = 0; i < m; ++i) {
-    while (band[i].first < target && idx < n) {
-      if (a[idx] > m) {
-        band[i].first++;
-        a[idx] = band[i].second;
-        cnt++;
+  while (q.size()) {
+    for (int i = 1; i <= m; ++i) {
+      if (q.empty()) break;
+      if (mp.find(i) == mp.end()) mp[i] = 0;
+      while (mp[i] < t) {
+        A[q.front()] = i;
+        q.pop();
+        mp[i]++;
+        chg++;
       }
-      idx++;
+    }
+    break;
+  }
+  while (q.size() >= m) {
+    memset(add, false, sizeof(add));
+    for (int i = 1; i <= m; ++i) {
+      if (add[i]) continue;
+      int a = q.front(); q.pop();
+      if (A[a] >= 1 && A[a] <= m && !add[A[a]]) add[A[a]] = true, --i;
+      else chg++, A[a] = i, add[i] = true;
     }
   }
-  for (int i = 0; i < m; ++i) {
-    idx = 0;
-    // cout << band[i].first << endl;
-    while (band[i].first < target) {
-      band[i].first++;
-      a[song[band[m - i - 1].second][idx]] = band[i].second;
-      band[m - i - 1].first--;
-      idx++;
-      cnt++;
-    }
-  }
-  idx = 0;
-  cout << target << ' ' << cnt << endl;
-  for (int i = 0; i < n; ++i) cout << a[i] << ' ';
-  return 0;
+  for (int i = 0; i < n; ++i) if (A[i] >= 1 && A[i] <= m) cnt[A[i]]++;
+  Min = INT_MAX;
+  for (int i = 1; i <= m; ++i) Min = min(Min, cnt[i]);
+  cout << Min << ' ' << chg << '\n';
+  for (int i = 0; i < n; ++i) cout << A[i] << ' ';
 }

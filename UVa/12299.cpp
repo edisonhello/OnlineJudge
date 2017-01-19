@@ -5,7 +5,7 @@
 #define Rc(id) (id) * 2 + 1
 using namespace std;
 
-int A[MAX], Seg[MAX << 2], N, Q;
+int A[MAX], Seg[MAX << 2], N, Q, l, r;
 char c1, c2, c3, c4, c5;
 void build(int, int, int);
 void pull(int);
@@ -15,7 +15,12 @@ int main() {
   for (int i = 1; i <= N; ++i) scanf("%d", A + i);
   build(1, 1, N);
   while (Q--) {
-    
+    scanf("%c%c%c%c%c(%d,%d", &c1, &c2, &c3, &c4, &c5, &l, &r);
+    if (c1 == 'q') {
+      scanf(")");
+    } else {
+      scanf(",%d,%d)", )
+    }
   }
 }
 

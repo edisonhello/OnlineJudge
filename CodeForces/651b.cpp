@@ -1,38 +1,29 @@
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-int a[1000];
-int n;
-int happy;
+const int maxn = 1000 + 5;
+int N, a;
+vector<int> A, ans;
 
-void greedy(int num[], int len) {
-	if (len > 0) {
-		int cur = num[0];
-		int tmp[1000];
-		int tlen = 0;
-		int ti = 0;
-		for (int i = 1; i < len; ++i) {
-			if (num[i] > cur) {
-				happy++;
-				cur = num[i];
-			} else {
-				tmp[ti++] = num[i];
-				tlen++;
-			}
+int main(){
+	ios_base::sync_with_stdio(false); cin.tie(0);
+	cin >> N;
+	for (int i = 0; i < N; ++i) cin >> a, A.push_back(a);
+	sort(A.begin(), A.end());
+	while (A.size()) {
+		vector<int> B; B.clear();
+		ans.push_back(A[0]);
+		int p = 0;
+		for (int i = 1; i < A.size(); ++i) {
+			if (A[i] > A[p]) ans.push_back(A[i]), p = i;
+			else B.push_back(A[i]);
 		}
-		greedy(tmp, tlen);
+		A = B;
 	}
-}
-
-int main() {
-	cin >> n;
-	for (int i = 0; i < n; ++i) {
-		cin >> a[i];
+	int cnt = 0;
+	for (int i = 1; i < ans.size(); ++i) {
+		if (ans[i] > ans[i - 1]) ++cnt;
 	}
-	sort(a, a + n);
-	happy = 0;
-	greedy(a, n);
-	cout << happy << endl;
+	cout << cnt << '\n';
 	return 0;
 }

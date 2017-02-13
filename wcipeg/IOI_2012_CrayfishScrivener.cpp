@@ -1,4 +1,3 @@
-#include "lib1271.h"
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -40,4 +39,19 @@ char GetLetter(int p) {
     }
   }
   return s[pos];
+}
+
+int N, p;
+char c;
+
+int main() {
+  ios_base::sync_with_stdio(false); cin.tie(nullptr);
+  cin >> N;
+  while (N--) {
+    cin >> c;
+    if (c == 'T') cin >> c, TypeLetter(c);
+    if (c == 'P') cin >> p, cout << GetLetter(p) << '\n';
+    if (c == 'U') cin >> p, UndoCommands(p);
+  }
+  return 0;
 }

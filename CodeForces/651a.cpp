@@ -1,25 +1,17 @@
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
+int a1, a2, t;
+
 int main() {
-	int a1, a2;
+	ios_base::sync_with_stdio(false); cin.tie(0);
 	cin >> a1 >> a2;
-	int t = 0;
-	while (true) {
-		if (a1 > a2) {
-			a1 -= 2;
-			a2++;
-		} else {
-			a2 -= 2;
-			a1++;
-		}
-		if (a1 <= 0 || a2 <= 0) break;
-		
-		t++;
+	while (a1 && a2) {
+		if (a1 < 2 && a2 < 2) break; 
+		if (a1 < a2) a1++, a2 -= 2;
+		else a2++, a1 -= 2;
+		++t;
 	}
-	cout << t << endl;
+	cout << t << '\n';
 	return 0;
 }
-
-//4 4 -> 2 5 -> 3 3 -> 1 4 -> 2 2 -> 0 3

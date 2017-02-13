@@ -15,11 +15,11 @@ int main() {
   int tmp;
 
   /* Set input and output buffering */
-  char *inbuf, *outbuf;
-  inbuf = (char*) malloc(inbuf_len * sizeof(char));
-  outbuf = (char*) malloc(outbuf_len * sizeof(char));
-  tmp = setvbuf(stdin, inbuf, _IOFBF, inbuf_len);
-  tmp = setvbuf(stdout, outbuf, _IOFBF, outbuf_len);
+  // char *inbuf, *outbuf;
+  // inbuf = (char*) malloc(inbuf_len * sizeof(char));
+  // outbuf = (char*) malloc(outbuf_len * sizeof(char));
+  // tmp = setvbuf(stdin, inbuf, _IOFBF, inbuf_len);
+  // tmp = setvbuf(stdout, outbuf, _IOFBF, outbuf_len);
 
   Init();
 

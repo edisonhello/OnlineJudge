@@ -1,82 +1,45 @@
-#include <iostream>
-#include <vector>
-#include <utility>
-#include <vector>
-#define INF 1 << 15
-#define getchar getchar_unlocked
+#include <bits/stdc++.h>
 using namespace std;
 
-char __c;
-bool flag;
-
-template <typename T>
-inline bool rit(T& x) {
-  __c = 0, flag = false;
-  while (__c = getchar(), (__c < '0' && __c != '-') || __c > '9') if (__c == -1) return false;
-  __c == '-' ? (flag = true, x = 0) : (x = __c - '0');
-  while (__c = getchar(), __c >= '0' && __c <= '9') x = x * 10 + __c - '0';
-  if (flag) x = -x;
-  return true;
-}
-
-template <typename T, typename ...Args>
-inline bool rit(T& x, Args& ...args) {return rit(x) && rit(args...);}
-
-int n, q, x0, y0, x1, y1;
-int mp[21][21];
-
-struct Point {
-  int i, j;
-  Point(int i, int j): x(i), y(j) {}
-  Point() {}
-};
-
-typedef pair<Point, int> PR;
-vector<PR> G[21][21];
-void graph();
-int dp[21][21][21][21][21][21];
-int Floyd_Warshell(int, int, int, int);
+const int maxn = 20;
+int N, Q, dp[2][maxn * maxn][maxn * maxn], w1[maxn][maxn], w2[maxn * maxn][maxn * maxn];
+inline int id(int x, int y) { return x * N + y; }
 
 int main() {
-  rit(n);
-  for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) rit(mp[i][j]);
-  graph();
-  rit(q);
-  while (q--) {
-    rit(x0, y0, x1, y1);
-    dpdp();
-    mx = INF;
-    cout << mp[y0][x0] + Floyd_Warshell(y0, x0, y1, x1) << endl;
-  }
-}
-
-void graph() {
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      if (i + 1 < n) G[i][j].push_back(PR(Point(i + 1, j)), mp[i + 1][j]);
-      if (i - 1 >= 0) G[i][j].push_back(PR(Point(i - 1, j)), mp[i - 1][j]);
-      if (j + 1 < n) G[i][j].push_back(PR(Point(i, j + 1)), mp[i][j + 1]);
-      if (j - 1 >= 0) G[i][j].push_back(PR(Point(i, j - 1)), mp[i][j - 1]);
+  cin >> N;
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < N; ++j) {
+      cin >> w1[i][j];
     }
   }
-}
-
-int Floyd_Warshell(int i1, int j1, int i2, int j2) {
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      if (dp[i1][j1][i2][j2][i][j] < mn) mn = dp[i1][j1][i2][j2][i][j];
+  for (int i = 0; i < N * N; ++i) for (int j = 0; j < N * N; ++j) w2[i][j] = 1000000;
+  for (int i = 0; i < N * N; ++i) w2[i][i] = 0;
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < N; ++j) {
+      if (i)         w2[id(i - 1, j)][id(i, j)] = w1[i][j];
+      if (i < N - 1) w2[id(i + 1, j)][id(i, j)] = w1[i][j];
+      if (j)         w2[id(i, j - 1)][id(i, j)] = w1[i][j];
+      if (j < N - 1) w2[id(i, j + 1)][id(i, j)] = w1[i][j];
     }
   }
-}
-
-void dpdp() {
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      for (int ii = 0; ii < n; ++ii) {
-        for (int jj = 0; jj < n; ++jj) {
-          for (int k = 0; k < G[i][j])
-        }
+  for (int i = 0; i < N * N; ++i) for (int j = 0; j < N * N; ++j) dp[1][i][j] = 1000000;
+  for (int i = 0; i < N * N; ++i) for (int j = 0; j < N * N; ++j) {
+    if (w2[i][j] < 1000000) dp[1][i][j] = 0;
+  }
+  for (int a = 0; a < N * N; ++a) for (int b = 0; b < N * N; ++b) dp[0][a][b] = w2[a][b];
+  for (int k = 0; k < N * N; ++k) {
+    for (int i = 0; i < N * N; ++i) {
+      for (int j = 0; j < N * N; ++j) {
+        dp[0][i][j] = min(dp[0][i][j], dp[0][i][k] + dp[0][k][j]);
+        dp[1][i][j] = min({ dp[0][i][k] + dp[1][k][j], dp[1][i][k] + dp[0][k][j], dp[1][i][j] });
       }
     }
   }
+  cin >> Q;
+  while (Q--) {
+    int x, y, xx, yy; cin >> x >> y >> xx >> yy; --x, --y, --xx, --yy;
+    if (x == xx && y == yy) { cout << "0\n"; continue; }
+    cout << min(dp[1][id(x, y)][id(xx, yy)] + w1[x][y], dp[1][id(xx, yy)][id(x, y)] + w1[xx][yy]) << '\n';
+  }
+  return 0;
 }

@@ -1,10 +1,10 @@
-#include <iostream>
-#include <stack>
+#include <bits/stdc++.h>
 using namespace std;
+
+int a[1000], b[1000];
 
 int main() {
 	int n, x;
-	int a[1000], b[1000];
 	while (cin >> n) {
 		if (n == 0) break;
 		while (cin >> x) {
@@ -33,10 +33,10 @@ int main() {
 					break;
 				}
 			}
-			if (success) cout << "Yes" << endl;
-			else cout << "No" << endl;
+			if (success) cout << "Yes\n";
+			else cout << "No\n";
 		}
-		cout << endl;
+		cout << '\n';
 	}
-	return 0;	
+	return 0;
 }

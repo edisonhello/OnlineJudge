@@ -1,28 +1,26 @@
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
+const int maxn = 100000 + 5;
 
-const int MAX = 100000 + 5;
-int N, C, D, dp[MAX];
-
-struct S {
-  int D, P, R, G;
-  bool operator<(const S& rhs) const {
+struct Mac {
+  int G, D, P, R;
+  bool operator<(const Mac& rhs) const {
     return D < rhs.D;
   }
-} s[MAX];
+} mac[maxn];
+
+long long dp[maxn];
+int N, C, D;
 
 int main() {
-  cin.tie(0); ios_base::sync_with_stdio(false);
+  ios_base::sync_with_stdio(false); cin.tie(nullptr);
   cin >> N >> C >> D;
-  for (int i = 1; i <= N; ++i) cin >> s[i].D >> s[i].P >> s[i].R >> s[i].G;
-  sort(s, s + N);
-  dp[0] = C;
+  for (int i = 1; i <= N; ++i) cin >> mac[i].D >> mac[i].P >> mac[i].R >> mac[i].G;
+  sort(mac + 1, mac + N + 1);
   for (int i = 1; i <= N; ++i) {
-    for (int j = 1; j < i; ++j) {
-      if (dp[j] >= s[j].P) dp[i] = max(dp[i], s[j].G * (s[i].D - s[j].D - 1) + s[j].R - s[j].P + dp[j]);
-      cout << "dp[" << i << "] at j = " << j << " --> " << dp[i] << '\n';
+    for (int j = 1; j < i; ++j) if (dp[j] + mac[j].G * (mac[i].D - mac[j].D) >= mac[i].P) {
+      dp[i] = max(dp[i], dp[j] + mac[j].G * (mac[i].D - mac[j].D) - mac[i].P + mac[i].R);
     }
   }
   cout << dp[N] << '\n';

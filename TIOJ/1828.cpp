@@ -1,20 +1,29 @@
-#include <iostream>
-#include <cmath>
+#include <bits/stdc++.h>
 using namespace std;
 
-int T;
-double t, z, x, y, d;
+int T, X, Y, Z;
+bool check(int);
 
 int main() {
-  cin.tie(0); ios_base::sync_with_stdio(false);
   cin >> T;
   while (T--) {
-    cin >> x >> y >> z;
-    if (x == 0) { cout << -1 << endl; continue; }
-    d = 10000 - x;
-    t = 10000 / z;
-    if ((int)(d / (t + y)) == ceil(d / (t + y))) cout << (int)(d / (t + y)) + 1 << endl;
-    else cout << ceil(d / (t + y)) << endl;
+    cin >> X >> Y >> Z;
+    int L = 1, R = Z + 1;
+    if (X == 0 && Y == 0) { cout << "-1\n"; continue; }
+    if (X > 10000) { cout << "0\n"; continue; }
+    if (Z == 0) { cout << "1\n"; continue; }
+    while (L < R) {
+      int M = (L + R) >> 1;
+      if (check(M)) R = M;
+      else L = M + 1;
+    }
+    cout << L << '\n';
   }
   return 0;
+}
+
+bool check(int v) {
+  double t = (double)(10000 - X - v * Y) / (double)v;
+  double dis = (double)Z * t;
+  return dis < 10000.0;
 }

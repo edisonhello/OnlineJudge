@@ -1,29 +1,34 @@
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-struct Circle {
-  int pos, r;
-  bool operator<(const Circle& res) const {
-    int a, b;
-    if (pos - r >= 0) a += r; else a += pos;
-    if (pos + r <= L) a += r; else a += L - pos;
-    if (res.pos - r >= 0) b += res.r; else b += res.pos;
-    if (res.pos + r <= L) b += res.r; else b += L - res.pos;
-    return a > b;
-  }
-} c[10005];
-
-int N, L, W, l, r, ans;
+const int maxn = 10000 + 5;
+int n;
+double l, w;
+vector<pair<double, double>> v;
 
 int main() {
-  cin.tie(0); ios_base::sync_with_stdio(false);
-  while (cin >> N >> L >> W) {
-    for (int i = 0; i < N; ++i) cin >> c[i].pos >> c[i].r;
-    sort(c, c + N);
-    l = L; r = 0;
-    for (int i = 0; i < N; ++i) {
-      if (c[i].pos + )
+  ios_base::sync_with_stdio(false); cin.tie(nullptr);
+  while (cin >> n >> l >> w) {
+    v.clear();
+    for (int i = 0; i < n; ++i) {
+      double f, r; cin >> f >> r;
+      if (r < w / 2) continue;
+      double len = sqrt(r * r - w * w / 4);
+      v.push_back(make_pair(f - len, f + len));
     }
+    sort(v.begin(), v.end());
+    double pos = 0.0; int ans = 0;
+    int i, j;
+    for (i = 0; i < v.size(); i = j) {
+      if (v[i].first > pos) break;
+      for (j = i + 1; j < v.size() && v[j].first <= pos; ++j) {
+        if (v[j].second > v[i].second) i = j;
+      }
+      ++ans; pos = v[i].second;
+      if (pos >= l) break;
+    }
+    if (pos < l) cout << "-1\n";
+    else cout << ans << '\n';
   }
+  return 0;
 }

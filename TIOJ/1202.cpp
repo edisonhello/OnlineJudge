@@ -12,7 +12,6 @@ vector<Event> v;
 multiset<int, greater<int>> ms;
 int N, L, H, R;
 
-
 int main() {
   ios_base::sync_with_stdio(false); cin.tie(nullptr);
   while (cin >> N, N) {

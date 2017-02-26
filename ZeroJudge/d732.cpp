@@ -1,62 +1,17 @@
-//
-// Created by Wayne Tu on 4/6/16.
-//
-
-#include <iostream>
-#include <math.h>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
-int binarySearch(vector<int> vec, int num) {
-    int length = vec.size();
-
-    int h = length / 2;
-
-    if (num < vec[h]) {
-        vector<int> newVec1;
-        for (int i = 0; i < h + 1; i++) {
-            newVec1.push_back(vec[i]);
-        }
-
-        return binarySearch(newVec1, num);
-    }
-
-    else if (num > vec[h]) {
-        vector<int> newVec2;
-        for (int i = h; i < length; i++) {
-            newVec2.push_back(vec[i]);
-        }
-
-        return binarySearch(newVec2, num);
-    }
-
-    else if (num == vec[h]) {
-        return h;
-    }
-
-    else {
-        return -1;
-    }
-}
+const int maxn = 100000 + 5;
+int n, k, a[maxn];
 
 int main() {
-    int n, k;
-    cin >> n >> k;
-    vector<int> vec;
-    for (int i = 0; i < n; i++) {
-        int num;
-        cin >> num;
-        vec.push_back(num);
-    }
-    int number[k];
-    for (int i = 0; i < k; i++) {
-        cin >> number[i];
-    }
-
-    for (int i = 0; i < k; i++) {
-
-        cout << binarySearch(vec, number[i]) + 1 << '\n';
-    }
-
-    return 0;
+  ios_base::sync_with_stdio(false); cin.tie(0);
+  cin >> n >> k;
+  for (int i = 1; i <= n; ++i) cin >> a[i];
+  while (k--) {
+    int x; cin >> x;
+    if (upper_bound(a + 1, a + n + 1, x) - lower_bound(a + 1, a + n + 1, x)) cout << lower_bound(a + 1, a + n + 1, x) - a << '\n';
+    else cout << 0 << '\n';
+  }
+  return 0;
 }

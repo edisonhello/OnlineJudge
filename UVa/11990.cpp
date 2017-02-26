@@ -1,98 +1,115 @@
 #include <bits/stdc++.h>
-#define Lc(id) (id << 1)
-#define Rc(id) (id << 1 | 1)
-#define lowbit(x) (x & -x)
 using namespace std;
 
 const int maxn = 200000 + 5;
-vector<int> seg[maxn << 2];
-int N, M, A[maxn], x, BIT[maxn], inv, pos[maxn];
+int n, m, a[maxn], pos[maxn];
 
-int sum(int);
-void add(int, int);
-void build(int, int, int);
-void pull(int);
-int query1(int, int, int, int, int, int);
-int query2(int, int, int, int, int, int);
-void modify(int, int, int, int);
+struct Seg {
+  static Seg mem[4000005];
+  static Seg* top;
+  int cnt, L, R;
+  Seg *l, *r;
+  Seg(): cnt(0), l(NULL), r(NULL) {}
+  Seg(int L, int R) {
+    this->L = L; this->R = R;
+    if (L == R) { cnt = 0; return; }
+    int M = (L + R) >> 1;
+    l = new(Seg::top++) Seg(L, M); r = new(Seg::top++) Seg(M + 1, R);
+    pull();
+  }
+  Seg(Seg* t) {
+    cnt = t->cnt;
+    l = t->l;
+    r = t->r;
+    L = t->L;
+    R = t->R;
+  }
+  void pull() {
+    cnt = 0;
+    if (l) cnt += l->cnt;
+    if (r) cnt += r->cnt;
+  }
+  Seg* modify(int x, int v) {
+    Seg* ret = new(Seg::top++) Seg(this);
+    if (L == R) { ret->cnt += v; return ret; }
+    int M = (L + R) >> 1;
+    if (x <= M) ret->l = l->modify(x, v);
+    else ret->r = r->modify(x, v);
+    ret->pull();
+    return ret;
+  }
+  int query(int L, int R) {
+    if (this->L > R || L > this->R) return 0;
+    if (this->L >= L && this->R <= R) return cnt;
+    return l->query(L, R) + r->query(L, R);
+  }
+};
+
+struct BIT {
+  #define lowbit(x) (x & -x)
+  Seg *seg[maxn];
+  void init() {
+    Seg::top = Seg::mem;
+    seg[0] = new Seg(1, n);
+    for (int i = 1; i <= n; ++i) seg[i] = seg[0];
+  }
+  void add(int id, int x, int v) {
+    for (int i = id; i <= n; i += lowbit(i)) seg[i] = seg[i]->modify(x, v);
+  }
+  vector<Seg*> sum(int id) {
+    vector<Seg*> ret;
+    ret.push_back(new Seg(1, n));
+    for (int i = id; i; i -= lowbit(i)) ret.push_back(seg[i]);
+    return ret;
+  }
+  #undef lowbit
+} bit;
+
+int Inverse();
+void print(Seg*);
 
 int main() {
-  ios_base::sync_with_stdio(false); cin.tie(nullptr);
-  while (cin >> N >> M) {
-    for (int i = 0; i < N; ++i) cin >> A[i], pos[A[i]] = i;
-    inv = 0;
-    for (int i = 0; i < N; ++i) {
-      inv += i - sum(A[i]);
-      add(A[i], 1);
-    }
-    memset(BIT, 0, sizeof(BIT));
-    build(1, 0, N - 1);
-    while (M--) {
-      cin >> x;
-      int a = 0, b = 0;
-      if (pos[x]) a = query1(1, 0, N - 1, 0, pos[x] - 1, x);
-      if (pos[x] != N - 1) b = query1(1, 0, N - 1, pos[x] + 1, N - 1, x);
-      inv -= a + b;
-      modify(1, 0, N - 1, pos[x]);
+  ios_base::sync_with_stdio(false); cin.tie(0);
+  while (cin >> n >> m) {
+    for (int i = 1; i <= n; ++i) cin >> a[i], pos[a[i]] = i;
+    bit.init();
+    for (int i = 1; i <= n; ++i) bit.add(i, a[i], 1);
+    int inv = Inverse();
+    while (m--) {
       cout << inv << '\n';
+      int d, ans = 0; cin >> d;
+      vector<Seg*> res1 = bit.sum(pos[d]), res2 = bit.sum(n);
+      for (Seg* t : res1) ans += t->query(d + 1, n);
+      for (Seg* t : res2) ans += t->query(1, d - 1);
+      for (Seg* t : res1) ans -= t->query(1, d - 1);
+      // cout << "ans: " << ans << '\n';
+      inv -= ans;
+      bit.add(pos[d], d, -1);
     }
   }
   return 0;
 }
 
-int sum(int x) {
-  int ret = 0;
-  while (x) ret += BIT[x], x -= lowbit(x);
+int Inverse() {
+  int fenwick[maxn], ret = 0;
+  memset(fenwick, 0, sizeof(fenwick));
+  auto add = [&fenwick](int x, int v) -> void {
+    for (int i = x; i <= n; i += (i & -i)) fenwick[i] += v;
+  };
+  auto sum = [&fenwick](int x) -> int {
+    int ret = 0;
+    for (int i = x; i; i -= (i & -i)) ret += fenwick[i];
+    return ret;
+  };
+  for (int i = 1; i <= n; ++i) {
+    ret += i - 1 - sum(a[i]);
+    add(a[i], 1);
+  }
   return ret;
 }
 
-void add(int x, int v) {
-  while (x <= N) BIT[x] += v, x += lowbit(x);
-}
-
-void build(int id, int L, int R) {
-  if (L == R) {
-    seg[id].clear(); seg[id].push_back(A[L]);
-    return;
-  }
-  int M = (L + R) >> 1;
-  build(Lc(id), L, M);
-  build(Rc(id), M + 1, R);
-  pull(id);
-}
-
-void pull(int id) {
-  seg[id].clear();
-  int i = 0, j = 0;
-  while (i < seg[Lc(id)].size() && j < seg[Rc(id)].size()) {
-    if (seg[Lc(id)][i] < seg[Rc(id)][j]) seg[id].push_back(seg[Lc(id)][i++]);
-    else seg[id].push_back(seg[Rc(id)][j++]);
-  }
-  while (i < seg[Lc(id)].size()) seg[id].push_back(seg[Lc(id)][i++]);
-  while (j < seg[Rc(id)].size()) seg[id].push_back(seg[Rc(id)][j++]);
-}
-
-int query1(int id, int L, int R, int l, int r, int v) {
-  if (L > r || l > R) return 0;
-  if (L >= l && R <= r) {
-    return seg[id].end() - upper_bound(seg[id].begin(), seg[id].end(), v);
-  }
-  int M = (L + R) >> 1;
-  return query1(Lc(id), L, M, l, r, v) + query1(Rc(id), M + 1, R, l, r, v);
-}
-
-int query2(int id, int L, int R, int l, int r, int v) {
-  if (L > r || l > R) return 0;
-  if (L >= l && R <= r) {
-    return lower_bound(seg[id].begin(), seg[id].end(), v) - seg[id].begin() - 1;
-  }
-  int M = (L + R) >> 1;
-  return query2(Lc(id), L, M, l, r, v) + query2(Rc(id), M + 1, R, l, r, v);
-}
-void modify(int id, int L, int R, int x) {
-  if (L == R) { seg[id].clear(); return; }
-  int M = (L + R) >> 1;
-  if (x <= M) modify(Lc(id), L, M, x);
-  else modify(Rc(id), M + 1, R, x);
-  pull(id);
+void print(Seg* t) {
+  if (t->l) print(t->l);
+  cout << "L=" << t->L << "  R=" << t->R << ": " << t->cnt << '\n';
+  if (t->r) print(t->r);
 }

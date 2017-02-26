@@ -1,8 +1,3 @@
-#include <cstdio>
-
-char __c;
-bool flag;
-
 inline int gtx() {
   const int N = 1048576;
   static char buffer[N];
@@ -16,7 +11,7 @@ inline int gtx() {
 
 template <typename T>
 inline bool rit(T& x) {
-  __c = 0, flag = false;
+  char __c = 0; bool flag = false;
   while (__c = getchar(), (__c < '0' && __c != '-') || __c > '9') if (__c == -1) return false;
   __c == '-' ? (flag = true, x = 0) : (x = __c - '0');
   while (__c = getchar(), __c >= '0' && __c <= '9') x = x * 10 + __c - '0';

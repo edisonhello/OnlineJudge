@@ -7,8 +7,8 @@ int LCS[maxn][maxn], kase;
 
 int main() {
 	ios_base::sync_with_stdio(false); cin.tie(nullptr);
-	while (cin >> s, s != "#") {
-		cin >> t;
+	while (getline(cin, s), s != "#") {
+		getline(cin, t);
 		memset(LCS, 0, sizeof(LCS));
 		for (int i = 0; i < s.length(); ++i) {
 			for (int j = 0; j < t.length(); ++j) {

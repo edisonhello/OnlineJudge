@@ -2,44 +2,31 @@
 using namespace std;
 
 const int maxn = 100000 + 5;
-int n, m, k;
-vector<int> t[maxn];
-struct Seg { int l, r; };
-vector<Seg> s[maxn];
-
-bool cmp(const Seg&, const int&);
+vector<pair<int, int>> a[maxn];
+int n, m, k, best[maxn];
 
 int main() {
   ios_base::sync_with_stdio(false); cin.tie(0);
   cin >> n >> m;
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < m; ++j) {
-      int x; cin >> x;
-      t[i].push_back(x);
+  for (int i = 0; i <= m; ++i) a[0].push_back(make_pair(INT_MAX, 0));
+  for (int i = 1; i <= n; ++i) {
+    int x; a[i].push_back(make_pair(INT_MAX, 0));
+    for (int j = 1; j <= m; ++j) cin >> x, a[i].push_back(make_pair(x, 0));
+  }
+  for (int i = n; i >= 1; --i) {
+    for (int j = m; j >= 1; --j) {
+      if (i < n) a[i][j].second = a[i + 1][j].first >= a[i][j].first ? a[i + 1][j].second + 1 : 1;
+      else a[i][j].second = 1;
     }
   }
-  for (int i = 0; i < m; ++i) t[n].push_back(0);
-  for (int j = 0; j < m; ++j) {
-    int i = 0, st = 0;
-    while (i < n) {
-      if (t[i + 1][j] >= t[i][j]) ++i;
-      else s[j].push_back((Seg){ st, i }), ++i, st = i;
-    }
+  for (int i = 1; i <= n; ++i) {
+    for (int j = 1; j <= m; ++j) best[i] = max(best[i], a[i][j].second);
   }
   cin >> k;
   while (k--) {
-    int l, r; cin >> l >> r; --l, --r;
-    bool ans = false;
-    for (int j = 0; j < m && !ans; ++j) {
-      int id1 = lower_bound(s[j].begin(), s[j].end(), l, cmp) - s[j].begin();
-      int id2 = lower_bound(s[j].begin(), s[j].end(), r, cmp) - s[j].begin();
-      if (id1 == id2) ans = true, cout << "Yes\n";
-    }
-    if (!ans) cout << "No\n";
+    int l, r; cin >> l >> r;
+    if (best[l] >= r - l + 1) cout << "Yes\n";
+    else cout << "No\n";
   }
   return 0;
-}
-
-bool cmp(const Seg& s, const int& i) {
-  return s.r < i;
 }

@@ -44,7 +44,7 @@ int main() {
         st[i][j] = min(st[i - 1][j], st[i - 1][j + (1 << (i - 1))]);
       }
     }
-
+    
   }
   return 0;
 }

@@ -1,31 +1,21 @@
-#include <iostream>
-#include <cstdio>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
-int prob(int n) {
-	int len = 0;
-	while (n != 1) {
-		if (n % 2 == 0) {
-			n /= 2;
-			len++;
-		}
-		else {
-			n = n * 3 + 1;
-			len++;
-		}
-	}
-	return len + 1;
-}
+const int maxn = 1000000000 + 5;
+int L, R;
+
+int dp(int);
 
 int main() {
-	int x, y;
-	while (scanf("%d %d", &x, &y)) {
-		int max = 0;
-		for (int i = x; i <= y; ++i) {
-			if (max < prob(i)) max = prob(i);
-		}
-		printf("%d %d %d\n", x, y, max);
+	ios_base::sync_with_stdio(false); cin.tie(0);
+	while (cin >> L >> R) {
+		int ans = 0;
+		for (int i = min(L, R); i <= max(R, L); ++i) ans = max(ans, dp(i));
+		cout << L << ' ' << R << ' ' << ans << '\n';
 	}
 	return 0;
+}
+
+int dp(int x) {
+	return x == 1 ? 1 : x & 1 ? dp(3 * x + 1) + 1 : dp(x / 2) + 1;
 }

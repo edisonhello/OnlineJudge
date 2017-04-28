@@ -1,61 +1,53 @@
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 #define int long long
 using namespace std;
 
-struct D {
-  int w, h;
-} d[1000005];
+const int maxn = 1e6 + 10, mod = 1000000009;
+pair<int, int> p[maxn];
 
-const int MOD = 1000000009;
-int N;
-int dq(int, int);
-
-signed main() {
-  cin.tie(0); ios_base::sync_with_stdio(false);
-  cin >> N;
-  for (int i = 0; i < N; ++i) cin >> d[i].w >> d[i].h;
-  sort(d, d + N, [](const D& a, const D& b) -> bool {
-    return a.h < b.h;
-  });
-  cout << dq(0, N) % MOD << '\n';
-  return 0;
-}
-
-int dq(int L, int R) {
-  if (L == R - 1) { /*cout << "L: " << L << " R: " << R << " ret: "; cout << "0\n"; */return 0; }
-  int M = (L + R) >> 1;
-  int ans1 = dq(L, M) % MOD, ans2 = dq(M, R) % MOD;
-  auto cmp = [](const D& a, const D& b) -> bool {
-    return a.w < b.w;
-  };
-  sort(d + L, d + M, cmp); sort(d + M, d + R, cmp);
-  // cout << "left: ";
-  // for (int i = L; i < M; ++i) cout << d[i].w << ' ' << d[i].h << '\n';
-  // cout << "right: ";
-  // for (int i = M; i < R; ++i) cout << d[i].w << ' ' << d[i].h << '\n';
-  int ans = 0, prefix = 0, len = 0;;
-  int i = L, j = M;
-  while (i < M && j < R) {
-    // cout << "i: " << i << " j: " << j << '\n';
-    // cout << "d[i]: " << d[i].w << ' ' << d[i].h << '\n';
-    if (d[i].w <= d[j].w) {}
-    else {
-      ans += (len * d[j].w * d[j].h - prefix);
-      ans %= MOD;
-      j++;
+struct BIT {
+    pair<int, int> bit[maxn];
+    void init() {
+        memset(bit, 0, sizeof(bit));
     }
-    prefix += (d[i].w * d[i].h); len++; i++;
-    prefix %= MOD;
-  }
-  // cout << "prefix: " << prefix << '\n';
-  while (j < R) {
-    ans += (len * d[j].w * d[j].h - prefix);
-    ans %= MOD;
-    j++;
-  }
-  int ret = (ans + ans1 + ans2) % MOD;
-  // cout << "L: " << L << " R: " << R << " ret: ";
-  // cout << ret << '\n';
-  return ret;
+#define lowbit(x) (x & -x)
+    void add(int x, int v) {
+        for (int i = x; i < maxn; i += lowbit(i)) {
+            bit[i].first++;
+            bit[i].second = (bit[i].second + v) % mod;
+        }
+    }
+    pair<int, int> sum(int x) {
+        pair<int, int> ret = make_pair(0, 0);
+        for (int i = x; i; i -= lowbit(i)) {
+            ret.first += bit[i].first;
+            ret.second = (ret.second + bit[i].second) % mod;
+        }
+        return ret;
+    }
+#undef lowbit
+} bit;
+
+main() {
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int n; cin >> n;
+    vector<int> v;
+    for (int i = 0; i < n; ++i) {
+        cin >> p[i].first >> p[i].second;
+        v.push_back(p[i].second);
+    }
+    sort(v.begin(), v.end()); v.resize(unique(v.begin(), v.end()) - v.begin());
+    sort(p, p + n, [](const pair<int, int>& a, const pair<int, int>& b) {
+        return a.first < b.first;        
+    });
+    int ans = 0;
+    for (int i = 0; i < n; ++i) {
+        int ind = lower_bound(v.begin(), v.end(), p[i].second) - v.begin() + 1;
+        pair<int, int> qry = bit.sum(ind);
+        ans += (((long long)p[i].first * (long long)p[i].second) % mod * (long long)qry.first) % mod - qry.second;
+        ans = (ans % mod + mod) % mod;
+        bit.add(ind, (long long)p[i].first * (long long)p[i].second % mod);
+    }
+    cout << ans << '\n';
+    return 0;
 }

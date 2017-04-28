@@ -1,50 +1,83 @@
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
+using namespace std;
 
-int c[100005], N, Q, sa[100005], t[2][100005], r[100005], k, h[100005], st[20][100005], L, R;
+const int maxn = 100000 + 5, mod = 1000000007, lg = 20;
+int n, q, sa[maxn], tmp[2][maxn], c[maxn], r[maxn], lcp[maxn], st[20][maxn];
+string s;
+
+int _pow(int, int);
+void suffix_array();
 
 int main() {
-  std::cin.tie(0); std::ios_base::sync_with_stdio(false);
-  std::cin >> N >> Q;
-  for (int i = 0; i < N; ++i) std::cin >> c[i];
-  int *x = t[0], *y = t[1];
-  for (int i = 0; i < N; ++i) sa[i] = i, x[i] = c[i];
-  for (int m = 2; m <= N; m <<= 1) {
-    auto cmp = [x, m](const int& i, const int& j) -> bool {
-      if (x[i] != x[j]) return x[i] < x[j];
-      return (i + (m >> 1) < N ? x[i + (m >> 1)] : -1) < (j + (m >> 1) < N ? x[j + (m >> 1)] : -1);
-    };
-    std::sort(sa, sa + N, cmp);
-    int R = 0;
-    y[sa[0]] = R;
-    for (int i = 1; i < N; ++i) {
-      if (cmp(sa[i - 1], sa[i])) R++;
-      y[sa[i]] = R;
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    cin >> n >> q;
+    s = "";
+    for (int i = 0; i < n; ++i) {
+        int c; cin >> c;
+        if (_pow(c, (mod - 1) >> 1) == 1) s += 'a';
+        else s += 'b';
     }
-    std::swap(x, y);
-    if (R == N - 1) break;
-  }
-  for (int i = 0; i < N; ++i) r[sa[i]] = i;
-  for (int i = 0; i < N; ++i) {
-    if (r[i] == 0) { h[0] = 0; continue; }
-    if (k) k--;
-    while (i + k < N && sa[r[i] - 1] + k < N && c[i + k] == c[sa[r[i] - 1] + k]) k++;
-    h[r[i]] = k;
-  }
-  for (int i = 0; i < N; ++i) st[0][i] = h[i];
-  for (int i = 1; (1 << i) <= N; ++i) {
-    for (int j = 0; j + (1 << i) <= N; ++j) {
-      st[i][j] = std::min(st[i - 1][j], st[i - 1][j + (1 << (i - 1))]);
+    s += 'c';
+    ++n;
+    suffix_array(); 
+    for (int i = 0; i < n; ++i) r[sa[i]] = i;
+    int ind = 0; lcp[0] = 0;
+    for (int i = 0; i < n; ++i) {
+        if (!r[i]) { ind = 0; continue;  }
+        while (s[i + ind] == s[sa[r[i] - 1] + ind]) ++ind;
+        lcp[r[i]] = ind ? ind-- : 0;
     }
-  }
-  while (Q--) {
-    std::cin >> L >> R;
-    if (L == R) { std::cout << N - L << '\n'; continue; }
-    if (r[L] < r[R]) L = r[L] + 1, R = r[R];
-    else R = r[R] + 1, L = r[L];
-    int d = std::abs(R - L) + 1;
-    int p = 31 - __builtin_clz(d);
-    std::cout << std::min(st[p][L], st[p][R - (1 << p) + 1]) << '\n';
-  }
-  return 0;
+    for (int i = 0; i < n; ++i) st[0][i] = lcp[i];
+    for (int i = 1; (1 << i) <= n; ++i) {
+        for (int j = 0; j + (1 << i) <= n; ++j) {
+            st[i][j] = min(st[i - 1][j], st[i - 1][j + (1 << (i - 1))]);
+        }
+    }
+    while (q--) {
+        int L, R; cin >> L >> R;
+        if (L == R) { cout << n - L - 1 << '\n'; continue; }
+        L = r[L], R = r[R];
+        if (L > R) swap(L, R);
+        ++L;
+        int p = 31 - __builtin_clz(R - L + 1);
+        cout << min(st[p][L], st[p][R - (1 << p) + 1]) << '\n';
+    }
+    return 0;
+}
+
+int _pow(int a, int n) {
+    int ret = 1;
+    for (; n; n >>= 1) {
+        if (n & 1) ret = (long long)ret * (long long)a % mod;
+        a = (long long)a * (long long)a % mod;
+    }
+    return ret;
+}
+
+void suffix_array() {
+    int* rank = tmp[0];
+    int* nRank = tmp[1];
+    int A = 128;
+    for (int i = 0; i < A; ++i) c[i] = 0;
+    for (int i = 0; i < s.length(); ++i) c[rank[i] = s[i]]++;
+    for (int i = 1; i < A; ++i) c[i] += c[i - 1];
+    for (int i = s.length() - 1; i >= 0; --i) sa[--c[s[i]]] = i;
+    for (int n = 1; n < s.length(); n *= 2) {
+        for (int i = 0; i < A; ++i) c[i] = 0;
+        for (int i = 0; i < s.length(); ++i) c[rank[i]]++;
+        for (int i = 1; i < A; ++i) c[i] += c[i - 1];
+        int* sa2 = nRank;
+        int r = 0;
+        for (int i = s.length() - n; i < s.length(); ++i) sa2[r++] = i;
+        for (int i = 0; i < s.length(); ++i) if (sa[i] >= n) sa2[r++] = sa[i] - n;
+        for (int i = s.length() - 1; i >= 0; --i) sa[--c[rank[sa2[i]]]] = sa2[i];
+        nRank[sa[0]] = r = 0;
+        for (int i = 1; i < s.length(); ++i) {
+            if (!(rank[sa[i - 1]] == rank[sa[i]] && sa[i - 1] + n < s.length() && rank[sa[i - 1] + n] == rank[sa[i] + n])) r++;
+            nRank[sa[i]] = r;
+        }
+        swap(rank, nRank);
+        if (r == s.length() - 1) break;
+        A = r + 1;
+    }
 }

@@ -1,130 +1,94 @@
-ㄊㄧㄊㄧ#include <cstdio>
-#include <algorithm>
-#include <map>
-#include <tuple>
+#include <bits/stdc++.h>
+#define __(x) cout << #x << " = " << x << '\n'
 using namespace std;
 
-char __c;
-bool flag;
-
-template <typename T>
-inline bool rit(T& x) {
-  __c = 0, flag = false;
-  while (__c = getchar(), (__c < '0' && __c != '-') || __c > '9') if (__c == -1) return false;
-  __c == '-' ? (flag = true, x = 0) : (x = __c - '0');
-  while (__c = getchar(), __c >= '0' && __c <= '9') x = x * 10 + __c - '0';
-  if (flag) x = -x;
-  return true;
-}
-
-template <typename T, typename ...Args>
-inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
+const int maxn = 200000 + 5, maxc = 24;
+int N, Q, C, A[maxn];
 
 struct Node {
-  int st, ed, len;
-  Node *l, *r;
-  Node() {
-    l = r = NULL;
-  }
-} *root[200005];
+    int a, b, c;
+    bool full;
+};
 
-int N, Q, C, A[200005], type, P, K, X, Y, d, a, b;
-map<int, int> mp;
-tuple<int, int, int> query(Node*, int, int, int, int);
-void modify(Node*&, int, int, int, int);
-void pull(Node*, int, int);
+struct Seg {
+    Node node;
+    Seg *lc, *rc;
+    Seg(int len) {
+        lc = rc = NULL;
+        node.full = true;
+        node.a = node.b = node.c = len;
+    }
+    void modify(int L, int R, int x, int v) {
+        if (L == R) {
+            node.a = node.b = node.c = (v ^ 1);
+            if (v) node.full = false;
+            else node.full = true;
+            return;
+        }
+        int M = (L + R) >> 1;
+        if (x <= M) {
+            if (!lc) lc = new Seg(M - L + 1);
+            lc->modify(L, M, x, v);
+        } else {
+            if (!rc) rc = new Seg(R - M);
+            rc->modify(M + 1, R, x, v);
+        }
+        pull(L, R);
+    }
+    void pull(int L, int R) {
+        int M = (L + R) >> 1;
+        Node q1, q2;
+        if (lc) q1 = lc->node;
+        else q1 = (Node){ M - L + 1, M - L + 1, M - L + 1, true };
+        if (rc) q2 = rc->node;
+        else q2 = (Node){ R - M, R - M, R - M, true };
+        node = merge(q1, q2); 
+    }
+    Node merge(Node q1, Node q2) {
+        int a = 0, b = 0, c = 0;
+        if (q1.full) a = q1.a + q2.a;
+        else a = q1.a;
+        if (q2.full) b = q1.b + q2.b;
+        else b = q2.b;
+        c = max({ q1.c, q2.c, a, b, q2.a + q1.b });
+        return (Node){  a, b, c, q1.full && q2.full };
+    }
+    Node query(int L, int R, int l, int r) {
+        if (L > r || l > R) return (Node){ 0, 0, 0, true };
+        if (L >= l && R <= r) return node;
+        int M = (L + R) >> 1;
+        Node q1, q2;
+        int leftlen = min(M, r) - max(L, l) + 1 > 0 ? min(M, r) - max(L, l) + 1 : 0;
+        int rightlen = min(R, r) - max(M + 1, l) + 1 > 0 ? min(R, r) - max(M + 1, l) + 1 : 0;
+        if (lc) q1 = lc->query(L, M, l, r);
+        else q1 = (Node){ leftlen, leftlen, leftlen, true };
+        if (rc) q2 = rc->query(M + 1, R, l, r);
+        else q2 = (Node){ rightlen, rightlen, rightlen, true };
+        return merge(q1, q2);
+    }
+} *st[1 << maxc];
 
 int main() {
-  rit(N, Q, C);
-  for (int i = 0; i < N; ++i) {
-    rit(A[i]);
-    if (mp.find(A[i]) == mp.end()) mp[A[i]] = d++;
-    if (!root[mp[A[i]]]) root[mp[A[i]]] = new Node();
-    modify(root[mp[A[i]]], i, A[i], 0, N - 1);
-  }
-  while (Q--) {
-    rit(type);
-    if (type) {
-      rit(X, Y, K); Y--;
-      if (mp.find(K) == mp.end()) mp[K] = d++;
-      printf("%d\n", get<2>(query(root[mp[K]], X, Y, 0, N - 1)));
-    } else {
-      rit(P, K);
-      a = A[P]; b = K; A[P] = K;
-      if (mp.find(b) == mp.end()) mp[b] = d++;
-      if (mp.find(a) == mp.end()) mp[a] = d++;
-      if (!root[mp[K]]) root[mp[K]] = new Node();
-      if (!root[mp[a]]) root[mp[a]] = new Node();
-      modify(root[mp[K]], P, K, 0, N - 1);
-      modify(root[mp[a]], P, a, 0, N - 1);
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    cin >> N >> Q >> C;
+    for (int i = 0; i < N; ++i) cin >> A[i];
+    for (int i = 0; i < N; ++i) {
+        if (!st[A[i]]) st[A[i]] = new Seg(N);
+        st[A[i]]->modify(0, N - 1, i, 1);
     }
-  }
-  return 0;
-}
-
-tuple<int, int, int> query(Node* node, int qL, int qR, int L, int R) {
-  if (!node && L >= qL && R <= qR) return make_tuple(R - L + 1, R - L + 1, R - L + 1);
-  if (!node && L >= qL) return make_tuple(qR - L + 1, qR - L + 1, qR - L + 1);
-  if (!node && R <= qR) return make_tuple(R - qL + 1, R - qL + 1, R - qL + 1);
-  if (L >= qL && R <= qR && node) return make_tuple(node->st, node->ed, node->len);
-  int M = (L + R) >> 1;
-  tuple<int, int, int> q1, q2;
-  if (!(M < qL || L > qR)) q1 = query(node->l, qL, qR, L, M);
-  else q1 = make_tuple(0, 0, 0);
-  if (!(M + 1 > qR || qL > R)) q2 = query(node->r, qL, qR, M + 1, R);
-  else q2 = make_tuple(0, 0, 0);
-  int st, ed, len;
-  if (get<2>(q1) == M - L + 1) st = get<2>(q1) + get<0>(q2);
-  else st = get<0>(q1);
-  if (get<2>(q2) == R - M) ed = get<2>(q2) + get<1>(q1);
-  else ed = get<1>(q2);
-  len = max({ st, ed, get<2>(q1), get<2>(q2), get<1>(q1) + get<0>(q2) });
-  return make_tuple(st, ed, len);
-}
-
-void modify(Node*& node, int P, int K, int L, int R) {
-  if (L == R) {
-    if (A[L] == K) {
-      node->st = node->ed = node->len = 0;
-      return;
-    } else {
-      node->st = node->ed = node->len = 1;
-      return;
+    while (Q--) {
+        int tp; cin >> tp;
+        if (tp == 1) {
+            int x, y, k;  cin >> x >> y >> k; --y;
+            if (!st[k]) cout << y - x + 1 << '\n';
+            else cout << st[k]->query(0, N - 1, x, y).c << '\n';
+        } else {
+            int p, k; cin >> p >> k;
+            st[A[p]]->modify(0, N - 1, p, 0);
+            if (!st[k]) st[k] = new Seg(N);
+            st[k]->modify(0, N - 1, p, 1);
+            A[p] = k;
+        }
     }
-  }
-  int M = (L + R) >> 1;
-  if (P <= M) {
-    if (!node->l) node->l = new Node();
-    modify(node->l, P, K, L, M);
-  }
-  if (P > M) {
-    if (!node->r) node->r = new Node();
-    modify(node->r, P, K, M + 1, R);
-  }
-  pull(node, L, R);
-}
-
-void pull(Node* node, int L, int R) {
-  int M = (L + R) >> 1;
-  if (node) {
-    if (node->l && node->r) {
-      if (node->l->len == M - L + 1) node->st = node->l->len + node->r->st;
-      else node->st = node->l->st;
-      if (node->r->len == R - M) node->ed = node->r->len + node->l->ed;
-      else node->ed = node->r->ed;
-    }
-    else if (node->r) {
-      node->st = node->r->st;
-      node->ed = node->r->ed;
-      node->len = node->r->len;
-    } else if (node->l) {
-      node->st = node->l->st;
-      node->ed = node->l->ed;
-      node->len = node->l->len;
-    }
-    node->len = max(node->st, node->ed);
-    if (node->l) node->len = max(node->len, node->l->len);
-    if (node->r) node->len = max(node->len, node->r->len);
-    if (node->l && node->r) node->len = max(node->len, node->l->ed + node->r->st);
-  }
+    return 0;
 }

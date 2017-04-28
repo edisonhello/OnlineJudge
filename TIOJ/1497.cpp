@@ -17,7 +17,7 @@ int main() {
   return 0;
 }
 
-void suffix_array() {
+/* void suffix_array() {
   int* rank = tmp[0];
   int* nRank = tmp[1];
   int A = 128;
@@ -44,28 +44,28 @@ void suffix_array() {
     if (r == s.length() - 1) break;
     A = r + 1;
   }
-}
+} */
 
-// void suffix_array() {
-//   int* rank = tmp[0];
-//   int* nRank = tmp[1];
-//   for (int i = 0; i < s.length(); ++i) sa[i] = i;
-//   for (int i = 0; i < s.length(); ++i) rank[i] = s[i];
-//   for (int m = 2; m <= s.length(); m *= 2) {
-//     auto cmp = [m, rank](const int& ii, const int& jj) -> bool {
-//       if (rank[ii] != rank[jj]) return rank[ii] < rank[jj];
-//       int a = (ii + m / 2 < s.length()) ? (rank[ii + m / 2]) : -1;
-//       int b = (jj + m / 2 < s.length()) ? (rank[jj + m / 2]) : -1;
-//       return a < b;
-//     };
-//     sort(sa, sa + s.length(), cmp);
-//     int r = 0;
-//     nRank[sa[0]] = r;
-//     for (int i = 1; i < s.length(); ++i) {
-//       if (cmp(sa[i - 1], sa[i])) r++;
-//       nRank[sa[i]] = r;
-//     }
-//     swap(rank, nRank);
-//     if (r == s.length() - 1) break;
-//   }
-// }
+void suffix_array() {
+    int* rank = tmp[0];
+    int* nRank = tmp[1];
+    for (int i = 0; i < s.length(); ++i) sa[i] = i;
+    for (int i = 0; i < s.length(); ++i) rank[i] = s[i];
+    for (int m = 2; m <= s.length(); m *= 2) {
+        auto cmp = [m, rank](const int& ii, const int& jj) -> bool {
+        if (rank[ii] != rank[jj]) return rank[ii] < rank[jj];
+            int a = (ii + m / 2 < s.length()) ? (rank[ii + m / 2]) : -1;
+            int b = (jj + m / 2 < s.length()) ? (rank[jj + m / 2]) : -1;
+            return a < b;
+        };
+        sort(sa, sa + s.length(), cmp);
+        int r = 0;
+        nRank[sa[0]] = r;
+        for (int i = 1; i < s.length(); ++i) {
+            if (cmp(sa[i - 1], sa[i])) r++;
+            nRank[sa[i]] = r;
+        }
+        swap(rank, nRank);
+        if (r == s.length() - 1) break;
+    }
+}

@@ -16,4 +16,5 @@ int main() {
   int Max = 0, ans = -1;
   for (int i = 0; i < n; ++i) if (cnt[i] > Max) Max = cnt[i], ans = i;
   cout << 0 << ' ' << ans << '\n';
+  return 0;
 }

@@ -1,14 +1,9 @@
-#include <iostream>
-#include <string>
+#include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	string s1, s2;
-	cin >> s1;
-	s2 = s1;
-	for (int i = s1.length() - 1; i >= 0; --i) {
-		s2.append(1, s1[i]);
-	}
-	cout << s2 << endl;
-	return 0;
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    string s; cin >> s; cout << s;
+    reverse(s.begin(), s.end()); cout << s << '\n';
+    return 0;
 }

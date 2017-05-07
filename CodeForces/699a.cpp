@@ -1,42 +1,19 @@
-#include <iostream>
-#include <string>
+#include <bits/stdc++.h>
 using namespace std;
 
-struct partical {
-	int position;
-	int move;
-};
+const int maxn = 2e5 + 10;
+pair<int, char> p[maxn];
 
 int main() {
-	partical p[200000];
-	int n;
-	cin >> n;
-	string s;
-	cin >> s;
-	int max = 0;
-	int pos;
-	for (int i = 0; i < n; ++i) {
-		cin >> pos;
-		p[i].position = pos;
-		if (i > 0 && p[i].position - p[i - 1].position > max) max = p[i].position - p[i - 1].position;
-		p[i].move = s[i] == 'R' ? 1 : -1;
-	}
-	int t = 1;
-	bool keep = true;
-	while (keep) {
-		p[0].position += p[0].move;
-		for (int i = 1; i < n && keep; ++i) {
-			p[i].position += p[i].move;
-			if (p[i].position == p[i - 1].position || p[i].position == p[i + 1].position) {
-				keep = false;
-			}
-			if (t > max) {
-				cout << -1 << endl;
-				return 0;
-			}
-		}
-		t++;
-	}
-	cout << t << endl;
-	return 0;
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int n; cin >> n;
+    for (int i = 0; i < n; ++i) cin >> p[i].second;
+    for (int i = 0; i < n; ++i) cin >> p[i].first;
+    int ans = INT_MAX;
+    for (int i = 0; i < n - 1; ++i) {
+        if (p[i].second == 'R' && p[i + 1].second == 'L') ans = min(ans, (p[i + 1].first - p[i].first) / 2);
+    }
+    if (ans == INT_MAX) cout << "-1\n";
+    else cout << ans << '\n';
+    return 0;
 }

@@ -1,79 +1,94 @@
 #include <bits/stdc++.h>
-#define Lc(id) (id << 1)
-#define Rc(id) (id << 1 | 1)
 using namespace std;
 
-const int maxn = 50000 + 5;
-map<int, int> seg[maxn << 2];
-int N, M, A[maxn];
-char tp;
+const int maxn = 1e6 + 10;
+int n, m, a[maxn];
 
-void build(int, int, int);
-void pull(int);
-void modify(int, int, int, int, int);
-map<int, int> query(int, int, int, int, int);
-map<int, int> merge(const map<int, int>&, const map<int, int>&);
+struct Seg {
+    Seg *lc, *rc;
+    int sum;
+    bool leaf;
+    Seg(int L, int R) {
+        lc = rc = nullptr;
+        sum = 0; leaf = false;
+        if (L == R) { leaf = true; return; }
+        int M = (L + R) >> 1;
+        lc = new Seg(L, M); rc = new Seg(M + 1, R);
+    }
+    Seg(Seg* t) {
+        leaf = t->leaf;
+        sum = t->sum;
+        lc = t->lc; rc = t->rc;
+    }
+    Seg* modify(int L, int R, int x, int v) {
+        Seg* ret = new Seg(this);
+        if (L == R) {
+            ret->sum += v;
+            return ret;
+        }
+        int M = (L + R) >> 1;
+        if (x <= M) ret->lc = lc->modify(L, M, x, v);
+        else ret->rc = rc->modify(M + 1, R, x, v);
+        ret->pull();
+        return ret;
+    }
+    void pull() {
+        if (lc->leaf) sum = (int)(lc->sum > 0) + (int)(rc->sum > 0);
+        else sum = lc->sum + rc->sum;
+    }
+    int query(int L, int R, int l, int r) {
+        if (L > r || l > R) return 0;
+        if (L == R) return (int)(sum > 0);
+        if (L >= l && R <= r) return sum;
+        int M = (L + R) >> 1;
+        return lc->query(L, M, l, r) + rc->query(M + 1, R, l, r);
+    }
+};
+
+struct BIT {
+    Seg *st[maxn];
+    void init() {
+        st[0] = new Seg(0, maxn - 1);
+        for (int i = 1; i <= n; ++i) st[i] = st[0];
+    }
+#define lowbit(x) (x & -x)
+    void add(int x, int p, int v) {
+        for (int i = x; i <= n; i += lowbit(i))  st[i] = st[i]->modify(0, maxn - 1, p, v);
+    }
+    vector<Seg*> sum(int x) {
+        vector<Seg*> ret;
+        for (int i = x; i; i -= lowbit(i)) ret.push_back(st[i]);
+        return ret;
+    }
+#undef lowbit
+} bit;
+
+int cal(const vector<Seg*>&);
 
 int main() {
-  freopen("in.txt", "r", stdin); freopen("out.txt", "w", stdout);
-  ios_base::sync_with_stdio(false); cin.tie(nullptr);
-  while (cin >> N >> M) {
-    for (int i = 0; i < N; ++i) cin >> A[i];
-    build(1, 0, N - 1);
-    while (M--) {
-      cin >> tp;
-      if (tp == 'M') {
-        int x, y; cin >> x >> y;
-        modify(1, 0, N - 1, x, y);
-      }
-      if (tp == 'Q') {
-        int x, y; cin >> x >> y; --y;
-        cout << query(1, 0, N - 1, x, y).size() << '\n';
-      }
+    // ios_base::sync_with_stdio(false); cin.tie(0);
+    cin >> n >> m;
+    bit.init();
+    for (int i = 1; i <= n; ++i) cin >> a[i], bit.add(i, a[i], 1);
+    while (m--) {
+        char c; cin >> c;
+        if (c == 'M') {
+            int x, y; cin >> x >> y; ++x;
+            bit.add(x, a[x], -1);
+            a[x] = y;
+            bit.add(x, a[x], 1);
+        } else {
+            int l, r; cin >> l >> r; ++l;
+            vector<Seg*> R = bit.sum(r), L = bit.sum(l - 1);
+            cout << "R: " << cal(R) << "  L: " << cal(L) << endl;
+            cout << cal(R) - cal(L) << '\n';
+        }
     }
-  }
-  return 0;
+    return 0;
 }
 
-void build(int id, int L, int R) {
-  if (L == R) {
-    seg[id].clear();
-    seg[id][A[L]] = 1;
-    return;
-  }
-  int M = (L + R) >> 1;
-  build(Lc(id), L, M); build(Rc(id), M + 1, R);
-  pull(id);
-}
-
-void pull(int id) {
-  seg[id].clear();
-  for (auto i : seg[Lc(id)]) seg[id][i.first] += i.second;
-  for (auto i : seg[Rc(id)]) seg[id][i.first] += i.second;
-}
-
-void modify(int id, int L, int R, int x, int y) {
-  if (L == R) {
-    seg[id].clear();
-    seg[id][y] = 1;
-    return;
-  }
-  int M = (L + R) >> 1;
-  if (x <= M) modify(Lc(id), L, M, x, y);
-  else modify(Rc(id), M + 1, R, x, y);
-  pull(id);
-}
-
-map<int, int> query(int id, int L, int R, int l, int r) {
-  if (L > r || l > R) return map<int, int>();
-  if (L >= l && R <= r) return seg[id];
-  int M = (L + R) >> 1;
-  return merge(query(Lc(id), L, M, l, r), query(Rc(id), M + 1, R, l, r));
-}
-
-map<int, int> merge(const map<int, int>& a, const map<int, int>& b) {
-  map<int, int> ret;
-  for (auto i : a) ret[i.first] += i.second;
-  for (auto i : b) ret[i.first] += i.second;
-  return ret;
+int cal(const vector<Seg*>& vec) {
+    int ret = 0;
+    for (Seg* t : vec) ret += t->query(0, maxn - 1, 0, maxn - 1);
+    return ret;
 }

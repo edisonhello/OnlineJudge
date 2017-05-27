@@ -4,31 +4,34 @@ using namespace std;
 struct Seg {
     Seg *lc, *rc;
     set<pair<int, int>, greater<pair<int, int>>> s;
+    pair<int, int> a, b;
     Seg(int L=1, int R=(int)1e5) {
         lc = rc = nullptr;
-        s.clear();
+        a = b = make_pair(-1, -1);
         if (L == R) return;
         int M = (L + R) >> 1;
         lc = new Seg(L, M); rc = new Seg(M + 1, R);
     }
     void pull() {
-        s.clear();
-        for (auto i : lc->s) s.insert(i);
-        for (auto i : rc->s) s.insert(i);
+        vector<pair<int, int>> tmp; tmp.push_back(lc->a); tmp.push_back(lc->b);
+        tmp.push_back(rc->a); tmp.push_back(rc->b);
+        sort(tmp.begin(), tmp.end());
+        a = tmp[tmp.size() - 1]; b = tmp[tmp.size() - 2];
     }
     int query(int L, int R, int l, int r, int id) {
         if (L > r || l > R) return -1;
         if (L >= l && R <= r) {
-            // auto it = s.end(); it--;
-            for (auto i : s) if (i.second != id) return i.first;
-            return -1;
+            if (a.second == id) return b.first;
+            return a.first; 
         }
         int M = (L + R) >> 1;
         return max(lc->query(L, M, l, r, id), rc->query(M + 1, R, l, r, id));
     }
     void modify(int L, int R, int p, int v, int id) {
         if (L == R) {
-            s.insert(make_pair(v, id));
+            pair<int, int> tmp = make_pair(v, id);
+            if (tmp > a) a = tmp;
+            else if (tmp > b) b = tmp;
             return;
         }
         int M = (L + R) >> 1;
@@ -58,7 +61,6 @@ int main() {
     }
     int ans = 0;
     for (F f : fs) {
-        // cout << "jizz" << endl;
         if (f.ch == 'C') {
             int q = st1->query(1, (int)1e5, 1, c - f.p, f.id);
             if (q != -1) ans = max(ans, f.b + q);

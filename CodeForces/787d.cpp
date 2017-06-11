@@ -1,91 +1,82 @@
+#pragma GCC optimize("O3")
 #include <bits/stdc++.h>
 using namespace std;
 
+const int maxn = 1e5 + 10;
+const long long inf = 1e18 + 1;
+vector<pair<int, int>> G[maxn << 3];
+int stamp;
+long long d[maxn << 3];
+bool v[maxn << 3];
+
 struct Seg {
     Seg *lc, *rc;
-    vector<pair<int, int>> G;
-    Seg(int L, int R) {
-        G.clear();
-        if (L == R) return;
-        int M = (L + R) >> 1;
-        lc = new Seg(L, M); rc = new Seg(M + 1, R);
-    }
-    void modify(int L, int R, int l, int r, vector<pair<int, int>> v) {
-        push(L, R);
-        if (L > r || l > R) return;
-        if (L >= l && R <= r) {
-            for (auto i : v) G.push_back(i);
+    int id;
+#define M ((L + R) >> 1)
+    Seg(int L, int R, int t) {
+        id = ++stamp;
+        lc = rc = nullptr;
+        if (L == R) {
+            if (t == 1) G[id].push_back(make_pair(L, 0));
+            else G[L].push_back(make_pair(id, 0));
             return;
         }
-        int M = (L + R) >> 1;
-        lc->modify(L, M, l, r, v); rc->modify(M + 1, R, l, r, v);
+        lc = new Seg(L, M, t); rc = new Seg(M + 1, R, t);
+        if (t == 1) G[id].push_back(make_pair(lc->id, 0)), G[id].push_back(make_pair(rc->id, 0));
+        else G[lc->id].push_back(make_pair(id, 0)), G[rc->id].push_back(make_pair(id, 0));
     }
-    vector<pair<int, int>> query(int L, int R, int x) {
-        push(L, R);
-        if (L == R) return G;
-        int M = (L + R) >> 1;
-        if (x <= M) return lc->query(L, M, x);
-        else return rc->query(M + 1, R, x);
+    void modify1(int L, int R, int l, int r, int v, int w) {
+        if (L > r || l > R) return;
+        if (L >= l && R <= r) {
+            G[v].push_back(make_pair(id, w));
+            return;
+        }
+        lc->modify1(L, M, l, r, v, w); rc->modify1(M + 1, R, l, r, v, w);
     }
-    void push(int L, int R) {
-        if (L == R) return;
-        if (G.empty()) return;
-        for (auto i : G) lc->G.push_back(i);
-        for (auto i : G) rc->G.push_back(i);
-        G.clear();
+    void modify2(int L, int R, int l, int r, int v, int w) {
+        if (L > r || l > R) return;
+        if (L >= l && R <= r) {
+            G[id].push_back(make_pair(v, w));
+            return;
+        }
+        lc->modify2(L, M, l, r, v, w); rc->modify2(M + 1, R, l, r, v, w);
     }
-} *st;
-
-const int maxn = 100000 + 5;
-long long dis[maxn];
-bool v[maxn];
-
-struct Heap {
-    int id;
-    long long dis;
-    bool operator>(const Heap& rhs) const {
-        return dis > rhs.dis;
-    }
-};
+#undef M
+} *st1, *st2;
 
 int main() {
     ios_base::sync_with_stdio(false); cin.tie(0);
     int n, q, s; cin >> n >> q >> s;
-    st = new Seg(1, n);
+    stamp = n; st1 = new Seg(1, n, 1); st2 = new Seg(1, n, 2);
     while (q--) {
         int t; cin >> t;
         if (t == 1) {
             int v, u, w; cin >> v >> u >> w;
-            vector<pair<int, int>> mod; mod.push_back(make_pair(u, w));
-            st->modify(1, n, v, v, mod);
+            G[v].push_back(make_pair(u, w));
         }
         if (t == 2) {
             int v, l, r, w; cin >> v >> l >> r >> w;
-            vector<pair<int, int>> mod;
-            for (int i = l; i <= r; ++i) mod.push_back(make_pair(i, w));
-            st->modify(1, n, v, v, mod);
+            st1->modify1(1, n, l, r, v, w);
         }
         if (t == 3) {
             int v, l, r, w; cin >> v >> l >> r >> w;
-            vector<pair<int, int>> mod; mod.push_back(make_pair(v, w));
-            st->modify(1, n, l, r, mod);
+            st2->modify2(1, n, l, r, v, w);
         }
     }
-    fill(dis, dis + maxn, LLONG_MAX); dis[s] = 0;
-    priority_queue<Heap, vector<Heap>, greater<Heap>> pq; pq.push((Heap){ s, 0 });
+    fill(d, d + (maxn << 3), inf); d[s] = 0;
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+    pq.push(make_pair(0, s));
     while (pq.size()) {
-        Heap h = pq.top(); pq.pop();
-        if (v[h.id]) continue;
-        v[h.id] = true;
-        vector<pair<int, int>> G = st->query(1, n, h.id);
-        for (auto i : G) {
-            if (i.second + h.dis < dis[i.first]) {
-                dis[i.first] = i.second + h.dis;
-                pq.push((Heap){ i.first, dis[i.first] });
+        pair<long long, int> p = pq.top(); pq.pop();
+        if (v[p.second]) continue;
+        v[p.second] = true;
+        for (pair<long long, int> e : G[p.second]) {
+            if (d[e.first] > p.first + e.second) {
+                d[e.first] = p.first + e.second;
+                pq.push(make_pair(d[e.first], e.first));
             }
         }
     }
-    for (int i = 1; i <= n; ++i) cout << (dis[i] == LLONG_MAX ? -1 : dis[i]) << ' ';
-    cout << '\n';
+    for (int i = 1; i <= n; ++i) cout << (d[i] == inf ? -1 : d[i]) << ' '; cout << endl;
     return 0;
 }

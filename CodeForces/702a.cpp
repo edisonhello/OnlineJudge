@@ -1,26 +1,21 @@
-#include <iostream>
+#pragma GCC optimize("O3")
+#include <bits/stdc++.h>
 using namespace std;
 
+const int maxn = 1e5 + 10;
+int a[maxn], dp[maxn];
+
 int main() {
-  int a[100000];
-  int n;
-  cin >> n;
-  int dp[100000];
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-  }
-  dp[0] = 1;
-  int max = 1;
-  for (int i = 1; i < n; ++i) {
-    if (a[i] > a[i - 1]) {
-      dp[i] = dp[i - 1] + 1;
-      if (max < dp[i]) {
-        max = dp[i];
-      }
-    } else {
-      dp[i] = 1;
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int n; cin >> n;
+    for (int i = 1; i <= n; ++i) cin >> a[i];
+    dp[0] = 0;
+    for (int i = 1; i <= n; ++i) {
+        if (a[i] > a[i - 1]) dp[i] = dp[i - 1] + 1;
+        else dp[i] = 1;
     }
-  }
-  cout << max << endl;
-  return 0;
+    int ans = 0;
+    for (int i = 1; i <= n; ++i) ans = max(ans, dp[i]); cout << ans << endl;
+    return 0;
 }
+

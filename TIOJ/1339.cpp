@@ -1,53 +1,50 @@
+#pragma GCC optimize("O3")
 #include <bits/stdc++.h>
-#define int long long
 using namespace std;
 
 const int maxn = 1e6 + 10, mod = 1000000009;
 pair<int, int> p[maxn];
+vector<int> v;
 
 struct BIT {
-    pair<int, int> bit[maxn];
+    int _bit[2][maxn];
     void init() {
-        memset(bit, 0, sizeof(bit));
+        memset(_bit, 0, sizeof(_bit));
     }
 #define lowbit(x) (x & -x)
     void add(int x, int v) {
         for (int i = x; i < maxn; i += lowbit(i)) {
-            bit[i].first++;
-            bit[i].second = (bit[i].second + v) % mod;
+            _bit[0][i] = (_bit[0][i] + v) % mod;
+            ++_bit[1][i];
         }
     }
-    pair<int, int> sum(int x) {
+    pair<int, int> qry(int x) {
         pair<int, int> ret = make_pair(0, 0);
         for (int i = x; i; i -= lowbit(i)) {
-            ret.first += bit[i].first;
-            ret.second = (ret.second + bit[i].second) % mod;
+            ret.first = (ret.first + _bit[0][i]) % mod;
+            ret.second += _bit[1][i];
         }
         return ret;
     }
 #undef lowbit
 } bit;
 
-main() {
+int main() {
     ios_base::sync_with_stdio(false); cin.tie(0);
     int n; cin >> n;
-    vector<int> v;
-    for (int i = 0; i < n; ++i) {
-        cin >> p[i].first >> p[i].second;
-        v.push_back(p[i].second);
-    }
-    sort(v.begin(), v.end()); v.resize(unique(v.begin(), v.end()) - v.begin());
-    sort(p, p + n, [](const pair<int, int>& a, const pair<int, int>& b) {
-        return a.first < b.first;        
-    });
+    for (int i = 0; i < n; ++i) cin >> p[i].first >> p[i].second, v.push_back(p[i].second);
+    bit.init();
+    sort(p, p + n); sort(v.begin(), v.end()); v.resize(unique(v.begin(), v.end()) - v.begin());
     int ans = 0;
     for (int i = 0; i < n; ++i) {
         int ind = lower_bound(v.begin(), v.end(), p[i].second) - v.begin() + 1;
-        pair<int, int> qry = bit.sum(ind);
-        ans += (((long long)p[i].first * (long long)p[i].second) % mod * (long long)qry.first) % mod - qry.second;
-        ans = (ans % mod + mod) % mod;
-        bit.add(ind, (long long)p[i].first * (long long)p[i].second % mod);
+        int prod = (long long)p[i].first * (long long)p[i].second % mod;
+        pair<int, int> qry = bit.qry(ind);
+        int add = ((long long)prod * (long long)qry.second % mod - (long long)qry.first) % mod;
+        add = ((add % mod) + mod) % mod;
+        ans = (ans + add) % mod;
+        bit.add(ind, prod);
     }
-    cout << ans << '\n';
+    cout << ans << endl;
     return 0;
 }

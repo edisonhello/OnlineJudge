@@ -1,21 +1,23 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int sigma = 26, maxn = 100000 + 5;
-int v[maxn];
+const int maxn = 1e5 + 10;
+int cnt[26];
+
+bool check(int t) {
+    for (int i = 0; i < t; ++i) if (cnt[i]) return false;
+    return true;
+}
 
 int main() {
     ios_base::sync_with_stdio(false); cin.tie(0);
     string s; cin >> s;
-    v[s.length() - 1] = (int)s[s.length() - 1];
-    for (int i = s.length() - 2; i >= 0; --i) v[i] = min(v[i + 1], (int)s[i]);
     stack<int> st;
-    string ans = "";
+    for (int i = 0; i < s.length(); ++i) ++cnt[s[i] - 'a'];
     for (int i = 0; i < s.length(); ++i) {
-        st.push(s[i]);
-        while (st.size() && st.top() <= v[i]) ans += (char)st.top(), st.pop();
+        while (st.size() && check(st.top())) cout << (char)(st.top() + 'a'), st.pop();
+        st.push(s[i] - 'a'); --cnt[s[i] - 'a'];
     }
-    while (st.size()) ans += (char)st.top(), st.pop();
-    cout << ans << '\n';
+    while (st.size()) cout << (char)(st.top() + 'a'), st.pop(); cout << endl;
     return 0;
 }

@@ -1,33 +1,29 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int maxn = 2e6 + 10;
+const int maxn = 2e5 + 10;
 string t[maxn];
-int sz[maxn], ans[maxn];
-char c[maxn];
+char ans[(int)(2e6 + 10)];
 
 int main() {
     ios_base::sync_with_stdio(false); cin.tie(0);
-    int n; cin >> n;
-    int len = 0;
+    int n, len = 0; cin >> n;
+    vector<pair<int, int>> vec;
     for (int i = 0; i < n; ++i) {
-        cin >> t[i];
-        int k; cin >> k; while (k--) {
-            int x; cin >> x; --x;
-            if (sz[x] < t[i].length()) sz[x] = t[i].length(), ans[x] = i;
+        cin >> t[i]; int k, x; cin >> k;
+        while (k--) {
+            cin >> x; --x; vec.push_back(make_pair(x, i));
             len = max(len, x + (int)t[i].length());
         }
     }
-    for (int i = 0; i < len; ++i) {
-        if (!c[i] && !sz[i]) c[i] = 'a';
-        else if (!c[i]) {
-            for (int j = 0; j < t[ans[i]].size(); ++j) c[i + j] = t[ans[i]][j];
-        }
+    sort(vec.begin(), vec.end());
+    int p = -1;
+    for (int i = 0; i < vec.size(); ++i) {
+        int q = vec[i].first + t[vec[i].second].length();
+        if (p > q) continue;
+        for (int j = max(0, p - vec[i].first); j < t[vec[i].second].length(); ++j) ans[vec[i].first + j] = t[vec[i].second][j];
+        p = vec[i].first + t[vec[i].second].length();
     }
-    for (int i = 0; i < len; ++i) {
-        if (c[i]) cout << c[i];
-        else break;
-    }
-    cout << endl;
+    for (int i = 0; i < len; ++i) cout << (ans[i] ? ans[i] : 'a'); cout << endl;
     return 0;
 }

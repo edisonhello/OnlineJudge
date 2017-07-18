@@ -1,42 +1,20 @@
-//
-// Created by Wayne Tu on 4/4/16.
-//
-
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
-int toVector(int num, vector<int>& vec) {
-    int k = 10;
-
-    while (k < num) {
-        vec.push_back(num % k);
-        num = num - num % k;
-        num /= 10;
-    }
-
-    int i = 0;
-    int zero = 0;
-    while (i < vec.size()) {
-        if (vec[i] == 0) {
-            zero++;
-        }
-        else {
-            break;
-        }
-    }
-
-    return zero;
-}
-
 int main() {
-    int num;
-    while (cin >> num ) {
-        vector<int> vec;
-        int zero = toVector(num, vec);
-        for (int i = zero; i < vec.size(); i++) {
-            cout << vec[i];
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    string s; while (cin >> s) {
+        bool neg = false;
+        if (s[0] == '-') neg = true, s = s.substr(1, s.length() - 1);
+        if (s == "0") {
+            cout << 0 << endl;
+            continue;
         }
+        reverse(s.begin(), s.end());
+        int i = 0;
+        if (neg) cout << "-";
+        while (i < s.length() && s[i] == '0') ++i;
+        for (; i < s.length(); ++i) cout << s[i]; cout << endl;
     }
     return 0;
 }

@@ -2,22 +2,14 @@
 using namespace std;
 
 int main() {
-    ios_base::sync_with_stdio(false); cin.tie(0);
     int a, b; cin >> a >> b;
-    int aa = 0, bb = 0, t = 1, tt = 2;
-    while (a > 0) {
-        if (a >= t) a -= t;
-        else a = 0;
-        t += 2;
-        ++aa;
+    int m1 = 1, m2 = 2;
+    while (true) {
+        if (a < m1) return cout << "Vladik\n", 0;
+        a -= m1;
+        if (b < m2) return cout << "Valera\n", 0;
+        b -= m2;
+        m1 += 2; m2 += 2;
     }
-    while (b) {
-        if (b >= tt) b -= tt;
-        else b = 0;
-        tt += 2;
-        ++bb;
-    }
-    if (aa <= bb) cout << "Valera\n";
-    else cout << "Vladik\n";
     return 0;
 }

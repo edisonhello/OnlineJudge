@@ -65,6 +65,5 @@ class HeavyLightDecomp {
             return ret;
         }
         inline int timein(int vtx) { return tin[vtx]; }
-        inline int size() { return clk; }
         inline int id(int t) { return rev[t]; }
 };

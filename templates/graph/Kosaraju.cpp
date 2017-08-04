@@ -18,7 +18,7 @@ class SCC {
             }
             topo.push_back(now);
         }
-    pulbilc:
+    public:
         SCC(int n): n(n) {}
         void add_edge(int a, int b) {
             G[a].push_back(b);

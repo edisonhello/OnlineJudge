@@ -1,6 +1,13 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 // n < 4759123141     chk = [2, 7, 61]
 // n < 1122004669633  chk = [2, 13, 23, 1662803]
 // n < 2^64           chk = [2, 325, 9375, 28178, 450775, 9780504, 1795265022]
+
+long long c[] = { 2, 325, 9375, 28178, 450775, 9780504, 1795265022 };
+// long long c[] = { 2, 7, 61 };
+vector<long long> chk;
 
 long long fpow(long long a, long long n, long long mod) {
     long long ret = 1LL;
@@ -12,6 +19,7 @@ long long fpow(long long a, long long n, long long mod) {
 }
 
 bool check(long long a, long long u, long long n, int t) {
+    // cout << "check a = " << a << " u = " << u << " n = " << n << " t = " << t << endl;
     a = fpow(a, u, n);
     if (a == 0) return true;
     if (a == 1 || a == n - 1) return true;
@@ -32,4 +40,16 @@ bool miller_rabin(long long n) {
         if (!check(i, u, n, t)) return false;
     }
     return true;
+}
+
+int main() {
+    chk = vector<long long>(c, c + 7);
+    long long a, b; while (cin >> a >> b) {
+        int ans = 0;
+        for (long long i = a; i <= b; ++i) {
+            if (miller_rabin(i)) ++ans;
+        }
+        cout << ans << endl;
+    }
+    return 0;
 }

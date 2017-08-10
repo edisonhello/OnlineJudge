@@ -7,7 +7,6 @@ class HeavyLightDecomp {
             maxson[now] = -1;
             sz[now] = 1;
             p[now] = fa;
-            tin[now] = ++clk;
             for (int u : G[now]) if (u != fa) {
                 dfs(u, now, d + 1);
                 sz[now] += sz[u];
@@ -16,6 +15,7 @@ class HeavyLightDecomp {
         }
         void link(int now, int t) {
             top[now] = t;
+            tin[now] = ++clk;
             if (maxson[now] == -1) return;
             link(maxson[now], t);
             for (int u : G[now]) if (u != p[now]) {

@@ -1,4 +1,7 @@
-const int maxn = 32;
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 131072;
 complex<double> omega[maxn + 1];
 const double pi = acos(-1);
 const complex<double> I(0, 1);
@@ -35,3 +38,28 @@ void invfft(vector<complex<double>>& a, int n) {
     fft(a, n, true);
 }
 
+int ans[maxn];
+
+int main() {
+    prefft();
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    string s, t; cin >> s >> t;
+    reverse(t.begin(), t.end());
+    int d = 1;
+    while (d < max(s.length(), t.length())) d <<= 1;
+    d <<= 1;
+    for (int i = 0; i < 26; ++i) {
+        char ch = (char)(i + 'a');
+        vector<complex<double>> a(d), b(d), c(d);
+        for (int j = 0; j < s.length(); ++j) if (s[j] == ch) a[j] = complex<double>(1, 0);
+        for (int j = 0; j < t.length(); ++j) if (t[j] == ch) b[j] = complex<double>(1, 0);
+        fft(a, d); fft(b, d);
+        for (int j = 0; j < d; ++j) c[j] = a[j] * b[j];
+        invfft(c, d);
+        for (int j = 0; j < d; ++j) ans[j] += (int)round(c[j].real());
+    }
+    int len = 0;
+    for (int i = 0; i < d; ++i) len = max(len, ans[i]);
+    cout << len << endl;
+    return 0;
+}

@@ -1,24 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int maxn = 2e5 + 10, maxv = 1e6, mod = 1e9 + 7;
+const int maxn = 2e5 + 10, maxv = 1e6 + 10, mod = 1e9 + 7;
 int a[maxn];
 long long fac[maxn], invfac[maxn];
-bool p[maxv];
-vector<int> prime;
+long long ans[maxv], cnt[maxv], cal[maxv];
 
-void sieve() {
-    p[1] = true;
-    for (int i = 2; i < maxv; ++i) {
-        if (!p[i]) prime.push_back(i);
-        for (int j = 0; i * prime[j] < maxv; ++j) {
-            p[i * prime[j]] = true;
-            if (i % prime[j] == 0) break;
-        }
-    }
-}
-
-long long fpow(int a, int n) {
+long long fpow(long long a, int n) {
     long long ret = 1;
     for (; n; n >>= 1) {
         if (n & 1) ret = ret * a % mod;
@@ -27,37 +15,35 @@ long long fpow(int a, int n) {
     return ret;
 }
 
+long long c(int n, int k) {
+    return fac[n] * invfac[n - k] % mod * invfac[k] % mod;
+}
+
 void init() {
     fac[1] = 1;
     for (int i = 2; i < maxn; ++i) fac[i] = fac[i - 1] * (long long)i % mod;
     invfac[1] = fpow(fac[1], mod - 2);
     for (int i = 2; i < maxn; ++i) invfac[i] = fpow(fac[i], mod - 2);
+    for (int i = 1; i <= 1000000; ++i) cal[i] = i * fpow(2, i - 1) % mod;
 }
 
-long long c(int n, int k) {
-    return fac[n] * invfac[n - k] % mod * invfac[k] % mod;
-}
-
-long long cal(int k) {
-    long long ret = 0;
-    for (int i = 1; i <= k; ++i) ret = (ret + c(k, i) * (long long)i % mod) % mod;
-    return ret;
-}
-
-long long ans[maxn];
 int main() {
     ios_base::sync_with_stdio(false); cin.tie(0);
     int n; cin >> n;
-    sieve(); 
     init();
-    int g = 0;
-    long long ans = 0;
     for (int i = 0; i < n; ++i) cin >> a[i];
-    for (int i : prime) {
-        int cnt = 0;
-        for (int j = 0; j < n; ++j) if (a[j] % i == 0) ++cnt;
-        ans[i] = 
+    for (int i = 0; i < n; ++i) {
+        for (int j = 1; j <= sqrt(a[i]); ++j) if (a[i] % j == 0) {
+            if (j == sqrt(a[i])) ++cnt[j];
+            else ++cnt[j], ++cnt[a[i] / j];
+        }
     }
-    cout << ans << endl;
+    for (int i = 1000000; i >= 2; --i) {
+        ans[i] = cal[cnt[i]];
+        for (int j = 2; i * j <= 1000000; ++j) ans[i] = ((ans[i] - ans[i * j]) + mod) % mod;
+    }
+    long long s = 0;
+    for (int i = 2; i <= 1000000; ++i) s = (s + (long long)i * ans[i] % mod) % mod;
+    cout << s << endl;
     return 0;
 }

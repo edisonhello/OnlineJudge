@@ -1,64 +1,64 @@
 #include <bits/stdc++.h>
+#define double long double
 using namespace std;
 
-const int maxn = 8388608;
+const int maxn = 262144;
+complex<double> omega[maxn + 1];
 const double pi = acos(-1);
-typedef complex<double> cplx;
-const cplx I(0, 1);
-cplx w[maxn + 10];
+const complex<double> I(0, 1);
 
 void prefft() {
-    for (int i = 0; i <= maxn; ++i) w[i] = exp(2.0 * i * pi / maxn * I);
+    for (int i = 0; i <= maxn; ++i) omega[i] = exp(i * 2 * pi / maxn * I);
 }
 
-void fft(cplx a[], int n) {
-    // cout << "fft" << endl;
+void fft(vector<complex<double>>& a, int n, bool inv=false) {
     int basic = maxn / n;
     int theta = basic;
     for (int m = n; m >= 2; m >>= 1) {
-        // cout << "m = " << m << endl;
         int h = m >> 1;
         for (int i = 0; i < h; ++i) {
+            complex<double> w = omega[inv ? maxn - (i * theta % maxn) : i * theta % maxn];
             for (int j = i; j < n; j += m) {
                 int k = j + h;
-                cplx x = a[j] - a[k];
+                complex<double> x = a[j] - a[k];
                 a[j] += a[k];
-                a[k] = w[i * theta % maxn] * x;
+                a[k] = w * x;
             }
         }
         theta = (theta * 2) % maxn;
     }
-    // cout << "ddd" << endl;
     int i = 0;
     for (int j = 1; j < n - 1; ++j) {
         for (int k = n >> 1; k > (i ^= k); k >>= 1);
         if (j < i) swap(a[i], a[j]);
     }
+    if (inv) for (int i = 0; i < n; ++i) a[i] /= n;
 }
 
-void invfft(cplx a[], int n) {
-    fft(a, n);
-    vector<cplx> vec(n);
-    for (int i = 0; i < n; ++i) vec[i] = a[n - i] / (double)n;
-    for (int i = 0; i < n; ++i) a[i] = vec[i];
+void invfft(vector<complex<double>>& a, int n) {
+    fft(a, n, true);
 }
-
-cplx a[maxn], b[maxn], c[maxn];
 
 int main() {
     ios_base::sync_with_stdio(false); cin.tie(0);
     prefft();
     string s, t; cin >> s >> t;
-    for (int i = 0; i < s.length(); ++i) a[i] = cplx(s[i] - '0', 0);
-    for (int i = 0; i < t.length(); ++i) b[i] = cplx(t[i] - '0', 0);
-    fft(a, maxn); fft(b, maxn);
-    for (int i = 0; i < maxn; ++i) c[i] = a[i] * b[i];
-    invfft(c, maxn);
+    int d = 1; while (d < max(s.length(), t.length())) d <<= 1; d <<= 1;
+    vector<complex<double>> a(d), b(d), c(d);
+    for (int i = 0; i < s.length(); ++i) a[i] = complex<double>(s[i] - '0', 0);
+    for (int i = 0; i < t.length(); ++i) b[i] = complex<double>(t[i] - '0', 0);
+    fft(a, d); fft(b, d);
+    for (int i = 0; i < d; ++i) c[i] = a[i] * b[i];
+    invfft(c, d);
+    int ind = d - 1;
+    while (ind >= 0 && (int)(c[ind].real() + 0.5) == 0) --ind;
     int car = 0;
-    for (int i = 0; i < 20; ++i) {
-        int k = ((int)c[i].real() + car) % 10;
-        cout << k;
-        car = ((int)c[i].real() + car) / 10;
+    stack<int> st;
+    for (; ind >= 0; --ind) {
+        int k = car + (int)(c[ind].real() + 0.5);
+        st.push(k % 10); car = k / 10;
     }
+    if (car) st.push(car);
+    while (st.size()) cout << st.top(), st.pop(); cout << endl;
     return 0;
 }

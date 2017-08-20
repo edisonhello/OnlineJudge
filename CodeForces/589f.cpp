@@ -1,3 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 200 + 10, inf = 1e9 + 1;
+
 template <typename T> class Dinic {
     private:
         int level[maxn], n, s, t;
@@ -25,10 +30,10 @@ template <typename T> class Dinic {
         }
         T flow(int now, T low) {
             if (now == t) return low;
-            long long ret = 0;
+            T ret = 0;
             for (auto &e : G[now]) {
                 if (e.cap > 0 && level[e.to] == level[now] + 1) {
-                    long long tmp = flow(e.to, min(e.cap, low - ret));
+                    T tmp = flow(e.to, min(e.cap, low - ret));
                     e.cap -= tmp; G[e.to][e.rev].cap += tmp;
                     ret += tmp;
                 }
@@ -50,3 +55,29 @@ template <typename T> class Dinic {
             return ret;
         }
 };
+
+int a[maxn], b[maxn], n;
+
+bool check(int tm) {
+    cout << "check tm = " << tm << endl;
+    int s = n * 2 + 1, t = n * 2 + 2;
+    Dinic<int> flow(n * 2 + 2, s, t);
+    for (int i = 1; i <= n; ++i) flow.add_edge(s, i, tm);
+    for (int i = 1; i <= n; ++i) flow.add_edge(i + n, t, tm);
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= i; ++j) {
+            if (min(b[i], b[j]) - max(a[i], a[j]) > 0) flow.add_edge(j, i + n, min(b[i], b[j]) - max(a[i], a[j]));
+        }
+    }
+    return flow.maxflow() == tm * n;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    cin >> n;
+    for (int i = 1; i <= n; ++i) cin >> a[i] >> b[i];
+    int d = 1, ans = 0; while (d <= (int)1e5) d <<= 1;
+    while (d >>= 1) if (ans + d <= (int)1e5) if (check(ans + d)) ans += d;
+    cout << ans * n << endl;
+    return 0;
+}

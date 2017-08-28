@@ -9,7 +9,7 @@
 \usepackage{color}
 \usepackage[x11names]{xcolor}
 \usepackage{listings}								%顯示code用的
-%\usepackage[Glenn]{fncychap}						%排版，頁面模板
+\usepackage[Glenn]{fncychap}						%排版，頁面模板
 \usepackage{fancyhdr}								%設定頁首頁尾
 \usepackage{graphicx}								%Graphic
 \usepackage{enumerate}
@@ -38,9 +38,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\setmainfont{Consolas}				%主要字型
+%\setmainfont{Consolas}				%主要字型
 \setmonofont{Monaco}				%主要字型
-\setCJKmainfont{Source Han Sans}
+%\setCJKmainfont{Source Han Sans}
 % \setCJKmainfont{Consolas}			%中文字型
 %\setmainfont{sourcecodepro}
 \XeTeXlinebreaklocale "zh"						%中文自動換行
@@ -73,6 +73,7 @@ morekeywords={*},									% if you want to add more keywords to the set
 keywordstyle=\bfseries\color{Blue1},
 commentstyle=\itshape\color{Red4},
 stringstyle=\itshape\color{Green4},
+literate={\ \ }{{\ }}1
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -81,7 +82,7 @@ stringstyle=\itshape\color{Green4},
 \pagestyle{fancy}
 \fancyfoot{}
 %\fancyfoot[R]{\includegraphics[width=20pt]{ironwood.jpg}}
-\fancyhead[L]{National Taiwan University PECaveros}
+\fancyhead[L]{bc4iaaynedisonihao123}
 \fancyhead[R]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\contentsname}{Contents} 
@@ -90,12 +91,35 @@ stringstyle=\itshape\color{Green4},
 \tableofcontents
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-%\section{Data Structure}
-%\subsection{Treap}
-%\lstinputlisting{/vimrc}
 \section{Flow}
 \subsection{Dinic}
 \lstinputlisting{flow/Dinic.cpp}
 \subsection{MinCostMaxFlow}
-\lstinputlisting{flow/MincostFlow.cpp}
+\lstinputlisting{flow/MincostMaxflow.cpp}
+\subsection{Maximum weighted Bipartite matching}
+\lstinputlisting{flow/Hungarian.cpp}
+\section{Math}
+\subsection{FFT}
+\lstinputlisting{math/FFT.cpp}
+\subsection{Miller-Rabin}
+\lstinputlisting{math/MillerRabin.cpp}
+\subsection{Extend GCD}
+\lstinputlisting{math/extGcd.cpp}
+\subsection{Matrix}
+\lstinputlisting{math/Matrix.cpp}
+\section{Graph}
+\subsection{Strongly connected components}
+\lstinputlisting{graph/Kosaraju.cpp}
+\subsection{Heavy-Light Decomposition}
+\lstinputlisting{graph/HeavyLightDecomp.cpp}
+\subsection{2-Satisfiability}
+\lstinputlisting{graph/2sat.cpp}
+\section{Data Structures}
+\subsection{Treap}
+\lstinputlisting{dataStructure/Treap.cpp}
+\subsection{Leftlist Tree}
+\lstinputlisting{dataStructure/LeftlistTree.cpp}
+\section{Geometry}
+\subsection{Convex Hull}
+\lstinputlisting{geometry/ConvexHull.cpp}
 \end{document}

@@ -1,6 +1,6 @@
 struct HeavyLightDecomp {
     vector<int> G[maxn];
-    int tin[maxn], top[maxn], dep[maxn], maxson[maxn], sz[maxn], p[maxn], rev[maxn << 1], n, clk;
+    int tin[maxn], top[maxn], dep[maxn], maxson[maxn], sz[maxn], p[maxn], n, clk;
     void dfs(int now, int fa, int d) {
         dep[now] = d;
         maxson[now] = -1;
@@ -26,7 +26,6 @@ struct HeavyLightDecomp {
         clk = 0;
         memset(tin, 0, sizeof(tin)); memset(top, 0, sizeof(top)); memset(dep, 0, sizeof(dep));
         memset(maxson, 0, sizeof(maxson)); memset(sz, 0, sizeof(sz)); memset(p, 0, sizeof(p));
-        memset(rev, 0, sizeof(rev));
     }
     void add_edge(int a, int b) {
         G[a].push_back(b);
@@ -34,7 +33,6 @@ struct HeavyLightDecomp {
     }
     void solve() {
         dfs(0, -1, 0);
-        for (int i = 0; i < n; ++i) rev[tin[i]] = i;
         link(0, 0);
     }
     int lca(int a, int b) {

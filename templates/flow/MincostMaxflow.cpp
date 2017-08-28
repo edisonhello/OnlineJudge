@@ -10,7 +10,7 @@ struct MincostMaxflow {
     vector<Edge> G[maxn];
     pair<int, int> spfa() {
         memset(p, -1, sizeof(-1));
-        memset(d, inf, sizeof(d));
+        fill(d, d + maxn, inf);
         memset(id, -1, sizeof(id));
         d[s] = 0; p[s] = s;
         queue<int> que; que.push(s); inque[s] = true;
@@ -42,7 +42,7 @@ struct MincostMaxflow {
     MincostMaxflow(int _n, int _s, int _t): n(_n), s(_s), t(_t) {
         fill(G, G + maxn, vector<Edge>());
     }
-    void add_edge(int a, int b, int cap, T w) {
+    void add_edge(int a, int b, int cap, int w) {
         G[a].push_back(Edge(b, cap, w, (int)G[b].size()));
         G[b].push_back(Edge(a, 0, -w, (int)G[a].size() - 1));
     }
@@ -56,3 +56,4 @@ struct MincostMaxflow {
         return make_pair(mxf, mnc);
     }
 };
+

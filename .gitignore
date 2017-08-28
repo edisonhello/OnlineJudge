@@ -10,3 +10,6 @@ IOJ
 templates/codebook.aux
 templates/codebook.toc
 templates/codebook.log
+jizz.txt
+.vscode/
+.idea/

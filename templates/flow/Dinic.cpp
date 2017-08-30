@@ -23,10 +23,10 @@ struct Dinic {
     }
     int flow(int now, int low) {
         if (now == t) return low;
-        long long ret = 0;
+        int ret = 0;
         for (auto &e : G[now]) {
             if (e.cap > 0 && level[e.to] == level[now] + 1) {
-                long long tmp = flow(e.to, min(e.cap, low - ret));
+                int tmp = flow(e.to, min(e.cap, low - ret));
                 e.cap -= tmp; G[e.to][e.rev].cap += tmp;
                 ret += tmp;
             }

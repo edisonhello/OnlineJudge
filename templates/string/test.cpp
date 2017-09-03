@@ -1,3 +1,26 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 1e5 + 10, lg = 20, mod = 1e9 + 7;
+
+struct SparseTable {
+    vector<vector<int>> st;
+    SparseTable() {}
+    SparseTable(int n, int arr[]) {
+        st.resize(lg);
+        for (int i = 0; i < lg; ++i) st[i].resize(maxn);
+        for (int i = 0; i < n; ++i) st[0][i] = arr[i];
+        for (int i = 1; (1 << i) <= n; ++i) {
+            for (int j = 0; j + (1 << i) <= n; ++j) {
+                st[i][j] = min(st[i - 1][j], st[i - 1][j + (1 << (i - 1))]);
+            } 
+        }
+    }
+    int query(int l, int r) {
+        int p = 31 - __builtin_clz(r - l + 1);
+        return min(st[p][l], st[p][r - (1 << p) + 1]);
+    }
+};
 struct SuffixArray {
     int sa[maxn], tmp[2][maxn], c[maxn], _lcp[maxn], r[maxn], n;
     string s;
@@ -50,3 +73,30 @@ struct SuffixArray {
     SuffixArray(string s): s(s), n(s.length()) {}
     SuffixArray() {}
 };
+int fpow(int a, int n) {
+    int ret = 1;
+    for (; n; n >>= 1) {
+        if (n & 1) ret = (long long)ret * (long long)a % mod;
+        a = (long long)a * (long long)a % mod;
+    }
+    return ret;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int n, q; cin >> n >> q;
+    string s = "";
+    for (int i = 0; i < n; ++i) {
+        int c; cin >> c;
+        if (fpow(c, (mod - 1) / 2) == 1) s += 'a';
+        else s += 'b';
+    }
+    s += 'c';
+    SuffixArray sa(s);
+    sa.solve();
+    while (q--) {
+        int l, r; cin >> l >> r;
+        cout << sa.lcp(l, r) << endl;
+    }
+    return 0;
+}

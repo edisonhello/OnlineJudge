@@ -1,7 +1,8 @@
 struct Hungarian {
-    int w[maxn][maxn], lx[maxn], ly[maxn];
-    int match[maxn], n;
-    bool s[maxn], t[maxn];
+    vector<int> lx, ly, match;
+    vector<vector<int>> w;
+    int n;
+    bitset<maxn> s, t;
     bool dfs(int now) {
         s[now] = true;
         for (int i = 0; i < n; ++i) {
@@ -28,10 +29,10 @@ struct Hungarian {
         }
     }
     Hungarian(int n): n(n) {
-        memset(w, 0, sizeof(w));
-        memset(lx, 0, sizeof(lx));
-        memset(ly, 0, sizeof(ly));
-        memset(match, -1, sizeof(match));
+        w.assign(n, vector<int>());
+        for (int i = 0; i < n; ++i) w[i].assign(n, 0);
+        lx.assign(n, 0); ly.assign(n, 0);
+        match.assign(n, -1);
     }
     void add_edge(int a, int b, int c) {
         w[a][b] = c;
@@ -40,7 +41,7 @@ struct Hungarian {
         for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) lx[i] = max(lx[i], w[i][j]);
         for (int i = 0; i < n; ++i) {
             while (true) {
-                memset(s, false, sizeof(s)); memset(t, false, sizeof(t));
+                s.reset(); t.reset();
                 if (dfs(i)) break;
                 else relabel();
             }

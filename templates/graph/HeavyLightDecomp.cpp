@@ -1,6 +1,7 @@
 struct HeavyLightDecomp {
     vector<int> G[maxn];
-    int tin[maxn], top[maxn], dep[maxn], maxson[maxn], sz[maxn], p[maxn], n, clk;
+    vector<int> tin, top, dep, maxson, sz, p;
+    int n, t;
     void dfs(int now, int fa, int d) {
         dep[now] = d;
         maxson[now] = -1;
@@ -12,26 +13,26 @@ struct HeavyLightDecomp {
             if (maxson[now] == -1 || sz[u] > sz[maxson[now]]) maxson[now] = u;
         }
     }
-    void link(int now, int t) {
-        top[now] = t;
-        tin[now] = ++clk;
+    void link(int now, int tp) {
+        top[now] = tp;
+        tin[now] = ++t;
         if (maxson[now] == -1) return;
-        link(maxson[now], t);
+        link(maxson[now], tp);
         for (int u : G[now]) if (u != p[now]) {
             if (u == maxson[now]) continue;
             link(u, u);
         }
     }
     HeavyLightDecomp(int n): n(n) {
-        clk = 0;
-        memset(tin, 0, sizeof(tin)); memset(top, 0, sizeof(top)); memset(dep, 0, sizeof(dep));
-        memset(maxson, 0, sizeof(maxson)); memset(sz, 0, sizeof(sz)); memset(p, 0, sizeof(p));
+        t = 0;
+        tin.assign(n, 0); top.assign(n, 0); dep.assign(n, 0);
+        maxson.assign(n, 0); sz.assign(n, 0); p.assign(n, 0);
     }
     void add_edge(int a, int b) {
         G[a].push_back(b);
         G[b].push_back(a);
     }
-    void solve() {
+    void build() {
         dfs(0, -1, 0);
         link(0, 0);
     }

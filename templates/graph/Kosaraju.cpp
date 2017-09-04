@@ -1,7 +1,8 @@
 struct SCC {
     vector<int> G[maxn], R[maxn], topo;
-    int n, nscc, scc[maxn], sz[maxn];
-    bool v[maxn];
+    int n, nscc;
+    vector<int> scc, sz;
+    bitset<maxn> v;
     void dfs(int now) {
         v[now] = true;
         scc[now] = nscc;
@@ -17,16 +18,19 @@ struct SCC {
         }
         topo.push_back(now);
     }
-    SCC(int n): n(n) {}
+    SCC(): {}
+    SCC(int n): n(n) {
+        scc.assign(n, 0); sz.assign(n, 0);
+    }
     void add_edge(int a, int b) {
         G[a].push_back(b);
         R[b].push_back(a);
     }
     void solve() {
-        memset(v, false, sizeof(v));
+        v.reset();
         for (int i = 0; i < n; ++i) if (!v[i]) rdfs(i);
         reverse(topo.begin(), topo.end());
-        memset(v, false, sizeof(v));
+        v.reset();
         for (int i : topo) if (!v[i]) {
             ++nscc;
             dfs(i);

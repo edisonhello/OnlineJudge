@@ -1,5 +1,6 @@
 struct Dinic {
-    int level[maxn], n, s, t;
+    int n, s, t;
+    vector<int> level;
     struct Edge {
         int to, rev, cap;
         Edge() {}
@@ -7,7 +8,7 @@ struct Dinic {
     };
     vector<Edge> G[maxn];
     bool bfs() {
-        memset(level, -1, sizeof(level));
+        level.assign(n, -1);
         level[s] = 0; 
         queue<int> que; que.push(s);
         while (que.size()) {

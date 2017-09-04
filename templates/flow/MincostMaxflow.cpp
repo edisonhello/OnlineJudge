@@ -4,14 +4,14 @@ struct MincostMaxflow {
         Edge() {}
         Edge(int a, int b, int c, int d): to(a), cap(b), w(c), rev(d) {}
     };
-    int n, s, t, p[maxn], id[maxn];
-    int d[maxn];
-    bool inque[maxn];
+    int n, s, t;
+    vector<int> p, id, d;
+    bitset<maxm> inque;
     vector<Edge> G[maxn];
     pair<int, int> spfa() {
-        memset(p, -1, sizeof(-1));
-        fill(d, d + maxn, inf);
-        memset(id, -1, sizeof(id));
+        p.assign(n, -1);
+        d.assign(n, inf);
+        id.assign(n, -1);
         d[s] = 0; p[s] = s;
         queue<int> que; que.push(s); inque[s] = true;
         while (que.size()) {

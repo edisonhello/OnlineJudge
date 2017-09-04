@@ -1,9 +1,10 @@
 struct MaximumMatching {
-    vector<int> G[maxn];
-    int n, mt[maxn];
-    bool v[maxn];
+    vector<int> G[maxn], mt;
+    int n;
+    bitset<maxn> v;
     MaximumMatching(int n): n(n) {
         fill(G, G + maxn, vector<int>());
+        v.reset();
     }
     void add_edge(int a, int b) {
         G[a].push_back(b);
@@ -19,7 +20,7 @@ struct MaximumMatching {
         return false;
     }
     int solve() {
-        memset(mt, -1, sizeof(mt));
+        mt.assign(n, -1);
         int ret = 0;
         for (int i = 0; i < n; ++i) {
             memset(v, false, sizeof(v));

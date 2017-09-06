@@ -82,7 +82,7 @@ literate={\ \ }{{\ }}1
 \pagestyle{fancy}
 \fancyfoot{}
 %\fancyfoot[R]{\includegraphics[width=20pt]{ironwood.jpg}}
-\fancyhead[L]{bc4iaaynedisonihao123}
+\fancyhead[L]{waynetuinfor}
 \fancyhead[R]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\contentsname}{Contents} 
@@ -96,6 +96,8 @@ literate={\ \ }{{\ }}1
 \lstinputlisting{basic/vimrc}
 \subsection{Fast Integer Input}
 \lstinputlisting{basic/rit.cpp}
+\subsection{Big Integer}
+\lstinputlisting{basic/Int.cpp}
 \section{Flow}
 \subsection{Dinic}
 \lstinputlisting{flow/Dinic.cpp}
@@ -136,4 +138,8 @@ literate={\ \ }{{\ }}1
 \lstinputlisting{string/KMP.cpp}
 \subsection{Suffix Array}
 \lstinputlisting{string/SuffixArray.cpp}
+\section{Dynamic Programming}
+\subsection{DP optimizations}
+\large
+$dp[k][n]=\max_{i<n}{dp[k-1][i]+f(i+1,n)}$ and the monotony $t[k][i]\leq t[k][j],\forall i<j$ holds
 \end{document}

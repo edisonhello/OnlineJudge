@@ -99,11 +99,13 @@ literate={\ \ }{{\ }}1
 \subsection{Big Integer}
 \lstinputlisting{basic/Int.cpp}
 \section{Flow}
-\subsection{Dinic}
+\subsection{Dinic's algorithm}
 \lstinputlisting{flow/Dinic.cpp}
-\subsection{MinCostMaxFlow}
+\subsection{Min cost Max flow}
 \lstinputlisting{flow/MincostMaxflow.cpp}
-\subsection{Maximum weighted Bipartite matching}
+\subsection{Maximum bipartite matching}
+\lstinputlisting{flow/MaximumMatching.cpp}
+\subsection{Maximum weighted bipartite matching}
 \lstinputlisting{flow/Hungarian.cpp}
 \section{Math}
 \subsection{FFT}
@@ -139,7 +141,10 @@ literate={\ \ }{{\ }}1
 \subsection{Suffix Array}
 \lstinputlisting{string/SuffixArray.cpp}
 \section{Dynamic Programming}
-\subsection{DP optimizations}
-\large
-$dp[k][n]=\max_{i<n}{dp[k-1][i]+f(i+1,n)}$ and the monotony $t[k][i]\leq t[k][j],\forall i<j$ holds
+\subsection{Concepts}
+1. Convex hull optimization($O(nlogn)$): $dp[i]=f(i)+\max_{j<i}\{a[j]x[i]+b[j]\}$. \\
+2. Linear Convex hull optimization($O(n)$): if $a[i]$ is monotonic. \\
+3. Divide and conquer optimization($O(nklogn)$): $dp[i][j]=\max_{j<i}{dp[i-1][j]+f(j,i)}$ and $t[i^\prime][j]<t[i][j]$ holds $\forall i^\prime<i$.
+\subsection{Linear convex hull optimization}
+\lstinputlisting{dp/ConvexHullLinear.cpp}
 \end{document}

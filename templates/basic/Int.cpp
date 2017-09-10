@@ -18,8 +18,9 @@ struct Int {
     Int(std::string s) {
         int i = 0; sgn = true;
         if (s[i] == '-') sgn = false, ++i;
-        for (i = 0; i < s.length(); ++i) dig.push_back(s[i] - '0');
+        for (;i < s.length(); ++i) dig.push_back(s[i] - '0');
         reverse(dig.begin(), dig.end());
+        if (dig.size() == 1 && dig[0] == '0') sgn = true;
     }
     Int(const std::vector<int>& d, const bool& s = true) {
         dig = std::vector<int>(d.begin(), d.end());
@@ -105,6 +106,37 @@ struct Int {
         }
         return Int(nvec);
     }
+    Int operator*(const Int& rhs) const {
+        if (sgn && !rhs.sgn || !sgn && rhs.sgn) return -(Int(dig, true) * Int(rhs.dig, true));
+        if (*this == 0) return Int();
+        if (rhs == 0) return Int();
+        std::vector<int> v1 = dig, v2 = rhs.dig;
+        if (v1.size() < v2.size()) swap(v1, v2);
+        std::vector<int> res(v1.size() * v2.size(), 0);
+        for (int i = 0; i < v2.size(); ++i) {
+            int car = 0;
+            for (int j = 0; j < v1.size(); ++j) {
+                int k = car + v1[j] * v2[i];
+                res[j + i] += k % 10;
+                car = k / 10;
+            }
+        }
+        int car = 0;
+        for (int i = 0; i < res.size(); ++i) {
+            int k = car + res[i];
+            res[i] = k % 10;
+            car = k / 10;
+        }
+        while (car) {
+            res.push_back(car % 10);
+            car /= 10;
+        }
+        int ind = res.size() - 1;
+        while (ind >= 0 && res[ind] == 0) --ind;
+        std::vector<int> nvec;
+        for (int i = 0; i <= ind; ++i) nvec.push_back(res[i]);
+        return Int(nvec);
+    }
     Int operator+(const int& n) const {
         return *this + Int(n);
     }
@@ -127,6 +159,14 @@ struct Int {
         *this -= Int(n);
         return *this;
     }
+    Int& operator*=(const Int& n) {
+        *this = *this * n;
+        return *this;
+    }
+    Int& operator*=(const int& n) {
+        *this *= Int(n);
+        return *this;
+    }
     Int& operator++(int) {
         *this += 1;
         return *this;
@@ -146,15 +186,3 @@ struct Int {
         return out;
     }
 };
-
-
-int main() {
-    /* Int a, b; std::cin >> a >> b;
-    std::cout << a << ' ' << b << std::endl;
-    Int c = a - b;
-    std::cout << c << std::endl; */
-    Int a, b, c; std::cin >> a >> b >> c;
-    a -= b; std::cout << a << std::endl; a += c;
-    std::cout << a << std::endl;
-    return 0;
-}

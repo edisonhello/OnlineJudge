@@ -121,6 +121,8 @@ literate={\ \ }{{\ }}1
 \lstinputlisting{graph/Kosaraju.cpp}
 \subsection{Heavy-Light Decomposition}
 \lstinputlisting{graph/HeavyLightDecomp.cpp}
+\subsection{Centroid Decomposition}
+\lstinputlisting{graph/CentroidDecomp.cpp}
 \subsection{2-Satisfiability}
 \lstinputlisting{graph/2sat.cpp}
 \section{Data Structures}
@@ -135,16 +137,20 @@ literate={\ \ }{{\ }}1
 \lstinputlisting{geometry/ConvexHull.cpp}
 \subsection{Rotating Caliper}
 \lstinputlisting{geometry/RotatingCaliper.cpp}
+\subsection{Closest Pair}
+\lstinputlisting{geometry/ClosestPair.cpp}
 \section{String}
 \subsection{KMP}
 \lstinputlisting{string/KMP.cpp}
 \subsection{Suffix Array}
 \lstinputlisting{string/SuffixArray.cpp}
+\subsection{Z algorithm}
+\lstinputlisting{string/Z.cpp}
+\subsection{Rolling hash primes}
+\lstinputlisting{string/HashPrime.cpp}
 \section{Dynamic Programming}
-\subsection{Concepts}
-1. Convex hull optimization($O(nlogn)$): $dp[i]=f(i)+\max_{j<i}\{a[j]x[i]+b[j]\}$. \\
-2. Linear Convex hull optimization($O(n)$): if $a[i]$ is monotonic. \\
-3. Divide and conquer optimization($O(nklogn)$): $dp[i][j]=\max_{j<i}{dp[i-1][j]+f(j,i)}$ and $t[i^\prime][j]<t[i][j]$ holds $\forall i^\prime<i$.
 \subsection{Linear convex hull optimization}
 \lstinputlisting{dp/ConvexHullLinear.cpp}
+\subsection{Divide and conquer optimization}
+\lstinputlisting{dp/divideConquer.cpp}
 \end{document}

@@ -1,8 +1,6 @@
-struct Treap {
-#define size(t) (t ? t->sz : 0)
+namespace Treap {
     struct Node {
-        int val;
-        int pri, sz;
+        int val, pri, sz;
         Node *lc, *rc;
         Node(T v): pri(rand()), val(v) {
             lc = rc = nullptr;
@@ -11,7 +9,10 @@ struct Treap {
         void pull() {
             sz = size(lc) + size(rc) + 1;
         }
-    } *root;
+    };
+    inline int size(Node* t) {
+        return t ? t->sz : 0;
+    }
     Node *merge(Node *a, Node *b) {
         if (!a || !b) return a ? a : b;
         if (a->pri > b->pri) {
@@ -47,28 +48,4 @@ struct Treap {
         if (t->rc) clear(t->rc);
         delete t;
     }
-    Treap(unsigned seed=time(nullptr)) {
-        srand(seed);
-        root = nullptr;
-    }
-    ~Treap() {
-        clear(root);
-        root = nullptr;
-    }
-    void insert(int val) {
-        Node *a, *b;
-        split(root, val - 1, a, b);
-        root = merge(merge(a, new Node(val)), b);
-    }
-    void erase(int val) {
-        Node *a, *b, *c, *d;
-        split(root, val - 1, a, b);
-        split(b, val, c, d);
-        c = merge(c->lc, c->rc);
-        root = merge(a, merge(c, d));
-    }
-    int find(int k) {
-        return kth(root, k);
-    }
-#undef size
-};
+}

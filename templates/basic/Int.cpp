@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 
 struct Int {
+    static const int inf = 1e9;
     std::vector<int> dig;
     bool sgn;
     Int() {

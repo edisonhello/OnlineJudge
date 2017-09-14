@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int maxn = 2e5 + 10;
+const int maxn = 1e5 + 10;
 string s[maxn];
 map<string, int> id;
 int p[maxn << 1];
@@ -26,12 +26,12 @@ int get(const string& t) {
 
 int main() {
     ios_base::sync_with_stdio(false); cin.tie(0);
-    int n, k; cin >> n;
+    int n, k; cin >> n >> k;
     for (int i = 0; i < n; ++i) cin >> s[i];
     int st;
     for (int i = 0; i < n; ++i) {
-        int a = get(s[i].substr(0, 2));
-        int b = get(s[i].substr(1, 2));
+        int a = get(s[i].substr(0, k - 1));
+        int b = get(s[i].substr(1, k - 1));
         ++out[a]; ++in[b];
         G[a].emplace_back(b, s[i]);
         st = a;
@@ -42,19 +42,18 @@ int main() {
         if (in[a] == out[a]) continue;
         if (in[a] - out[a] == 1) ++ex;
         else if (out[a] - in[a] == 1) ++en, st = a;
-        else return cout << "NO" << endl, 0;
+        else return cout << "-1" << endl, 0;
     }
     if (en == ex && en <= 1) {
         dfs(st, "");
         if (ret.size() == n) {
             reverse(ret.begin(), ret.end());
             string ans = ret[0];
-            for (int i = 1; i < ret.size(); ++i) ans += ret[i][2];
-            cout << "YES" << endl;
+            for (int i = 1; i < ret.size(); ++i) ans += ret[i][k - 1];
             cout << ans << endl;
             return 0;
         }
     }
-    cout << "NO" << endl;
+    cout << "-1" << endl;
     return 0;
 }

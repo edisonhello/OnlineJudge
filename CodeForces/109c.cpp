@@ -3,40 +3,47 @@ using namespace std;
 
 const int maxn = 1e5 + 10;
 vector<pair<int, bool>> G[maxn];
-long long ans = 0, dp[maxn];
-bool b[maxn];
+int sz[maxn], dp[maxn], dp2[maxn], n;
+long long ans;
 
-bool check(int t) {
-    stringstream ss; ss << t;
-    string s; ss >> s;
-    for (int i = 0; i < s.length(); ++i) {
-        if (s[i] != '7' && s[i] != '4') return false;
-    }
-    return true;
+long long c(int n) {
+    return (long long)n * (long long)(n - 1);
 }
 
-void dfs(int now, int fa, bool lucky) {
-    b[now] = lucky;
+void dfs(int now, int fa) {
+    sz[now] = 1;
     for (auto u : G[now]) if (u.first != fa) {
-        dfs(u.first, now, lucky | u.second);
-        dp[now] += dp[u.first];
-        if (u.second) ++dp[now];
+        dfs(u.first, now);
+        sz[now] += sz[u.first];
+        if (u.second) dp[now] += sz[u.first];
+        else dp[now] += dp[u.first];
     }
+    dp2[now] = 1;
     for (auto u : G[now]) if (u.first != fa) {
-        int k = (u.second ? dp[u.first] + 1 : dp[u.first]);
-        ans += (long long)k * (dp[now] - k);
+        if (u.second) {
+            ans += (long long)dp2[u.first] * c(n - sz[u.first]);
+        } else {
+            ans += 
+            dp2[now] += dp2[u.first];
+        }
     }
-    if (lucky) ans += dp[now];
+    if (now) ans += c(dp[now]);
 }
 
 int main() {
     ios_base::sync_with_stdio(false); cin.tie(0);
-    int n; cin >> n;
+    cin >> n;
     for (int i = 0; i < n - 1; ++i) {
-        int a, b, c; cin >> a >> b >>c;
-        bool d = check(c);
-        G[a].push_back(make_pair(b, d)); G[b].push_back(make_pair(a, d));
+        int a, b, c; cin >> a >> b >> c;
+        bool l = false;
+        while (c) {
+            int k = c % 10;
+            if (k == 4 || k == 7) l = true;
+            c /= 10;
+        }
+        G[a].emplace_back(b, l); G[b].emplace_back(a, l);
     }
-    dfs(1, 0, false);
+    // G[0].emplace_back(1, true);
+    dfs(1, -1);
     cout << ans << endl;
 }

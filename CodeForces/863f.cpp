@@ -1,3 +1,9 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 100 + 10, inf = 1e9 + 1;
+int ub[maxn], lb[maxn];
+
 struct MincostMaxflow {
     struct Edge {
         int to, rev, cap, w;
@@ -56,3 +62,30 @@ struct MincostMaxflow {
         return make_pair(mxf, mnc);
     }
 };
+
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int n, q; cin >> n >> q;
+    fill(lb, lb + maxn, 1); fill(ub, ub + maxn, n);
+    while (q--) {
+        int t, l, r, v; cin >> t >> l >> r >> v;
+        for (int i = l; i <= r; ++i) {
+            if (t == 1) lb[i] = max(lb[i], v);
+            else ub[i] = min(ub[i], v);
+        }
+    }
+    MincostMaxflow flow(2 * n + 2, 0, 2 * n + 1);
+    int s = 0, t = 2 * n + 1;
+    for (int i = 1; i <= n; ++i) flow.add_edge(s, i, 1, 0);
+    for (int i = 1; i <= n; ++i) {
+        for (int j = lb[i]; j <= ub[i]; ++j) flow.add_edge(i, j + n, 1, 0);
+    }
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) flow.add_edge(i + n, t, 1, 2 * j - 1);
+    }
+    int mf, mc;
+    tie(mf, mc) = flow.maxflow();
+    if (mf != n) cout << "-1" << endl;
+    else cout << mc << endl;
+    return 0;
+}

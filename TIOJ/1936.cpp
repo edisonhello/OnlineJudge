@@ -1,33 +1,47 @@
-#include <iostream>
-#include <cstring>
+#include <bits/stdc++.h>
 using namespace std;
 
-const int maxn = 1024;
-int A[maxn][maxn], B[maxn][maxn], C[maxn][maxn], N, T, ans[maxn][maxn];
-bool loli;
+const int maxn = 1000 + 50;
+typedef vector<vector<int>> mat;
+
+mat init(int n, int m) {
+    return mat(n, vector<int>(m));
+}
+
+mat matmul(const mat& a, const mat& b) {
+    assert(a[0].size() == b.size());
+    mat ret = init(a.size(), b[0].size());
+    for (int i = 0; i < a.size(); ++i) {
+        for (int j = 0; j < b[0].size(); ++j) {
+            for (int k = 0; k < a[0].size(); ++k) ret[i][j] += a[i][k] * b[k][j];
+        }
+    }
+    return ret;
+}
+
+mat rnd(int n, int m) {
+    mat ret = mat(n, vector<int>(m));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < m; ++j) ret[i][j] = rand();
+    }
+    return ret;
+}
 
 int main() {
-  cin.tie(0); ios_base::sync_with_stdio(false);
-  cin >> T;
-  while (T--) {
-    cin >> N;
-    for (int i = 0; i < N; ++i) for (int j = 0; j < N; ++j) cin >> A[i][j];
-    for (int i = 0; i < N; ++i) for (int j = 0; j < N; ++j) cin >> B[i][j];
-    for (int i = 0; i < N; ++i) for (int j = 0; j < N; ++j) cin >> C[i][j];
-    memset(ans, 0, sizeof(ans));
-    for (int i = 0; i < N; ++i) {
-      for (int j = 0; j < N; ++j) {
-        for (int k = 0; k < N; ++k) {
-          ans[i][j] += A[i][k] * B[k][j];
-        }
-      }
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    srand(time(nullptr));
+    int t; cin >> t; while (t--) {
+        int n; cin >> n;
+        mat a = init(n, n), b = init(n, n), c = init(n, n);
+        for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) cin >> a[i][j];
+        for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) cin >> b[i][j];
+        for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) cin >> c[i][j];
+        mat t = rnd(n, 1);
+        mat l = matmul(a, matmul(b, t)), r = matmul(c, t);
+        bool ans = true;
+        for (int i = 0; i < n; ++i) if (l[i][0] != r[i][0]) ans = false;
+        if (ans) cout << "Loli is god." << endl;
+        else cout << "QAQ!" << endl;
     }
-    loli = true;
-    for (int i = 0; i < N && loli; ++i) for (int j = 0; j < N && loli; ++j) {
-      if (ans[i][j] != C[i][j]) loli = false;
-    }
-    if (loli) cout << "Loli is god.\n";
-    else cout << "QAQ!\n";
-  }
-  return 0;
+    return 0;
 }

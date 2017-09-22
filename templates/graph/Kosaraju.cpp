@@ -5,18 +5,18 @@ struct SCC {
     bitset<maxn> v;
     void dfs(int now) {
         v[now] = true;
-        scc[now] = nscc;
-        ++sz[nscc];
         for (int u : G[now]) if (!v[u]) {
             dfs(u);
         }
+        topo.push_back(now);
     }
     void rdfs(int now) {
         v[now] = true;
+        scc[now] = nscc;
+        ++sz[nscc];
         for (int u : R[now]) if (!v[u]) {
             rdfs(u);
         }
-        topo.push_back(now);
     }
     SCC(): {}
     SCC(int n): n(n) {
@@ -28,12 +28,12 @@ struct SCC {
     }
     void solve() {
         v.reset();
-        for (int i = 0; i < n; ++i) if (!v[i]) rdfs(i);
+        for (int i = 0; i < n; ++i) if (!v[i]) dfs(i);
         reverse(topo.begin(), topo.end());
         v.reset();
         for (int i : topo) if (!v[i]) {
             ++nscc;
-            dfs(i);
+            rdfs(i);
         } 
     }
 };

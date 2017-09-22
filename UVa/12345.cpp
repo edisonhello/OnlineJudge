@@ -1,94 +1,77 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int maxn = 1e6 + 10;
-int n, m, a[maxn];
+const int maxn = 5e4 + 10, maxv = 1e6 + 10;
+int a[maxn], ans[maxn], cur, upd[maxn], l, r, cnt[maxv];
+vector<pair<int, int>> mod;
 
-struct Seg {
-    Seg *lc, *rc;
-    int sum;
-    bool leaf;
-    Seg(int L, int R) {
-        lc = rc = nullptr;
-        sum = 0; leaf = false;
-        if (L == R) { leaf = true; return; }
-        int M = (L + R) >> 1;
-        lc = new Seg(L, M); rc = new Seg(M + 1, R);
-    }
-    Seg(Seg* t) {
-        leaf = t->leaf;
-        sum = t->sum;
-        lc = t->lc; rc = t->rc;
-    }
-    Seg* modify(int L, int R, int x, int v) {
-        Seg* ret = new Seg(this);
-        if (L == R) {
-            ret->sum += v;
-            return ret;
-        }
-        int M = (L + R) >> 1;
-        if (x <= M) ret->lc = lc->modify(L, M, x, v);
-        else ret->rc = rc->modify(M + 1, R, x, v);
-        ret->pull();
-        return ret;
-    }
-    void pull() {
-        if (lc->leaf) sum = (int)(lc->sum > 0) + (int)(rc->sum > 0);
-        else sum = lc->sum + rc->sum;
-    }
-    int query(int L, int R, int l, int r) {
-        if (L > r || l > R) return 0;
-        if (L == R) return (int)(sum > 0);
-        if (L >= l && R <= r) return sum;
-        int M = (L + R) >> 1;
-        return lc->query(L, M, l, r) + rc->query(M + 1, R, l, r);
+struct query {
+    int l, r, t, block, id;
+    bool operator<(const query& rhs) const {
+        return block == rhs.block ? r == rhs.r ? t < rhs.t : r < rhs.r : block < rhs.block;
     }
 };
+vector<query> qry;
 
-struct BIT {
-    Seg *st[maxn];
-    void init() {
-        st[0] = new Seg(0, maxn - 1);
-        for (int i = 1; i <= n; ++i) st[i] = st[0];
+void addt(int now) {
+    // cout << "adding t = " << now << endl;
+    int k = a[mod[now].first];
+    a[mod[now].first] = mod[now].second;
+    mod[now].second = k;
+    if (mod[now].first >= l && mod[now].first <= r) {
+        --cnt[k];
+        if (cnt[k] == 0) --cur;
+        if (cnt[a[mod[now].first]] == 0) ++cur;
+        ++cnt[a[mod[now].first]];
     }
-#define lowbit(x) (x & -x)
-    void add(int x, int p, int v) {
-        for (int i = x; i <= n; i += lowbit(i))  st[i] = st[i]->modify(0, maxn - 1, p, v);
-    }
-    vector<Seg*> sum(int x) {
-        vector<Seg*> ret;
-        for (int i = x; i; i -= lowbit(i)) ret.push_back(st[i]);
-        return ret;
-    }
-#undef lowbit
-} bit;
-
-int cal(const vector<Seg*>&);
-
-int main() {
-    // ios_base::sync_with_stdio(false); cin.tie(0);
-    cin >> n >> m;
-    bit.init();
-    for (int i = 1; i <= n; ++i) cin >> a[i], bit.add(i, a[i], 1);
-    while (m--) {
-        char c; cin >> c;
-        if (c == 'M') {
-            int x, y; cin >> x >> y; ++x;
-            bit.add(x, a[x], -1);
-            a[x] = y;
-            bit.add(x, a[x], 1);
-        } else {
-            int l, r; cin >> l >> r; ++l;
-            vector<Seg*> R = bit.sum(r), L = bit.sum(l - 1);
-            cout << "R: " << cal(R) << "  L: " << cal(L) << endl;
-            cout << cal(R) - cal(L) << '\n';
-        }
-    }
-    return 0;
 }
 
-int cal(const vector<Seg*>& vec) {
-    int ret = 0;
-    for (Seg* t : vec) ret += t->query(0, maxn - 1, 0, maxn - 1);
-    return ret;
+void add(int now) {
+    // cout << "adding now = " << now << " a[now] = " << a[now] << endl;
+    if (cnt[a[now]] == 0) ++cur;
+    ++cnt[a[now]];
+}
+
+void sub(int now) {
+    // cout << "subing now = " << now << " a[now] = " << a[now] << endl;
+    --cnt[a[now]];
+    if (cnt[a[now]] == 0) --cur;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int n, m; while (cin >> n >> m) {
+        memset(cnt, 0, sizeof(cnt));
+        for (int i = 1; i <= n; ++i) cin >> a[i];
+        int t = 0, ind = 0;
+        mod.clear(); qry.clear();
+        int lim = ceil(pow(n, 2.0 / 3.0));
+        mod.emplace_back(0, 0);
+        while (m--) {
+            char c; int x, y; cin >> c >> x >> y;
+            ++x;
+            if (c == 'M') {
+                ++t;
+                mod.emplace_back(x, y);
+            } else {
+                int blk = x / lim;
+                qry.push_back((query){ x, y, t, blk, ind++ });
+            }
+        }
+        sort(qry.begin(), qry.end());
+        // cout << "bang" << endl;
+        int tn = 0; cur = 0; l = 1, r = 0;
+        for (auto q : qry) {
+            // cout << q.l << ' ' << q.r << ' ' << q.id << ' ' << q.t << endl;
+            while (tn < q.t) addt(++tn);
+            while (tn > q.t) addt(tn--);
+            while (r < q.r) add(++r);
+            while (r > q.r) sub(r--);
+            while (l > q.l) add(--l);
+            while (l < q.l) sub(l++);
+            ans[q.id] = cur;
+        }
+        for (int i = 0; i < ind; ++i) cout << ans[i] << endl;
+    }
+    return 0;
 }

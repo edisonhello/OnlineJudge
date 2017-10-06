@@ -1,76 +1,86 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int maxn = 1000000 + 5;
-const long long MAX = 1000000000000000000LL;
-long long A[maxn], L[maxn];
-__int128 dp[maxn];
-int N, K, P, a, l;
+const int maxn = 1e6 + 10;
+const long long inf = 2e18 + 1;
+long long sa[maxn], sl[maxn], dp[maxn], lim;
+int n, k, p;
 
-inline __int128 f(int);
-struct Line { __int128 a, b; };
-deque<Line> dq;
-bool check(const Line&, const Line&, long long);
-bool over(const Line&, const Line&, const Line&);
-inline long long power(long long, int, long long);
+struct segment {
+    int i, l, r;
+    segment() {}
+    segment(int a, int b, int c): i(a), l(b), r(c) {}
+    friend ostream& operator<<(ostream& out, const segment& s) {
+        out << "i = " << s.i << " l = " << s.l << " r = " << s.r;
+        return out;
+    }
+};
+
+inline long long fpow(long long a, int n) {
+    if (a > lim) return inf;
+    long long ret = 1ll;
+    for (; n; n >>= 1) {
+        if (n & 1) ret *= a;
+        a *= a;
+    } 
+    return ret;
+}
+
+inline long double dfpow(long double a, int n) {
+    long double ret = 1.0;
+    for (; n; n >>= 1) {
+        if (n & 1) ret *= a;
+        a *= a;
+    }
+    return ret;
+}
+
+inline long long f(int l, int r) {
+    long long m = sa[r] - sa[l] + sl[r - 1] - sl[l] - k;
+    if (m < 0) m = -m;
+    long long ret = dp[l] + fpow(m, p);
+    if (ret > inf) return inf;
+    return dp[l] + fpow(m, p);
+}
+
+inline long double df(int l, int r) {
+    long double m = sa[r] - sa[l] + sl[r - 1] - sl[l] - k;
+    if (m < 0) m = -m;
+    return (long double)dp[l] + dfpow(m, p);
+}
+
+void debug(const deque<segment>& deq) {
+    for (auto i : deq) cout << i << endl;
+}
 
 int main() {
-  ios_base::sync_with_stdio(false); cin.tie(nullptr);
-  cin >> N >> K >> P;
-  for (int i = 1; i <= N; ++i) cin >> a, A[i] = A[i - 1] + a;
-  for (int i = 1; i <= N - 1; ++i) cin >> l, L[i] = L[i - 1] + l;
-  if (N > 12000) {
-    // assert(P == 2);
-    dq.push_back((Line){ 0, 0 });
-    for (int i = 1; i <= N; ++i) {
-      while (dq.size() >= 2 && check(dq[0], dq[1], A[i] + L[i - 1])) dq.pop_front();
-      dp[i] = f(i) + dq.front().a * (__int128)(A[i] + L[i - 1]) + dq.front().b;
-      __int128 a = -2 * (__int128)(A[i] + L[i]);
-      __int128 b = 2 * ((__int128)A[i] * (__int128)L[i] + (__int128)A[i] * (__int128)K + (__int128)L[i] * (__int128)K) + (__int128)A[i] * (__int128)A[i] + (__int128)L[i] * (__int128)L[i] + dp[i];
-      while (dq.size() >= 2 && over(dq[dq.size() - 2], dq[dq.size() - 1], (Line){ a, b })) dq.pop_back();
-      dq.push_back((Line){ a, b });
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    cin >> n >> k >> p; lim = pow(inf, 1.0 / (double)p);
+    for (int i = 1; i <= n; ++i) {
+        long long a; cin >> a;
+        sa[i] = sa[i - 1] + a;
     }
-    cout << (long long)dp[N] << '\n';
-    return 0;
-  }
-  if (N <= 12000) {
-    fill(dp, dp + maxn, MAX + 1);
-    dp[0] = 0;
-    for (int i = 1; i <= N; ++i) {
-      for (int j = 0; j < i; ++j) {
-        long long M = A[i] - A[j] + L[i - 1] - L[j];
-        long long penalty = power(abs(M - K), P, MAX - dp[j]);
-        if (penalty == -1) continue;
-        dp[i] = min(dp[i], dp[j] + penalty);
-      }
+    for (int i = 1; i <= n - 1; ++i) {
+        long long l; cin >> l;
+        sl[i] = sl[i - 1] + l;
     }
-    cout << (long long)dp[N] << '\n';
+    dp[0] = 0ll;
+    deque<segment> deq; deq.push_back(segment(0, 1, n));
+    for (int i = 1; i <= n; ++i) {
+        dp[i] = f(deq.front().i, i);
+        if (i == n) return cout << dp[n] << endl, 0;
+        while (deq.size() && deq.front().r < i + 1) deq.pop_front();
+        deq.front().l = i + 1;
+        segment seg = segment(i, i + 1, n);
+        while (deq.size() && df(i, deq.back().l) < df(deq.back().i, deq.back().l)) deq.pop_back();
+        if (deq.size()) {
+            int d = 1048576, c = deq.back().l;
+            while (d >>= 1) if (c + d <= deq.back().r) {
+                if (df(i, c + d) > df(deq.back().i, c + d)) c += d;
+            }
+            deq.back().r = c; seg.l = c + 1;
+        }
+        if (seg.l <= n) deq.push_back(seg);
+    }
     return 0;
-  }
-}
-
-inline __int128 f(int i) {
-  __int128 ret = 0;
-  ret += (__int128)A[i] * (__int128)A[i] + (__int128)L[i - 1] * (__int128)L[i - 1] + (__int128)K * (__int128)K;
-  ret += 2 * ((__int128)A[i] * (__int128)L[i - 1] - (__int128)A[i] * (__int128)K - (__int128)L[i - 1] * (__int128)K);
-  return ret;
-}
-
-bool check(const Line& l1, const Line& l2, long long x) {
-  return l1.a * (__int128)x + l1.b >= l2.a * (__int128)x + l2.b;
-}
-
-bool over(const Line& l1, const Line& l2, const Line& l3) {
-  return (long double)(l2.b - l1.b) / (long double)(l1.a - l2.a) > (long double)(l3.b - l2.b) / (long double)(l2.a - l3.a);
-}
-
-inline long long power(long long a, int n, long long ub) {
-  if (ub < 0) return -1;
-  __int128 A = a;
-  __int128 ret = 1;
-  for (int i = 0; i < n; ++i) {
-    if (ret * A > ub) return -1;
-    ret *= A;
-  }
-  return ret;
 }

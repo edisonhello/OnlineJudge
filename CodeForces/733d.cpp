@@ -1,33 +1,39 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int sz[3], N, Max, a, b;
-map<pair<int, int>, pair<int, int>> m;
+const int maxn = 1e5 + 10;
+vector<int> v[maxn];
+
+map<pair<int, int>, multiset<pair<int, int>>> m;
 
 int main() {
-  ios_base::sync_with_stdio(false); cin.tie(nullptr);
-  cin >> N;
-  a = b = 0;
-  for (int i = 1; i <= N; ++i) {
-    cin >> sz[0] >> sz[1] >> sz[2];
-    sort(sz, sz + 3);
-    if (sz[0] > Max) {
-      a = i;
-      b = 0;
-      Max = sz[0];
-      continue;
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int n; cin >> n;
+    for (int i = 1; i <= n; ++i) {
+        v[i].resize(3);
+        for (int j = 0; j < 3; ++j) cin >> v[i][j];
+        sort(v[i].begin(), v[i].end());
+        for (int j = 0; j < 3; ++j) {
+            m[minmax(v[i][j], v[i][(j + 1) % 3])].insert(make_pair(v[i][(j + 2) % 3], i));
+        }
     }
-    m[make_pair(sz[0], sz[1])] = max(m[make_pair(sz[0], sz[1])], make_pair(sz[2], i));
-    m[make_pair(sz[0], sz[2])] = max(m[make_pair(sz[0], sz[2])], make_pair(sz[1], i));
-    m[make_pair(sz[1], sz[2])] = max(m[make_pair(sz[1], sz[2])], make_pair(sz[0], i));
-    auto Min = min({ m[make_pair(sz[1], sz[2])], m[make_pair(sz[0], sz[2])], m[make_pair(sz[0], sz[1])] });
-    if (Min.first > Max) {
-      Max = Min.first;
-      a = Min.second;
-      b = i;
+    pair<int, pair<int, int>> ans = make_pair(0, make_pair(0, 0));
+    for (int i = 1; i <= n; ++i) ans = max(ans, make_pair(v[i][0], make_pair(i, 0)));
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            multiset<pair<int, int>>& s = m[minmax(v[i][j], v[i][(j + 1) % 3])];
+            if (s.size() == 1) continue;
+            s.erase(s.find(make_pair(v[i][(j + 2) % 3], i)));
+            auto k = *s.rbegin();
+            int l = min({ v[i][j], v[i][(j + 1) % 3], v[i][(j + 2) % 3] + k.first });
+            ans = max(ans, make_pair(l, make_pair(i, k.second)));
+            
+        }
     }
-  }
-  if (b) cout << "2 " << a << " " << b << '\n';
-  else cout << "1 " << a << '\n';
-  return 0;
+    int k = 1;
+    if (ans.second.second && ans.second.second != ans.second.first) ++k;
+    cout << k << endl;
+    cout << ans.second.first << ' ';
+    if (ans.second.second && ans.second.second != ans.second.first) cout << ans.second.second << endl;
+    return 0;
 }

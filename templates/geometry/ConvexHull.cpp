@@ -1,4 +1,4 @@
-double cross(const pt& o, const pt& a, const pt& b) {
+type cross(const pt& o, const pt& a, const pt& b) {
     return (a - o) ^ (b - o);
 }
 

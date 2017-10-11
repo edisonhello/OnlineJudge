@@ -1,4 +1,4 @@
-pt intersection(const pt& p1, const pt& p2, const pt& p3, const pt& p4) {
+pt intersection(const pt& p1, const pt& p2, const pt& q1, const pt& q2) {
     double f1 = (p2 - p1) ^ (q1 - p1);
     double f2 = (p2 - p1) ^ (p1 - q2);
     double f = f1 + f2;

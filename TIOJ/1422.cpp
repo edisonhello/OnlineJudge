@@ -1,3 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 300 + 10, inf = 1e9 + 1;
+
 struct MCMF {
     struct Edge {
         int to, rev, cap, w;
@@ -43,6 +48,8 @@ struct MCMF {
         fill(G, G + maxn, vector<Edge>());
     }
     void add_edge(int a, int b, int cap, int w) {
+        cout << a << ' ' << b << ' ' << cap << endl;
+        // cout << a << " -> " << b << " cap = " << cap << " w = " << w << endl;
         G[a].push_back(Edge(b, cap, w, (int)G[b].size()));
         G[b].push_back(Edge(a, 0, -w, (int)G[a].size() - 1));
     }
@@ -53,6 +60,34 @@ struct MCMF {
             if (res.first == -1) break;
             mxf += res.first; mnc += res.first * res.second;
         }
+        // cout << "mxf = " << mxf << " mnc = " << mnc << endl;
         return make_pair(mxf, mnc);
     }
 };
+
+int main() {
+    int n, m; cin >> n >> m;
+    if (n < m) swap(n, m);
+    int s = 0, t = n * m * 2 + 1;
+    cout << "s = " << s << " t = " << t << endl;
+    MCMF flow(n * m * 2 + 2, s, t);
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= m; ++j) {
+            int now = (i - 1) * m + j;
+            // cout << "now = " << now << endl;
+            flow.add_edge(s, now, inf, 1); flow.add_edge(now, now + n * m, inf, 0);
+            for (int k = 1; k <= n; ++k) if (k != i) flow.add_edge(now, (k - 1) * m + j + n * m, inf, 0);
+            for (int k = 1; k <= m; ++k) if (k != j) flow.add_edge(now, (i - 1) * m + k + n * m, inf, 0);
+            for (int k = -n; k <= n; ++k) if (k != 0) {
+                if (i + k <= n && i + k >= 1 && j + k <= m && j + k >= 1) flow.add_edge(now, (i + k - 1) * m + (j + k) + n * m, inf, 0);
+            }
+            for (int k = -n; k <= n; ++k) if (k != 0) {
+                if (i - k <= n && i - k >= 1 && j + k <= m && j + k >= 1) flow.add_edge(now, (i - k - 1) * m + (j + k) + n * m, inf, 0);
+            }
+            flow.add_edge(now + n * m, t, 1, 0);
+        }
+    }
+    auto f = flow.maxflow();
+    cout << f.first << ' ' << f.second << endl;
+    return 0;
+}

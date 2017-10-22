@@ -1,4 +1,4 @@
-using type = int;
+using type = double;
 
 struct pt {
     type x, y;
@@ -14,5 +14,7 @@ struct pt {
     bool operator>(const pt& a) const { return x == a.x ? y > a.y : x > a.x; }
     bool operator==(const pt& a) const { return x == a.x && y == a.y; }
     bool operator!=(const pt& a) const { return x != a.x || y != a.y; }
+    double dist(const pt &p) const { return sqrt((p - *this) * (p - *this)); }
+    friend double norm2(const pt &p) { return p * p; }
+    friend double norm(const pt &p) { return sqrt(norm2(p)); }
 };
-

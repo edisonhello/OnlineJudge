@@ -1,3 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 100 + 10, inf = 1e9 + 1;
+
 struct Hungarian {
     vector<vector<int>> w;
     bitset<maxn> s, t;
@@ -63,4 +68,19 @@ struct Hungarian {
         return ret;
     }
 };
+
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int n; while (cin >> n, n) {
+        Hungarian solver(n);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                int w; cin >> w; w = max(w, 0);
+                solver.add_edge(i, j, w);
+            }
+        }
+        cout << max(0, solver.matching()) << endl;
+    }
+    return 0;
+}
 

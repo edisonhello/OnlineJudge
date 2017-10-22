@@ -175,8 +175,18 @@ literate={\ \ }{{\ }}1
 \subsection{Rolling Hash Primes}
 \lstinputlisting{string/HashPrime.cpp}
 \section{Dynamic Programming}
+\subsection{Concept}
+\begin{enumerate}
+    \item Convex Hull Optimization: $dp[i] = \max_{j < i} \{ a[j]x[i] + b[j] \}$
+    \item Concave totally Montone: $\forall i < i^\prime, j < j^\prime, f[i][j]\leq f[i^\prime][j]\Rightarrow f[i][j^\prime]\leq f[i^\prime][j^\prime]$
+    \item Convex totally Montone: $\forall i < i^\prime, j < j^\prime, f[i][j]\geq f[i^\prime][j]\Rightarrow f[i][j^\prime]\geq f[i^\prime][j^\prime]$
+\end{enumerate}
 \subsection{Linear Convex Hull Optimization}
 \lstinputlisting{dp/ConvexHullLinear.cpp}
+\subsection{Convex Hull Optimization}
+\lstinputlisting{dp/ConvexHullSet.cpp}
+\subsection{Convex Montone Optimization}
+\lstinputlisting{dp/convex.cpp}
 \subsection{Divide and Conquer Optimization}
 \lstinputlisting{dp/divideConquer.cpp}
 \end{document}

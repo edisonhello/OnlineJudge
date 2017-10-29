@@ -23,7 +23,7 @@ struct DisjointSet {
     }
     int find(int x) {
         if (x == p[x]) return x;
-        return p[x] = find(p[x]);
+        return find(p[x]);
     }
     void merge(int x, int y) {
         x = find(x); y = find(y);

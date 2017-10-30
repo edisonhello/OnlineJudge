@@ -1,87 +1,54 @@
-#include <cstdio>
-#include <cstring>
-#include <utility>
-#include <vector>
-#define getchar getchar_unlocked
+#include <bits/stdc++.h>
 using namespace std;
 
-char __c;
-bool flag;
+const int maxn = 6e5 + 10;
+int n, m, s[maxn], a[maxn], b[maxn];
 
-template <typename T>
-inline bool rit(T& x) {
-  __c = 0, flag = false;
-  while (__c = getchar(), (__c < '0' && __c != '-') || __c > '9') if (__c == -1) return false;
-  __c == '-' ? (flag = true, x = 0) : (x = __c - '0');
-  while (__c = getchar(), __c >= '0' && __c <= '9') x = x * 10 + __c - '0';
-  if (flag) x = -x;
-  return true;
+inline bool check(int t) {
+    vector<int> ts(s, s + maxn);
+    bitset<maxn> v;
+    for (int i = 0; i < t; ++i) swap(ts[a[i]], ts[b[i]]);
+    int c = 0;
+    for (int i = 0; i < n; ++i) if (!v[i]) {
+        int now = i;
+        ++c;
+        while (!v[now]) v[now] = true, now = ts[now];
+    }
+    return n - c <= t;
 }
 
-template <typename T, typename ...Args>
-inline bool rit(T& x, Args& ...args) { return rit(x) && rit(args...); }
-
-int T, N, S[200005], H[200005], M, l, r, mid, now;
-bool v[200005];
-pair<int, int> ch[600005];
-vector<pair<int, int>> ans;
-int check();
-void DFS(int);
+void solve(int t) {
+    vector<int> ts(s, s + maxn);
+    for (int i = 0; i < t; ++i) swap(ts[a[i]], ts[b[i]]); 
+    bitset<maxn> v;
+    vector<pair<int, int>> sw;
+    for (int i = 0; i < n; ++i) if (!v[i]) {
+        int now = i;
+        vector<int> cycle;
+        while (!v[now]) v[now] = true, cycle.push_back(now), now = ts[now];
+        for (size_t j = 0; j < cycle.size() - 1; ++j) sw.emplace_back(cycle[j], cycle[j + 1]);
+    }
+    while (sw.size() < t) sw.emplace_back(0, 0);
+    vector<int> pos(maxn);
+    for (int i = 0; i < n; ++i) pos[s[i]] = i;
+    for (int i = 0; i < t; ++i) {
+        swap(pos[s[a[i]]], pos[s[b[i]]]); swap(s[a[i]], s[b[i]]);
+        cout << pos[sw[i].first] << ' ' << pos[sw[i].second] << endl;
+        swap(pos[sw[i].first], pos[sw[i].second]); swap(s[pos[sw[i].first]], s[pos[sw[i].second]]);     
+    }
+}
 
 int main() {
-  rit(T);
-  while (T--) {
-    rit(N); for (int i = 0; i < N; ++i) rit(S[i]), H[S[i]] = i;
-    rit(M); for (int i = 0; i < M; ++i) rit(ch[i].first, ch[i].second);
-    l = -1; r = N * 3;
-    while (l < r - 1) {
-      mid = (l + r) >> 1;
-      for (int i = 0; i < N; ++i) S[H[i]] = i;
-      for (int i = 0; i < mid; ++i) swap(S[ch[i].first], S[ch[i].second]);
-      if (check() <= mid) r = mid;
-      else l = mid;
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int t; cin >> t; while (t--) {
+        cin >> n;
+        for (int i = 0; i < n; ++i) cin >> s[i];
+        cin >> m;
+        for (int i = 0; i < m; ++i) cin >> a[i] >> b[i];
+        int d = 1, ans = m; while (d < maxn) d <<= 1;
+        while (d >>= 1) if (ans - d >= 0) if (check(ans - d)) ans -= d;
+        cout << ans << endl;
+        solve(ans);
     }
-    printf("%d\n", r); ans.clear();
-    memset(v, false, sizeof(v));
-    for (int i = 0; i < N; ++i) S[H[i]] = i;
-    for (int i = 0; i < r; ++i) swap(S[ch[i].first], S[ch[i].second]);
-    for (int i = 0; i < N; ++i) {
-      if (!v[i]) {
-        v[i] = true;
-        now = i;
-        while (!v[S[now]]) {
-          ans.push_back(make_pair(S[now], S[S[now]]));
-          now = S[now];
-          v[now] = true;
-        }
-      }
-    }
-    if (ans.size() < r) ans.push_back(make_pair(0, 0));
-    for (int i = 0; i < N; ++i) S[H[i]] = i;
-    for (int i = 0; i < r; ++i) {
-      swap(H[S[ch[i].first]], H[S[ch[i].second]]);
-      swap(S[ch[i].first], S[ch[i].second]);
-      printf("%d %d\n", H[ans[i].first], H[ans[i].second]);
-      swap(H[ans[i].first], H[ans[i].second]);
-      swap(S[H[ans[i].first]], S[H[ans[i].second]]);
-    }
-  }
-  return 0;
-}
-
-int check() {
-  int cycle = 0;
-  memset(v, false, sizeof(v));
-  for (int i = 0; i < N; ++i) {
-    if (!v[i]) {
-      cycle++;
-      DFS(i);
-    }
-  }
-  return N - cycle;
-}
-
-void DFS(int x) {
-  v[x] = true;
-  if (!v[S[x]]) DFS(S[x]);
+    return 0;
 }

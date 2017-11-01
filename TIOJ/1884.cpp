@@ -1,48 +1,47 @@
-#include <iostream>
-#include <cstring>
-#include <vector>
-#define getchar getchar_unlocked
+#include <bits/stdc++.h>
 using namespace std;
 
-long long L[10000010], R[10000010], lL, lR, T, n, k, l, D[10000010], mid, i, __t;
-char __c;
-long long ans, tmp;
+const int maxn = 1e7 + 10;
+const long long inf = 1e18 + 1;
+int a[maxn], n, k, l;
+long long dpl[maxn], dpr[maxn];
 
-inline long long rit() {
-  __t = 0;
-  do {
-    __c = getchar();
-  } while (__c < '0' || __c > '9');
-  do {
-    __t = __t * 10 + __c - '0';
-    __c = getchar();
-  } while (__c >= '0' && __c <= '9');
-  return __t;
+void solve(long long *dp, const vector<int> &a) {
+    dp[0] = 0;
+    for (int i = 1; i < a.size(); ++i) {
+        dp[i] = dp[max(i - k, 0)] + 2 * abs(a[i] - a[0]);
+    }
 }
 
 int main() {
-  T = rit();
-  while (T--) {
-    n = rit(), k = rit(), l = rit();
-    for (i = 0; i < n; ++i) D[i] = rit();
-    mid = 0;
-    while (mid < n && D[mid] <= l / 2) {
-      R[mid + 1] = 2 * D[mid];
-      if (mid + 1 - k > 0) R[mid + 1] += R[mid + 1 - k];
-      mid++;
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    int t; cin >> t; while (t--) {
+        cin >> n >> k >> l;
+        for (int i = 1; i <= n; ++i) cin >> a[i];
+        int pos = lower_bound(a + 1, a + n + 1, l / 2) - a;
+        if (a[pos] > l / 2) --pos;
+        // cout << "pos = " << pos << endl;
+        vector<int> al, ar;
+        al.push_back(0); ar.push_back(l);
+        for (int i = 1; i <= pos; ++i) al.push_back(a[i]);
+        for (int i = n; i > pos; --i) ar.push_back(a[i]);
+        // cout << "al : " << endl;
+        // for (int i : al) cout << i << ' '; cout << endl;
+        // cout << "ar : " << endl;
+        // for (int i : ar) cout << i << ' '; cout << endl;
+        solve(dpl, al); solve(dpr, ar);
+        // cout << "dpl : " << endl;
+        // for (int i = 1; i < al.size(); ++i) cout << dpl[i] << ' '; cout << endl;
+        // cout << "dpr : " << endl;
+        // for (int i = 1; i < ar.size(); ++i) cout << dpr[i] << ' '; cout << endl;
+        long long ans = dpl[al.size() - 1] + dpr[ar.size() - 1];
+        for (int i = 1; i <= pos; ++i) {
+            if (i + k - 1 <= pos) continue;
+            int tid = ar.size() - (i + k - 2 - pos) - 1;
+            if (tid <= 0) continue;
+            ans = min(ans, dpl[i - 1] + l + dpr[tid - 1]);
+        }
+        cout << ans << endl;
     }
-    for (i = 0; i < n - mid; ++i) {
-      L[i + 1] = 2 * (l - D[n - i - 1]);
-      if (i + 1 - k > 0) L[i + 1] += L[i + 1 - k];
-    }
-    ans = R[mid] + L[n - mid];
-    for (i = 0; i < k + 1; ++i) {
-      tmp = l;
-      if (mid - i > 0) tmp += R[mid - i];
-      if (n - mid + i - k > 0) tmp += L[n - mid + i - k];
-      if (tmp < ans) ans = tmp;
-    }
-    printf("%lld\n", ans);
-  }
-  return 0;
+    return 0;
 }
